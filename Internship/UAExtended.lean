@@ -15,7 +15,7 @@ open Arrow
 
 @[grind cases]
 inductive UAExtendedSemiring where
-  | atom : UANaiveSemiring → UAExtendedSemiring 
+  | atom : UANaiveSemiring → UAExtendedSemiring
   | arrow : Arrow → UAExtendedSemiring
   deriving DecidableEq, Repr, Fintype
 
@@ -65,7 +65,7 @@ def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | n, arrow A_to_1          => n
 
 instance : Zero UAExtendedSemiring where
-  zero := atom .zero 
+  zero := atom .zero
 
 @[grind =] theorem UAExtendedSemiring.zero_eq :
     (0 : UAExtendedSemiring) = atom .zero := rfl
@@ -77,21 +77,21 @@ instance : One UAExtendedSemiring where
     (1 : UAExtendedSemiring) = atom .one := rfl
 
 instance : Add UAExtendedSemiring where
-  add := add 
+  add := add
 
-@[grind =] theorem UAExtendedSemiring.hadd_eq (a b : UANaiveSemiring) :
+@[grind =] theorem UAExtendedSemiring.hadd_eq (a b : UAExtendedSemiring) :
     a + b = add a b := rfl
 
 instance : Mul UAExtendedSemiring where
-  mul := mul 
+  mul := mul
 
-@[grind =] theorem UAExtendedSemiring.hmul_eq (a b : UANaiveSemiring) :
+@[grind =] theorem UAExtendedSemiring.hmul_eq (a b : UAExtendedSemiring) :
     a * b = mul a b := rfl
 
 instance : Min UAExtendedSemiring where
-  min := meet 
+  min := meet
 
-@[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UANaiveSemiring) :
+@[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
     a ⊓ b = meet a b := rfl
 
 instance : OrderedSemiring UAExtendedSemiring where
@@ -118,4 +118,3 @@ instance : OrderedSemiring UAExtendedSemiring where
 
   add_inf := by decide
   inf_add := by decide
-

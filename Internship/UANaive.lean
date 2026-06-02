@@ -1,7 +1,7 @@
 import Internship.Base
-open Base 
+open Base
 
-namespace UANaive 
+namespace UANaive
 
 @[grind cases]
 inductive UANaiveSemiring where
@@ -79,57 +79,56 @@ def meet : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
   | bot, n     => n
 
 instance : Zero UANaiveSemiring where
-  zero := zero 
+  zero := zero
 
 @[grind =] theorem UANaiveSemiring.zero_eq :
     (0 : UANaiveSemiring) = zero := rfl
 
 instance : One UANaiveSemiring where
-  one := one 
+  one := one
 
 @[grind =] theorem UANaiveSemiring.one_eq :
     (1 : UANaiveSemiring) = one := rfl
 
 instance : Add UANaiveSemiring where
-  add := add 
+  add := add
 
 @[grind =] theorem UANaiveSemiring.hadd_eq (a b : UANaiveSemiring) :
     a + b = add a b := rfl
 
 instance : Mul UANaiveSemiring where
-  mul := mul 
+  mul := mul
 
 @[grind =] theorem UANaiveSemiring.hmul_eq (a b : UANaiveSemiring) :
     a * b = mul a b := rfl
 
 instance : Min UANaiveSemiring where
-  min := meet 
+  min := meet
 
 @[grind =] theorem UANaiveSemiring.hmin_eq (a b : UANaiveSemiring) :
     a ⊓ b = meet a b := rfl
 
 instance : OrderedSemiring UANaiveSemiring where
   add_assoc := by grind
-  add_comm := by grind
-  add_zero := by grind
-  zero_add := by grind
+  add_comm := by decide
+  add_zero := by decide
+  zero_add := by decide
 
-  mul_assoc := by grind
-  mul_one := by grind
-  one_mul := by grind
-  mul_zero := by grind
-  zero_mul := by grind
+  mul_assoc := by decide
+  mul_one := by decide
+  one_mul := by decide
+  mul_zero := by decide
+  zero_mul := by decide
 
-  inf_assoc := by grind
-  inf_comm := by grind
-  inf_idem := by grind
+  inf_assoc := by decide
+  inf_comm := by decide
+  inf_idem := by decide
 
-  mul_add := by grind
-  add_mul := by grind
+  mul_add := by decide
+  add_mul := by decide
 
-  mul_inf := by grind
-  inf_mul := by grind
+  mul_inf := by decide
+  inf_mul := by decide
 
-  add_inf := by grind
-  inf_add := by grind
-
+  add_inf := by decide
+  inf_add := by decide
