@@ -94,17 +94,23 @@ instance : Min UAExtendedSemiring where
 @[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
     a ⊓ b = meet a b := rfl
 
+theorem mult_monotone_left (a b c : UAExtendedSemiring) (h : a ⊓ b = a) : -- a <= b
+    a * c ⊓ b * c = a * c := by grind -- a * c <= b * c
+
+theorem mult_monotone_right (a b c : UAExtendedSemiring) (h : a ⊓ b = a) : -- a <= b
+    c * a ⊓ c * b = c * a := by grind -- c * a <= c * b
+
 instance : OrderedSemiring UAExtendedSemiring where
   add_assoc := by decide
   add_comm := by decide
-  add_zero := by decide
-  zero_add := by decide
+  add_zero := by grind
+  zero_add := by grind
 
   mul_assoc := by decide
-  mul_one := by decide
-  one_mul := by decide
-  mul_zero := by decide
-  zero_mul := by decide
+  mul_one := by grind
+  one_mul := by grind
+  mul_zero := by grind
+  zero_mul := by grind
 
   inf_assoc := by decide
   inf_comm := by decide
@@ -113,8 +119,8 @@ instance : OrderedSemiring UAExtendedSemiring where
   mul_add := by decide
   add_mul := by decide
 
-  mul_inf := by decide
-  inf_mul := by decide
+  mul_inf := by sorry -- use 'grind' to see a counter-example
+  inf_mul := by grind
 
   add_inf := by decide
   inf_add := by decide
