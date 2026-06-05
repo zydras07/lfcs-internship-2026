@@ -342,7 +342,7 @@ We derive terms for the following types:
     &\mid \llet x = e_1 \lin e_2
       \mid \llet_\mu (x, y) = e \lin e
       \mid \case_\mu\, e\, \{x.e_1;\; y.e_2\} \\
-  \Gamma &::= \cdot \mid \Gamma, x : A \at \mu, \lock_\mu
+  \Gamma &::= \cdot \mid \Gamma, x : A \at \mu \mid \Gamma, \lock_\mu
 \end{align*}
 
 We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
