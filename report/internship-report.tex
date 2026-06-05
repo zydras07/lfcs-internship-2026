@@ -568,7 +568,7 @@ We derive terms for the following types:
       By VAR, $0 \cdot \Gamma_1^\prime, x :^1 A, 0 \cdot \Gamma_2^\prime \tee x : A$, as required.
       \\
       \item[Case SUB.]
-      By assumption, have $q_2 \le q_1$. By the definition of $\le$ over contexts, we have \textbf{(1)} $q_2 \le q_1 \le q_1^\prime$. By the inductive hypothesis, and $\Gamma_1^\prime, x :^q A, \Gamma_2^\prime \tee v : B$ by the inductive hypothesis, we have $$ as required.
+      By assumption, have $q_2 \le q_1$. By the definition of $\le$ over contexts, we have \textbf{(1)} $q_2 \le q_1 \le q_1^\prime$. By the inductive hypothesis, and $\Gamma_1^\prime, x :^q A, \Gamma_2^\prime \tee v : B$ by the inductive hypothesis, we have as required.
       \\
       \item[Case LAM.]
       By the inductive hypothesis, have $\Gamma^\prime, x :^q A \tee e : B$. By LAM on this, $\Gamma^\prime \tee \lambda x.e : \,^qA \rightarrow B$, as required.
@@ -687,7 +687,7 @@ We derive terms for the following types:
 \end{proof}
 
 \begin{theorem}[Graded Type Theory to Mode Qualifiers]
-  If\/ $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
+  If\/ $\Gamma \tee e : \,^qA$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at q$.
 \end{theorem}
 
 \begin{proof}
@@ -696,8 +696,6 @@ We derive terms for the following types:
       \item[Case VAR.]
       \item[Case SUB.]
       \item[Case LAM.]
-      By the inductive hypothesis, have 
-      \\
       \item[Case UNIT.]
       By UNIT, $\sem{\Gamma} \tee () : \unit \at 1$ as required.
       \\ 
