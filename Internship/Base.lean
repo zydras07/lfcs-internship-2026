@@ -40,3 +40,5 @@ class OrderedSemiring (α : Type*)
 
 instance [OrderedSemiring α] : LE α where
   le a b := a ⊓ b = a
+
+if Γ ≤ Γ' and Γ' ⊢ e : A then Γ ⊢ e : A
