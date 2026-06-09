@@ -349,7 +349,7 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
 \begin{align*}
   \mathrm{locks}(\cdot) &= \mathrm{id} \\
   \mathrm{locks}(\Gamma, x :_\mu A) &= \mathrm{locks}(\Gamma) \\
-  \mathrm{locks}(\Gamma, \lock_\mu) &= \mu \circ \mathrm{locks}(\Gamma)
+  \mathrm{locks}(\Gamma, \lock_\mu) &= \mathrm{locks}(\Gamma) \circ \mu
 \end{align*}
 
 \paragraph{Typing rules} \hfill \framebox{$\Gamma \tee e : A \at \mu$}
@@ -367,9 +367,10 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
   } \and
   \inferrule*[right=app]{
     \Gamma \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_ \\\\
-    \Gamma \tee e_2 : A \at \mu_1
+    \Gamma \tee e_2 : A \at \mu_1 \\
+    \mu_2 \geq \mu_3
   }{
-    \Gamma \tee e_1\, e_2 : B \at \mu_2
+    \Gamma \tee e_1\, e_2 : B \at \mu_3
   } \and
   \inferrule*[right=$\boxempty$I]{
     \Gamma \tee e : A \at \nu \circ \mu
@@ -471,6 +472,8 @@ For the local and global modes, we take a single comonadic axis $\{1, \mathbb{G}
 
 Over contexts, the $\le$ relation is defined by comparing variables point-wise. If variables modes are equal when compared point-wise, then locks may be compared point-wise contrapositively, where $\mu \le \mu^\prime$ $\Gamma_1, \lock_{\mu^\prime}, \Gamma_2 \le \Gamma_1, \lock_\mu, \Gamma_2$. Two contexts are incomparable if they have a different set of variables or locks in different positions.
 
+We also have a $+$ operator for modes, defined with $0$ as the identity and $\mu_1 + \mu_2 = \max(\mu_1, \mu_2)$ with $\mu_1, \mu_2 \ne 0$. $+$ over contexts is defined point-wise over variables.
+
 For this parameterisation, it is also possible to define the lock as a left-division operator:
 \begin{align*}
   \cdot,\lock_\mu &= \cdot \\
@@ -521,7 +524,9 @@ We derive terms for the following types:
 \begin{align*}
   \sem{\cdot} &= \cdot \\
   \sem{\Gamma, x :^0 A} &= \sem{\Gamma} \\
-  \sem{\Gamma, x :^q A} &= \sem{\Gamma},\, x : \sem{A} \at q
+  \sem{\Gamma, x :^q A} &= \sem{\Gamma},\, x : \sem{A} \at q \\
+  \sem{\Gamma_1 + \Gamma_2} &= \sem{\Gamma_1} + \sem{\Gamma_2}
+  \sem{q \cdot \Gamma} &= q \circ \sem{\Gamma}
 \end{align*}
 
 \paragraph{Translation of values}
@@ -579,7 +584,7 @@ TODO: Add something like $\sem{q \cdot \Gamma \tee v : A} = \sem{\Gamma} \tee \s
       By the inductive hypothesis, have $\Gamma^\prime, \lock_{\mu^\prime}, x : A \at \mu_1 \tee e : B \at \mu_2$. By LAM on this, $\Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
       \\
       \item[Case APP.]
-      ???
+      By the inductive hypothesis, have $\Gamma^\prime \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and $\Gamma^\prime \tee e_2 : A \at \mu_1$. By APP on these and assumption $\mu_2^\prime \le \mu_2$, $\Gamma^\prime \tee e_1 e_2 : B \at \mu_2^\prime$ as required.
       \\
       \item[Case $\boxempty$I.]
       By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$.
@@ -659,63 +664,89 @@ TODO: Add something like $\sem{q \cdot \Gamma \tee v : A} = \sem{\Gamma} \tee \s
   \end{description}
 \end{proof}
 
-\begin{lemma}
-  For all $q$, $\Gamma_1$ and $\Gamma_2$, if $\Gamma_1 \le \Gamma_2$, then $q \cdot \Gamma_1 \le q \cdot \Gamma_2$.
-\end{lemma}
-
-\begin{proof}
-  By the definition of $\le$ over contexts being point-wise, it suffices to show that $q \cdot q_1 \le q \cdot q_2$.
-  Proceed by cases over $q$ and $q_1$.
-  \begin{description}
-      \item[Case $q = 0$.] 
-      $0 \le 0$ holds by reflexivity of $\le$.
-      \item[Case $q = 1$.] 
-      $q_1 \le q_2$ holds by assumption.
-      \item[Case $q = G, q_1 = 0$.] 
-      $0 \le G \cdot q_2$ holds since $0$ is the least element of the semiring.
-      \item[Case $q = G, otherwise$.]
-      $G \le G$ holds by reflexivity of $\le$.
-  \end{description}
-\end{proof}
-
-\begin{theorem}[Graded Type Theory to Mode Qualifiers]
-  If\/ $q\cdot\Gamma \tee v : A$, then $\sem{\Gamma} \tee \sem{v} : \sem{A} \at q$ for all $q \neq 0$. If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
+\begin{theorem}[Graded Type Theory Values to Mode Qualifiers]
+  If\/ $\Gamma \tee v : A$, then $\sem{q \cdot \Gamma} \tee \sem{v} : \sem{A} \at q$ for all $q \neq 0$. 
 \end{theorem}
 
 \begin{proof}
-   Proceed by induction over the structure of the derivation of $q\cdot\Gamma \tee e : A$.\\
+   Proceed by induction over the structure of the derivation of $q \cdot \Gamma \tee v : A$.\\
    \begin{description}
       \item[Case VAR.]
-      By assumption, have $q \ge 1$. Thus, by VAR, $\cdot, x : \sem{A} \at q \tee x : \sem{A} \at 1$, as required.
+      Have $q \le q$ by reflexivity of $\le$. 
+      Thus, by VAR, $\cdot, x : \sem{A} \at q \tee x : \sem{A} \at q$, as required.
       \\
-      \item[Case SUB. TODO: UPDATE TO GENERIC $q$.]
-      By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q, \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at 1$. Thus, by the assumption $q \le q^\prime$ and weakening, $\sem{\Gamma}, x : \sem{A} \at q^\prime, \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at 1$, as required.
+      \item[Case SUB.]
+      By the inductive hypothesis, have $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q^\prime \circ q_1, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$. 
+      Thus, by the assumption $q_1 \le q_2$ and weakening, $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q_2, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$, as required.
       \\
       \item[Case LAM.]
+      ???
+      \\
       \item[Case UNIT.]
-      By UNIT, $\sem{\Gamma} \tee () : \unit \at q$ as required.
+      By UNIT, $q \circ \sem{\Gamma} \tee () : \unit \at q$ as required.
       \\ 
       \item[Case PAIR.]
-      By assumption, have $q \cdot \Gamma_1 \tee v_1 : A$ and $q \cdot \Gamma_2 \tee v_2 : B$. By (1.3), $\Gamma_1 \le \Gamma_1 + \Gamma_2$ and \textbf{(1)} $\Gamma_2 \le \Gamma_2 + \Gamma_1$. By commutativity of addition on \textbf{(1)}, $\Gamma_2 \le \Gamma_1 + \Gamma_2$. Hence, by weakening and (1.4), obtain $q \cdot (\Gamma_1 + \Gamma_2) \tee v_1 : A$ and $q \cdot (\Gamma_1 + \Gamma_2) \tee v_2 : B$. By the inductive hypothesis, obtain \textbf{(2)} $\sem{\Gamma_1 + \Gamma_2} \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(3)} $\sem{\Gamma_1 + \Gamma_2} \tee \sem{v_2} : \sem{B} \at q$. By PAIR on \textbf{(2)} and \textbf{(3)}, $\sem{\Gamma_1 + \Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$. By the translation, this is equal to $\sem{\Gamma_1 + \Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A \times B} \at q$, as required.
+      By assumption, have \textbf{(1)} $\Gamma_1 \tee v_1 : A$ and \textbf{(2)} $\Gamma_2 \tee v_2 : B$.
+      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
+      By weakening, and then right distributivity of $\circ$ over $+$ on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(6)} $q \circ \sem{\Gamma_1 + \Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
+      By PAIR on \textbf{(6)} and \textbf{(7)}, $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
       \\ 
       \item[Case INL.]
-      By the inductive hypothesis, have $\sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. By INL on this, $\sem{\Gamma} \tee \inl \sem{e} : \sem{A} + B^\prime \at q$. Since, for all mode qualifier types $B^\prime$, there exists a graded modal type $B$ such that $B^\prime = \sem{B}$, we have $\sem{\Gamma} \tee \inl \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $\sem{\Gamma} \tee \inl \sem{e} : \sem{A + B} \at q$, as required.
+      By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
+      By INL on this, $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + B^\prime \at q$. 
+      Since, for all mode qualifier types $B^\prime$, there exists a graded modal type $B$ such that $B^\prime = \sem{B}$, we have $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inl e} : \sem{A + B} \at q$, as required.
       \\
       \item[Case INR.]
-      By the inductive hypothesis, have $\sem{\Gamma} \tee \sem{e} : \sem{B} \at q$. By INR on this, $\sem{\Gamma} \tee \inr \sem{e} : A^\prime + \sem{B} @ q$. Since, for all mode qualifier types $A^\prime$, there exists a graded modal type $A$ such that $A^\prime = \sem{A}$, we have $\sem{\Gamma} \tee \inr \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $\sem{\Gamma} \tee \inr \sem{e} : \sem{A + B} \at q$, as required.
+      By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{B} \at q$. 
+      By INR on this, $q \circ \sem{\Gamma} \tee \inr \sem{e} : A^\prime + \sem{B} @ q$. 
+      Since, for all mode qualifier types $A^\prime$, there exists a graded modal type $A$ such that $A^\prime = \sem{A}$, we have $q \circ \sem{\Gamma} \tee \inr \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inr e} : \sem{A + B} \at q$, as required.
       \\
       \item[Case $\boxempty$I.]
-      \item[Case APP.]
-      \item[Case BIND.]
-      By assumption, have $\Gamma_1 \tee e_1 : A$ and $\Gamma_2, x :^1 A \tee e_2 : B$. By (1.3), $\Gamma_1 \le \Gamma_1 + \Gamma_2$ and \textbf{(1)} $\Gamma_2 \le \Gamma_2 + \Gamma_1$. By commutativity of addition on \textbf{(1)}, $\Gamma_2 \le \Gamma_1 + \Gamma_2$. Hence, by weakening, obtain $\Gamma_1 + \Gamma_2 \tee e_1 : A$ and $\Gamma_1 + \Gamma_2, x :^1 A \tee e_2 : B$. By the inductive hypothesis, obtain \textbf{(2)} $\sem{\Gamma_1 + \Gamma_2} \tee \sem{e_1} : \sem{A} \at q$ and \textbf{(3)} $\sem{\Gamma_1 + \Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at q$. By LET on \textbf{(2)} and \textbf{(3)}, $\sem{\Gamma_1 + \Gamma_2} \tee \llet x = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, as required.
+      By the inductive hypothesis, have $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{v} : \sem{A} \at q^\prime \circ q$. 
+      Thus, by $\emptybox$I, $q^\prime \circ q \circ \Gamma \tee \mathrm{box}_qv : \emptybox_qA \at q^\prime$.
       \\
-      \item[Case $\boxempty$E.]
-      \item[Case SPLIT.]
-      By assumption, have $q \cdot \Gamma_1 \tee v : A_1 \times A_2$ and $\Gamma_2, x :^q A_1, y :^q A_2 \tee e : B$. By (1.3), $\Gamma_1 \le \Gamma_1 + \Gamma_2$ and \textbf{(1)} $\Gamma_2 \le \Gamma_2 + \Gamma_1$. By commutativity of addition on \textbf{(1)}, $\Gamma_2 \le \Gamma_1 + \Gamma_2$. Hence, by weakening and (1.4), obtain $q \cdot (\Gamma_1 + \Gamma_2) \tee v : A_1 \times A_2$ and $\Gamma_1 + \Gamma_2, x :^q A_1, y :^q A_2 \tee e : B$. By the inductive hypothesis, obtain \textbf{(2)} $\sem{\Gamma_1 + \Gamma_2} \tee \sem{v} : \sem{A_1} \times \sem{A_2} \at q$ and \textbf{(3)} $\sem{\Gamma_1 + \Gamma_2}, x : \sem{A_1} @ q, y : \sem{A_2} @ q \tee \sem{e} : \sem{B} @ 1$. By LET on \textbf{(2)} and \textbf{(3)}, obtain $\sem{\Gamma_1 + \Gamma_2} \tee \llet_q (x, y) = \sem{v} \lin \sem{e} : \sem{B} \at 1$, as required.
-      \\
-      \item[Case CASE.]
-      By assumption, have $q \cdot \Gamma_1 \tee v : A + B$, $\Gamma_2, x :^q A \tee e_1 : C$ and $\Gamma_2, y :^q B \tee e_2 : C$. By (1.3), $\Gamma_1 \le \Gamma_1 + \Gamma_2$ and \textbf{(1)} $\Gamma_2 \le \Gamma_2 + \Gamma_1$. By commutativity of addition on \textbf{(1)}, $\Gamma_2 \le \Gamma_1 + \Gamma_2$. Hence, by weakening and (1.4), obtain $q \cdot (\Gamma_1 + \Gamma_2) \tee v : A + B$, $\Gamma_1 + \Gamma_2, x :^q A \tee e_1 : C$ and $\Gamma_1 + \Gamma_2, y :^q B \tee e_2 : C$. By the inductive hypothesis, obtain \textbf{(2)} $\sem{\Gamma_1 + \Gamma_2} \tee \sem{v} : \sem{A} + \sem{B} \at q$, \textbf{(3)} $\sem{\Gamma_1 + \Gamma_2}, x : \sem{A} @ q \tee \sem{e_1} : \sem{C} @ 1$ and \textbf{(4)} $\sem{\Gamma_1 + \Gamma_2}, y : \sem{B} @ q \tee \sem{e_2} : \sem{C} @ 1$. By LET on \textbf{(2)}, \textbf{(3)} and \textbf{(4)}, obtain $\sem{\Gamma_1 + \Gamma_2} \tee \case_q e \{x.e_1; y.e_2\} : \sem{C} \at 1$, as required.
    \end{description}
+\end{proof}
+
+\begin{theorem}[Graded Type Theory Expressions to Mode Qualifiers]
+If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
+\end{theorem}
+
+\begin{proof} 
+    Proceed by induction over the structure of the derivation of  $\Gamma \tee e : A$.\\
+    \begin{description}
+       \item[Case APP.]
+       By assumption, have \textbf{(1)} $\Gamma_1 \tee e : \,^qA \rightarrow B$ and \textbf{(2)} $\Gamma_2 \tee v : A$. 
+       By inductive hypothesis on \textbf{(1)} and (1.4) on \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$. 
+       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$. 
+       Thus, by APP on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} \sem{v} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + q \cdot \Gamma_2} \tee \sem{e v} : \sem{B} \at 1$, as required.
+       \\
+       \item[Case BIND.]
+       By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A$ and \textbf{(2)} $\Gamma_2, x :^1 A \tee e_2 : B$. 
+       By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \sem{A} \at 1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
+       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{e_1} : A \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
+       Thus, by LET on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\llet x \leftarrow e_1 \lin e_2} : \sem{B} \at 1$, as required.
+       \\
+       \item[Case $\boxempty$E.]
+       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : \boxempty^{q_2} A$ and \textbf{(2)} $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$. 
+       By (1.4) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q_1 \circ \sem{\Gamma_1} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
+       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
+       By $\boxempty$E on \textbf{(5)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{unbox}_{q_2}\sem{v} : \sem{A} \at q_1 \circ q_2$. 
+       Thus, by LET on \textbf{(6)} and \textbf{(7)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \mathrm{unbox}_{q_2}\sem{v} \lin \sem{e} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_{q_1} \mathrm{box}_{q_2} x = v \lin e} : \sem{B} \at 1$, as required.
+       \\
+       \item[Case SPLIT.]
+       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A_1 \times A_2$ and \textbf{(2)} $\Gamma_2, x :^q A_1, y :^q A_2 \tee e : B$. 
+       By (1.4) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A_1} \times \sem{A_2} \at q$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e} : \sem{B} \at 1$. 
+       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A_1 \times A_2 \at 1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e_2} : \sem{B} \at 1$. 
+       Thus, by SPLIT on \textbf{(5)} and \textbf{(6)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet_q(x, y) = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_q(x, y) = e_1 \lin e_2} : \sem{B} \at 1$, as required.
+       \\
+       \item[Case CASE.]
+       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A + B$, \textbf{(2)} $\Gamma_2, x :^q A \tee e_1 : C$ and \textbf{(3)} $\Gamma_2, y :^q B \tee e_2 : C$. 
+       By (1.4) on \textbf{(1)} and inductive hypothesis on each of \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A} + \sem{B} \at q$, \textbf{(5)} $\sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(6)} $\sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
+       By weakening on each of \textbf{(4)}, \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A + B \at 1$, \textbf{(8)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(9)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
+       Thus, by CASE on \textbf{(7)}, \textbf{(8)} and \textbf{(9)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{case}_q\sem{v}\{x.\sem{e_1}, y.\sem{e_2}\} : \sem{C} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\case_q\{x.e_1, y.e_2\}} : \sem{C} \at 1$, as required.
+       \\
+    \end{description}
 \end{proof}
     
 \begin{acks}
