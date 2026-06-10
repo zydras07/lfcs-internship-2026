@@ -726,7 +726,7 @@ We derive terms for the following types:
   Thus, by LET on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \llet x = e_1 \lin e_2 : B \at \mu_2$, as required.
   \\
   \item[Case UNIT.]
-  $\Gamma \setminus \mu, \Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
+  $\Gamma, \lock_\mu, \Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
   \\
   \item[Case PAIR.]
   By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_1 : A \at \mu^\prime$ and \textbf{(2)} $\Gamma \setminus \mu, \Gamma_\prime \tee e_2 : B \at \mu^\prime$. 
