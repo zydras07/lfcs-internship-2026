@@ -804,12 +804,12 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   \sem{\Gamma_1 + \Gamma_2} &= \sem{\Gamma_1} + \sem{\Gamma_2}
 \end{align*}
 
-\paragraph{Translation of expressions}
+\paragraph{Translation of expressions for return mode $q$}
 %
 \begin{align*}
   \sem{x} &= x \\
-  \sem{()} &= \bbox_{q'} () \\
-  \sem{\lambda x.\, e} &= \lambda x.\, \sem{e} \\
+  \sem{()} &= \bbox_{q} () \\
+  \sem{\lambda x.\, e} &= \bbox_q (\lambda x.\, \sem{e}) \\
   \sem{\bbox_{q'}\, e} &= \llet x \leftarrow \sem{e} \lin \\
                     &\quad \llet \bbox_{q'\circ q} x' = x \lin \\
                     &\quad \bbox_{q}\; (\bbox_{q'} x') \\
@@ -841,7 +841,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
     &\quad \llet \bbox_q x' = x \lin \\
     &\quad \llet \bbox_{q'} x'' = x' \lin \\
     &\quad \bbox_{q' \circ q} x' \\
-  \sem{\llet_q (x, y) = e_1 \lin e_2} \\
+  \sem{\llet_q (x, y) = e_1 \lin e_2}
     &= \llet z \leftarrow \sem{e_1} \lin \\
     &\quad \llet \bbox_q z' = z \lin \\
     &\quad \llet (x, y) = z' \lin \\
