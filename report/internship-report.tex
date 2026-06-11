@@ -299,37 +299,6 @@ Aside from the usual semiring axioms, we require that $+$ and $\cdot$ are monoto
 For local and global modes, we take the three-element semiring $\{0, 1, \mathbb{G}\}$ with
 $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \mathbb{G}$.
 
-\paragraph{Derivations}
-
-We derive terms for the following types:
-%
-\begin{align*}
-  T &= \lambda x.\, \llet_1 \bbox_\mathbb{G} y = x \lin y
-    : \,^1 (\boxempty^\mathbb{G} A) \rightarrow A \\
-  4 &= \lambda x.\, \llet_1 \bbox_\mathbb{G} y = x \lin \bbox_\mathbb{G}\, (\bbox_\mathbb{G}\, y)
-    : \,^1 (\boxempty^\mathbb{G} A) \rightarrow \boxempty^\mathbb{G}\boxempty^\mathbb{G} A \\
-  N &= \bbox_q\, () : \boxempty^q \unit \\
-  X &= \lambda p.\, \llet_1 (x, y) = p \lin
-    \llet_1 \bbox_q f = x \lin
-    \llet_1 \bbox_q g = y \lin {} \\
-    &\phantom{= \lambda p.\,}
-    \bbox_q\, (\lambda a.\,
-      \llet b \leftarrow f\, a \lin g\, b) \\
-    &\phantom{=}\; : \,^1 (\boxempty^q (\,^1 A \rightarrow B)
-      \times \boxempty^q (\,^1 B \rightarrow C)) \\
-    &\phantom{=}\; \rightarrow \boxempty^q (\,^1 A \rightarrow C) \\
-  M^{\times} &= \lambda p.\, \llet_1 (x, y) = p \lin
-    \llet_1 \bbox_q a = x \lin \\
-    &\phantom{= \lambda p.\,}
-    \llet_1 \bbox_q b = y \lin \bbox_q\, (a, b) \\
-    &\phantom{=}\; : \,^1 (\boxempty^q A \times \boxempty^q B) \rightarrow \boxempty^q (A \times B) \\
-  M^{+} &= \lambda s.\, \case_1\, s\,
-    \{x.\llet_1 \bbox_q a = x \lin \bbox_q\, (\inl\, a);\; \\
-    &\phantom{= \lambda s.\, \case\, s\, \{}
-    y.\llet_1 \bbox_q b = y \lin \bbox_q\, (\inr\, b)\} \\
-    &\phantom{=}\; : \,^1 (\boxempty^q A + \boxempty^q B) \rightarrow \boxempty^q (A + B)
-\end{align*}
-
 \subsection{Mode Qualifiers}
 
 \paragraph{Syntax}
@@ -483,32 +452,6 @@ For this parameterisation, it is also possible to define the lock as a left-divi
   \cdot,\lock_\mu &= \cdot \\
   \Gamma, x :_{\mu_1} A, \lock_{\mu_2} &= \Gamma, \lock_{\mu_2}, x :_{\mu_1} A & (\text{if } \mu_1 \leq \mu_2) \\
   \Gamma, x :_{\mu_1} A, \lock_{\mu_2} &= \Gamma, \lock_{\mu_2} & (\text{otherwise})
-\end{align*}
-
-\paragraph{Derivations}
-
-We derive terms for the following types:
-%
-\begin{align*}
-  T &= \lambda x.\, \unbox_\mathbb{G}\, x
-    : ((\boxempty^\mathbb{G} A) \at 1 \rightarrow A \at 1) \at 1 \\
-  4 &= \lambda x.\, \bbox_\mathbb{G}\, (\bbox_\mathbb{G}\, (\unbox_\mathbb{G}\, x))
-    : ((\boxempty^\mathbb{G} A) \at 1 \rightarrow (\boxempty^\mathbb{G}\boxempty^\mathbb{G} A) \at 1) \at 1 \\
-  N &= \bbox_\nu\, () : \boxempty^\nu \unit \at 1 \\
-  X &= \lambda p.\, \llet_{1} (f, g) = p \lin \llet f' = \unbox_\nu\, f \lin \llet g' = \unbox_\nu\, g \lin {} \\
-    &\phantom{= \lambda p.\,}
-    \bbox_\nu\, (\lambda a.\, g'\, (f'\, a)) \\
-    &\phantom{=}\; : ((\boxempty^\nu (A \at 1 \rightarrow B \at 1))
-      \times (\boxempty^\nu (B \at 1 \rightarrow C \at 1)) \at 1 \\
-    &\phantom{=}\; \rightarrow (\boxempty^\nu (A \at 1 \rightarrow C \at 1)) \at 1) \at 1 \\
-  M^{\times} &= \lambda p.\, \llet_{1} (x, y) = p \lin
-    \bbox_\nu\, (\unbox_\nu\, x, \unbox_\nu\, y) \\
-    &\phantom{=}\; : ((\boxempty^\nu A \times \boxempty^\nu B) \at 1 \rightarrow \boxempty^\nu (A \times B) \at 1) \at 1 \\
-  M^{+} &= \lambda s.\, \case_{1}\, s\,
-    \{x.\bbox_\nu\, (\inl\, (\unbox_\nu\, x));\; \\
-    &\phantom{= \lambda s.\, \case_{1}\, s\, \{}
-    y.\bbox_\nu\, (\inr\, (\unbox_\nu\, y))\} \\
-    &\phantom{=}\; : ((\boxempty^\nu A + \boxempty^\nu B) \at 1 \rightarrow \boxempty^\nu (A + B) \at 1) \at 1
 \end{align*}
 
 \subsection{Converting Graded Modal Type Theory to Mode Qualifiers}
@@ -796,7 +739,7 @@ We derive terms for the following types:
       \\
       \item[Case $\boxempty$I.]
       By the inductive hypothesis, have $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{v} : \sem{A} \at q^\prime \circ q$. 
-      Thus, by $\emptybox$I, $q^\prime \circ q \circ \Gamma \tee \mathrm{box}_qv : \emptybox_qA \at q^\prime$.
+      Thus, by $\boxempty$I, $q^\prime \circ q \circ \Gamma \tee \mathrm{box}_qv : \boxempty_qA \at q^\prime$.
    \end{description}
 \end{proof}
 
@@ -839,7 +782,77 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
        Thus, by CASE on \textbf{(7)}, \textbf{(8)} and \textbf{(9)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{case}_q\sem{v}\{x.\sem{e_1}, y.\sem{e_2}\} : \sem{C} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\case_q\{x.e_1, y.e_2\}} : \sem{C} \at 1$, as required.
     \end{description}
 \end{proof}
-    
+
+\subsection{Converting Mode Qualifiers to Graded Modal Type Theory}
+
+\paragraph{Interpretation of types}
+%
+\begin{align*}
+  \sem{\unit} &= \unit \\
+  \sem{A + B} &= \sem{A} + \sem{B} \\
+  \sem{A \times B} &= \sem{A} \times \sem{B} \\
+  \sem{\boxempty^{q} A} &= \boxempty^{q}\, \sem{A} \\
+  \sem{A \at q \rightarrow B \at q'} &= \,^q \sem{A} \rightarrow \boxempty^{q'}\, \sem{B}
+\end{align*}
+
+\paragraph{Contexts}
+%
+\begin{align*}
+  \sem{\cdot} &= \cdot \\
+  \sem{\Gamma, x : A \at q} &= \sem{\Gamma},\, x :^q \sem{A} \\
+  \sem{\Gamma, \lock_q} &= \sem{\Gamma} \setminus q \\
+  \sem{\Gamma_1 + \Gamma_2} &= \sem{\Gamma_1} + \sem{\Gamma_2}
+\end{align*}
+
+\paragraph{Translation of expressions}
+%
+\begin{align*}
+  \sem{x} &= x \\
+  \sem{()} &= \bbox_{q'} () \\
+  \sem{\lambda x.\, e} &= \lambda x.\, \sem{e} \\
+  \sem{\bbox_{q'}\, e} &= \llet x \leftarrow \sem{e} \lin \\
+                    &\quad \llet \bbox_{q'\circ q} x' = x \lin \\
+                    &\quad \bbox_{q}\; (\bbox_{q'} x') \\
+  \sem{(e_1, e_2)} &= \llet x_1 \leftarrow \sem{e_1} \lin \\
+                   &\quad \llet \bbox_q x_1' = x_1 \lin \\
+                   &\quad \llet x_2 \leftarrow \sem{e_2} \lin \\
+                   &\quad \llet \bbox_q x_2' = x_2 \lin \\
+                   &\quad \bbox_q (x_1', x_2') \\
+  \sem{\inl\, e} &= \llet x \leftarrow \sem{e} \lin \\
+                 &\quad \llet \bbox_q x' = x \lin \\
+                 &\quad \bbox_q (\inl\; x')  \\
+  \sem{\inr\, e} &= \llet x \leftarrow \sem{e} \lin \\
+                 &\quad \llet \bbox_q x' = x \lin \\
+                 &\quad \bbox_q (\inr\; x') \\
+  \sem{e_1\, e_2} &= \llet x \leftarrow \sem{e_1} \lin \\
+                   &\quad \llet \bbox_q x' = x \lin \\
+                   &\quad \llet y \leftarrow \sem{e_2} \lin \\
+                   &\quad \llet \bbox_q y' = y \lin \\
+                   &\quad x'\, y' \\
+\end{align*}
+%
+\begin{align*}
+  \sem{\llet x = e_1 \lin e_2}
+    &= \llet x = \sem{e_1} \lin \\
+    &\quad \llet \bbox_q x' = x \lin \\
+    &\quad \sem{e_2} \\
+  \sem{\unbox_{q'}\, e}
+    &= \llet x \leftarrow \sem{e} \lin \\
+    &\quad \llet \bbox_q x' = x \lin \\
+    &\quad \llet \bbox_{q'} x'' = x' \lin \\
+    &\quad \bbox_{q' \circ q} x' \\
+  \sem{\llet_q (x, y) = e_1 \lin e_2} \\
+    &= \llet z \leftarrow \sem{e_1} \lin \\
+    &\quad \llet \bbox_q z' = z \lin \\
+    &\quad \llet (x, y) = z' \lin \\
+    &\quad \sem{e_2} \\
+  \sem{\case_q\, e_1\, \{x.e_2;\; y.e_3\}}
+    &= \llet z \leftarrow \sem{e_1} \lin \\
+    &\quad \llet \bbox_q z' = z \lin \\
+    &\quad \mathrm{case}\; z'\; \{x.\sem{e_2};\; y.\sem{e_3}\}
+\end{align*}
+\\
+
 \begin{acks}
 
 The internship was supervised by Anton Lorenzen and Sam Lindley.
