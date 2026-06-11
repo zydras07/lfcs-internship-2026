@@ -23,20 +23,19 @@ class Quantale (α : Type*)
   inf_seq : ∀ a b c : α,
     (a ⊓ b) + c = (a + c) ⊓ (b + c)
 
+class ModeTheory (α : Type*) (β : Type*)
+    extends Monoid α, Quantale β where
 
-class Action (α : Type*)
-    extends Quantale α, One α where
+  ε : β
+  act : α → β → β
 
-  act : α → α → α
+  act_mul : ∀ (a b : α) (c : β), act a (act b c) = act (a * b) c
+  act_one : ∀ b : β, act 1 b = b
 
-  act_one : ∀ a : α, act 1 a = a
-  one_act : ∀ a : α, act a 1 = a
+  bot_act : ∀ a : α, act a ⊥ = ⊥
+  zero_act : ∀ a : α, act a 0 = 0
 
-  act_inf : ∀ (a : α) (b c : α),
+  act_inf : ∀ (a : α) (b c : β),
     act a (b ⊓ c) = act a b ⊓ act a c
-
-  inf_act : ∀ (a b : α) (c : α),
-    act (a ⊓ b) c = act a c ⊓ act b c
-
-  act_seq_monotone : ∀ (a : α) (b c : α),
+  act_seq_monotone : ∀ (a : α) (b c : β),
     act a (b + c) ⊓ (act a b) + (act a c) = (act a b) + (act a c)
