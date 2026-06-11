@@ -1,8 +1,10 @@
-import Internship.Base
-import Internship.UANaive
+import Internship.Semiring.Base
+import Internship.Semiring.UANaive
 
 open Base
-open UANaive
+open SUANaive
+
+namespace SUAExtended
 
 @[grind cases]
 inductive Arrow where
@@ -37,14 +39,13 @@ def mul : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | n, atom 1                => n
   | atom .A, arrow n         => arrow n
   | arrow A_to_1, arrow n    => arrow n
-  | atom _, _                => arrow A_to_bot
   | _, arrow _               => arrow A_to_bot
   | arrow A_to_1, atom .A    => atom .A
   | arrow _, atom .A         => atom .AM
+  | arrow _, atom .AM        => atom .AM
   | arrow A_to_bot, atom .M  => arrow A_to_bot
-  | _, atom .M               => arrow A_to_M
+  | arrow _, atom .M         => arrow A_to_M
   | arrow _, atom .bot       => arrow A_to_bot
-  | _, atom .AM              => atom .AM
 
 @[grind]
 def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
@@ -94,33 +95,42 @@ instance : Min UAExtendedSemiring where
 @[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
     a ⊓ b = meet a b := rfl
 
-theorem mult_monotone_left (a b c : UAExtendedSemiring) (h : a ⊓ b = a) : -- a <= b
-    a * c ⊓ b * c = a * c := by grind -- a * c <= b * c
+instance : LE UAExtendedSemiring where
+  le a b := a ⊓ b = a
 
-theorem mult_monotone_right (a b c : UAExtendedSemiring) (h : a ⊓ b = a) : -- a <= b
-    c * a ⊓ c * b = c * a := by grind -- c * a <= c * b
+@[grind =] theorem UAExtendedSemiring.hle_eq (a b : UAExtendedSemiring) :
+    (a ≤ b) = (a ⊓ b = a) := rfl
 
 instance : OrderedSemiring UAExtendedSemiring where
-  add_assoc := by decide
-  add_comm := by decide
-  add_zero := by grind
-  zero_add := by grind
+  add_assoc := by native_decide
+  add_comm := by native_decide
+  add_zero := by native_decide
+  zero_add := by native_decide
 
-  mul_assoc := by decide
-  mul_one := by grind
-  one_mul := by grind
-  mul_zero := by grind
-  zero_mul := by grind
+  mul_assoc := by native_decide
+  mul_one := by native_decide
+  one_mul := by native_decide
+  mul_zero := by native_decide
+  zero_mul := by native_decide
 
-  inf_assoc := by decide
-  inf_comm := by decide
-  inf_idem := by decide
+  inf_assoc := by native_decide
+  inf_comm := by native_decide
+  inf_idem := by native_decide
 
-  mul_add := by decide
-  add_mul := by decide
+  mul_add := by native_decide
+  add_mul := by native_decide
 
   mul_inf := by sorry -- use 'grind' to see a counter-example
-  inf_mul := by grind
+  inf_mul := by native_decide
 
-  add_inf := by decide
-  inf_add := by decide
+  add_inf := by native_decide
+  inf_add := by native_decide
+
+theorem mult_monotone_left (a b c : UAExtendedSemiring) (h : a ≤ b) :
+    a * c ≤ b * c := by grind
+
+theorem mult_monotone_right (a b c : UAExtendedSemiring) (h : a ≤ b) :
+    c * a ≤ c * b := by grind
+
+theorem left_residual (q r : UAExtendedSemiring) :
+    (.arrow A_to_1 * r) ≤ q ↔ r ≤ (.atom .A * q) := by grind

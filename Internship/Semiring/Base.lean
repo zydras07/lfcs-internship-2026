@@ -37,8 +37,3 @@ class OrderedSemiring (α : Type*)
 
   inf_add : ∀ a b c : α,
     (a ⊓ b) + c = (a + c) ⊓ (b + c)
-
-instance [OrderedSemiring α] : LE α where
-  le a b := a ⊓ b = a
-
-if Γ ≤ Γ' and Γ' ⊢ e : A then Γ ⊢ e : A

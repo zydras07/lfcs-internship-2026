@@ -1,7 +1,7 @@
-import Internship.Base
+import Internship.Semiring.Base
 open Base
 
-namespace UANaive
+namespace SUANaive
 
 @[grind cases]
 inductive UANaiveSemiring where
@@ -44,10 +44,10 @@ def mul : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
   | M, M      => M
   | M, AM     => AM
   | M, bot    => bot
-  | AM, A     => AM   -- sorry
-  | AM, M     => AM   -- sorry
-  | AM, AM    => AM   -- sorry
-  | AM, bot   => AM   -- sorry
+  | AM, A     => AM
+  | AM, M     => AM
+  | AM, AM    => AM
+  | AM, bot   => AM
   | bot, A    => AM
   | bot, M    => bot
   | bot, AM   => AM
@@ -55,28 +55,23 @@ def mul : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
 
 @[grind]
 def meet : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
-  | zero, _    => zero
-  | one, zero  => zero
-  | one, one   => one
-  | one, A     => A
-  | one, M     => one
-  | one, AM    => A
-  | one, bot   => one
-  | A, zero    => zero
-  | A, _       => A
-  | M, zero    => zero
-  | M, one     => one
-  | M, A       => A
-  | M, M       => M
-  | M, AM      => AM
-  | M, bot     => M
-  | AM, zero   => zero
-  | AM, one    => A
-  | AM, A      => A
-  | AM, M      => AM
-  | AM, AM     => AM
-  | AM, bot    => AM
-  | bot, n     => n
+  | zero, _   => zero
+  | _, zero   => zero
+  | one, one  => one
+  | one, A    => A
+  | one, M    => one
+  | one, AM   => A
+  | A, _      => A
+  | M, one    => one
+  | M, A      => A
+  | M, M      => M
+  | M, AM     => AM
+  | AM, one   => A
+  | AM, A     => A
+  | AM, M     => AM
+  | AM, AM    => AM
+  | n, bot    => n
+  | bot, n    => n
 
 instance : Zero UANaiveSemiring where
   zero := zero
@@ -109,26 +104,26 @@ instance : Min UANaiveSemiring where
     a ⊓ b = meet a b := rfl
 
 instance : OrderedSemiring UANaiveSemiring where
-  add_assoc := by grind
-  add_comm := by decide
-  add_zero := by decide
-  zero_add := by decide
+  add_assoc := by native_decide
+  add_comm := by native_decide
+  add_zero := by native_decide
+  zero_add := by native_decide
 
-  mul_assoc := by decide
-  mul_one := by decide
-  one_mul := by decide
-  mul_zero := by decide
-  zero_mul := by decide
+  mul_assoc := by native_decide
+  mul_one := by native_decide
+  one_mul := by native_decide
+  mul_zero := by native_decide
+  zero_mul := by native_decide
 
-  inf_assoc := by decide
-  inf_comm := by decide
-  inf_idem := by decide
+  inf_assoc := by native_decide
+  inf_comm := by native_decide
+  inf_idem := by native_decide
 
-  mul_add := by decide
-  add_mul := by decide
+  mul_add := by native_decide
+  add_mul := by native_decide
 
-  mul_inf := by decide
-  inf_mul := by decide
+  mul_inf := by native_decide
+  inf_mul := by native_decide
 
-  add_inf := by decide
-  inf_add := by decide
+  add_inf := by native_decide
+  inf_add := by native_decide
