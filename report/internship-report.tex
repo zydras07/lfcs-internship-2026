@@ -299,6 +299,8 @@ Aside from the usual semiring axioms, we require that $+$ and $\cdot$ are monoto
 For local and global modes, we take the three-element semiring $\{0, 1, \mathbb{G}\}$ with
 $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \mathbb{G}$.
 
+We also have a division operator $\setminus$, which is defined by saying that $\mu_1 \setminus \mu_2$ is the maximum $\mu$ such that $\mu_2 \circ \mu = \mu_1$. $\setminus$ may not be defined if there are no $\mu$ satisfying the condition. $\setminus$ over contexts is defined point-wise over variables.
+
 \subsection{Mode Qualifiers}
 
 \paragraph{Syntax}
@@ -335,11 +337,11 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma \tee \lambda x.\, e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu
   } \and
   \inferrule*[right=app]{
-    \Gamma \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_ \\\\
-    \Gamma \tee e_2 : A \at \mu_1 \\
+    \Gamma_1 \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_ \\\\
+    \Gamma_2 \tee e_2 : A \at \mu_1 \\
     \mu_2 \geq \mu_3
   }{
-    \Gamma \tee e_1\, e_2 : B \at \mu_3
+    \Gamma_1 + q \circ \Gamma_2 \tee e_1\, e_2 : B \at \mu_3
   } \and
   \inferrule*[right=$\boxempty$I]{
     \Gamma \tee e : A \at \nu \circ \mu
@@ -352,10 +354,10 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma \tee \unbox_\nu\, e : A \at \nu \circ \mu
   } \and
   \inferrule*[right=let]{
-    \Gamma \tee e_1 : A \at \mu_1 \\
-    \Gamma, x : A \at \mu_1 \tee e_2 : B \at \mu_2
+    \Gamma_1 \tee e_1 : A \at \mu_1 \\
+    \Gamma_2, x : A \at \mu_1 \tee e_2 : B \at \mu_2
   }{
-    \Gamma \tee \llet x = e_1 \lin e_2 : B \at \mu_2
+    q \circ \Gamma_1 + \Gamma_2 \tee \llet x = e_1 \lin e_2 : B \at \mu_2
   } \and
   \inferrule*[right=unit]{
     \phantom{.}
@@ -363,16 +365,16 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma \tee () : \unit \at \mu
   } \and
   \inferrule*[right=pair]{
-    \Gamma \tee e_1 : A \at \mu \\
-    \Gamma \tee e_2 : B \at \mu
+    \Gamma_1 \tee e_1 : A \at \mu \\
+    \Gamma_2 \tee e_2 : B \at \mu
   }{
-    \Gamma \tee (e_1, e_2) : A \times B \at \mu
+    \Gamma_1 + \Gamma_2 \tee (e_1, e_2) : A \times B \at \mu
   } \and
   \inferrule*[right=split]{
-    \Gamma \tee e_1 : A \times B \at \mu_1 \\\\
-    \Gamma, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2
+    \Gamma_1 \tee e_1 : A \times B \at \mu_1 \\\\
+    \Gamma_2, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2
   }{
-    \Gamma \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2
+    \mu_1 \circ \Gamma_1 + \Gamma_2 \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2
   } \and
   \inferrule*[right=inl]{
     \Gamma \tee e : A \at \mu
@@ -385,11 +387,11 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma \tee \inr\, e : A + B \at \mu
   } \and
   \inferrule*[right=case]{
-    \Gamma \tee e : A + B \at \mu_1 \\\\
-    \Gamma, x : A \at \mu_1 \tee e_1 : C \at \mu_2 \\\\
-    \Gamma, y : B \at \mu_1 \tee e_2 : C \at \mu_2
+    \Gamma_1 \tee e : A + B \at \mu_1 \\\\
+    \Gamma_2, x : A \at \mu_1 \tee e_1 : C \at \mu_2 \\\\
+    \Gamma_2, y : B \at \mu_1 \tee e_2 : C \at \mu_2
   }{
-    \Gamma \tee \case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\} : C \at \mu_2
+    \mu_1 \circ \Gamma_1 + \Gamma_2 \tee \case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\} : C \at \mu_2
   }
 \end{mathpar}
 
@@ -801,7 +803,8 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   \sem{\cdot} &= \cdot \\
   \sem{\Gamma, x : A \at q} &= \sem{\Gamma},\, x :^q \sem{A} \\
   \sem{\Gamma, \lock_q} &= \sem{\Gamma} \setminus q \\
-  \sem{\Gamma_1 + \Gamma_2} &= \sem{\Gamma_1} + \sem{\Gamma_2}
+  \sem{\Gamma_1 + \Gamma_2} &= \sem{\Gamma_1} + \sem{\Gamma_2} \\
+  \sem{q \circ \Gamma_1} &= q \cdot \sem{\Gamma_1}
 \end{align*}
 
 \paragraph{Translation of expressions}
@@ -810,11 +813,11 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   \sem{x} &= x \\
   \sem{()} &= \bbox_{q'} () \\
   \sem{\lambda x.\, e} &= \lambda x.\, \sem{e} \\
-  \sem{\bbox_{q'}\, e} &= \llet x \leftarrow \sem{e} \lin \\
-                    &\quad \llet \bbox_{q'\circ q} x' = x \lin \\
+  \sem{\bbox_{q'}\, e} &= \llet \bbox_{q^\prime} x = \sem{e} \lin \\
+                    &\llet \bbox_{q'\circ q} x' = x \lin \\
                     &\quad \bbox_{q}\; (\bbox_{q'} x') \\
   \sem{(e_1, e_2)} &= \llet x_1 \leftarrow \sem{e_1} \lin \\
-                   &\quad \llet \bbox_q x_1' = x_1 \lin \\
+                   &\quad \llet \bbox_q x_1' =  \lin \\
                    &\quad \llet x_2 \leftarrow \sem{e_2} \lin \\
                    &\quad \llet \bbox_q x_2' = x_2 \lin \\
                    &\quad \bbox_q (x_1', x_2') \\
@@ -857,7 +860,28 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, \sem{A}$.
 \end{theorem}
 \begin{proof}
-TODO
+  Proceed by induction over the derivation of $\Gamma \tee e : A \at q$.
+  \begin{description}
+      \item[Case VAR.] 
+      \item[Case LAM.] 
+      \item[Case APP.] 
+      \item[Case $\boxempty$I.] 
+      \item[Case $\boxempty$E.] 
+      \item[Case LET.] 
+      \item[Case UNIT.]
+      By UNIT, \textbf{(1)} $\sem{\Gamma} \tee () : A$. 
+      Thus, by $\boxempty$I on \textbf{(1)}, $\sem{\Gamma} \tee \mathrm{box}_q() : \boxempty^qA$, as required. 
+      \\
+      \item[Case PAIR.] 
+      By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A \at q$ and \textbf{(2)} $\Gamma_2 \tee e_2 : B \at q$. 
+      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(1)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^qA$ and $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^qB$.
+      Thus, by PAIR on \textbf{(3)} and \textbf{(4)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee ( , )$
+      \\
+      \item[Case SPLIT.] 
+      \item[Case INL.] 
+      \item[Case INR.] 
+      \item[Case CASE.] 
+  \end{description}
 \end{proof}
 
 \begin{acks}
