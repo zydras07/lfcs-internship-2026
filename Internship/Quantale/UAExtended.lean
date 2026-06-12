@@ -5,61 +5,54 @@ namespace QUAExtended
 
 @[grind cases]
 inductive UAExtendedSemiring where
-  |          bot
+  |          top
   |          zero
   |           A
+  |                AM
   |       one
-  |               AM
-  |             M
+  |              M
   |     CA
   |          CAM
-  |          top
-  deriving DecidableEq, Repr, Fintype
-
-@[grind cases]
-inductive UAExtendedMonoid where
-  |           A
-  |       one
-  |               AM
-  |             M
-  |     CA
-  |          CAM
-  |          CAb
+  |          bot
   deriving DecidableEq, Repr, Fintype
 
 @[grind]
 def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
-  | .top, n => n
-  | n, .top => n
-  | .CAM, n => n
-  | n, .CAM => n
-  | .bot, _ => .bot
-  | _, .bot => .bot
-  | .zero, _ => .zero
-  | _, .zero => .zero
-  | .A, _ => .A
-  | _, .A => .A
-  | .one, .AM => .A
-  | .AM, .one => .A
-  | .CA, .AM => .A
-  | .AM, .CA => .A
-  | .CA, .M => .one
-  | .M, .CA => .one
-  | .one, _ => .one
-  | _, .one => .one
-  | .AM, _ => .AM
-  | _, .AM => .AM
-  | .CA, _ => .CA
-  | .M, _ => .M
+  | .top, n    => n
+  | n, .top    => n
+  | .zero, n   => n
+  | n, .zero   => n
+  | .A, n      => n
+  | n, .A      => n
+  | .one, .one => .one
+  | .AM, .AM   => .AM
+  | .one, .AM  => .M
+  | .AM, .one  => .M
+  | .M, .one   => .M
+  | .one, .M   => .M
+  | .AM, .M    => .M
+  | .M, .AM    => .M
+  | .M, .M     => .M
+  | .one, .CA  => .CA
+  | .CA, .one  => .CA
+  | .CA, .CA   => .CA
+  | .AM, .CA   => .CAM
+  | .M, .CA    => .CAM
+  | .CA, .M    => .CAM
+  | .CA, .AM   => .CAM
+  | .bot, _    => .bot
+  | _, .bot    => .bot
+  | .CAM, _    => .CAM
+  | _, .CAM    => .CAM
 
 @[grind]
 def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
-  | .bot, _   => .bot
-  | _, .bot   => .bot
-  | .zero, n  => n
-  | n, .zero  => n
-  | .top, _   => .top
-  | _, .top   => .top
+  | .top, _    => .top
+  | _, .top    => .top
+  | .bot, _    => .bot
+  | _, .bot    => .bot
+  | .zero, n   => n
+  | n, .zero   => n
   | .one, .one => .M
   | .one, .M   => .M
   | .M, .one   => .M
@@ -76,96 +69,16 @@ def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .A, .AM    => .AM
   | .AM, .A    => .AM
   | .AM, .AM   => .AM
-  | .CA, _    => .top
-  | .CAM, _   => .top
-  | _, .CA    => .top
-  | _, .CAM   => .top
+  | .CA, _     => .bot
+  | .CAM, _    => .bot
+  | _, .CA     => .bot
+  | _, .CAM    => .bot
 
-@[grind]
-def mul : UAExtendedMonoid → UAExtendedMonoid → UAExtendedMonoid
-  | .one, n    => n
-  | n, .one    => n
-  | .A, .A      => .A
-  | .M, .M      => .M
-  | .A, .M      => .AM
-  | .A, .AM     => .AM
-  | .M, .A      => .AM
-  | .M, .AM     => .AM
-  | .AM, .A     => .AM
-  | .AM, .M     => .AM
-  | .AM, .AM    => .AM
+instance : Top UAExtendedSemiring where
+  top := .top
 
-  | .CA, .CA   => .CA
-  | .CA, .CAM  => .CAM
-  | .CA, .M    => .CAM
-  | .CA, .A    => .A
-  | .CA, .AM   => .AM
-  | .CAM, .A   => .AM
-  | .CAM, .AM  => .AM
-  | .CAM, .M   => .CAM
-
-  | .A, .CA    => .CA
-  | .A, .CAM   => .CAM
-  | .CAb, .A   => .AM
-  | .CAb, .AM  => .AM
-
-  | .CAM, .CA  => .CAb
-  | .CAM, .CAM => .CAb
-  | .M, .CA    => .CAb
-  | .AM, .CA   => .CAb
-  | .M, .CAM   => .CAb
-  | .AM, .CAM  => .CAb
-  | .CAb, _   => .CAb
-  | _, .CAb   => .CAb
-
-@[grind]
-def act : UAExtendedMonoid → UAExtendedSemiring → UAExtendedSemiring
-  | _, .bot   => .bot
-  | _, .zero   => .zero
-  | _, .top    => .top
-  | .one, n    => n
-  | .A, .one    => .A
-  | .A, .A      => .A
-  | .M, .M      => .M
-  | .A, .M      => .AM
-  | .A, .AM     => .AM
-  | .M, .one    => .M
-  | .M, .A      => .AM
-  | .M, .AM     => .AM
-  | .AM, .one   => .AM
-  | .AM, .A     => .AM
-  | .AM, .M     => .AM
-  | .AM, .AM    => .AM
-
-  | .CA, .one  => .CA
-  | .CA, .CA   => .CA
-  | .CA, .CAM  => .CAM
-  | .CA, .M    => .CAM
-  | .CA, .A    => .A
-  | .CA, .AM   => .AM
-  | .CAM, .one => .CAM
-  | .CAM, .A   => .AM
-  | .CAM, .AM  => .AM
-  | .CAM, .M   => .CAM
-
-  | .A, .CA    => .CA
-  | .A, .CAM   => .CAM
-  | .CAb, .A   => .AM
-  | .CAb, .AM  => .AM
-
-  | .CAM, .CA  => .top
-  | .CAM, .CAM => .top
-  | .M, .CA    => .top
-  | .AM, .CA   => .top
-  | .M, .CAM   => .top
-  | .AM, .CAM  => .top
-  | .CAb, _   => .top
-
-instance : Bot UAExtendedSemiring where
-  bot := .bot
-
-@[grind =] theorem UAExtendedSemiring.bot_eq :
-    (⊥ : UAExtendedSemiring) = .bot := rfl
+@[grind =] theorem UAExtendedSemiring.top_eq :
+    (⊤ : UAExtendedSemiring) = .top := rfl
 
 instance : Zero UAExtendedSemiring where
   zero := .zero
@@ -191,48 +104,154 @@ instance : Min UAExtendedSemiring where
 @[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
     a ⊓ b = meet a b := rfl
 
-instance : LE UAExtendedSemiring where
-  le a b := a ⊓ b = a
-
-@[grind =] theorem UAExtendedSemiring.hle_eq (a b : UAExtendedSemiring) :
-    (a ≤ b) = (a ⊓ b = a) := rfl
-
 instance : Quantale UAExtendedSemiring where
-  inf_assoc := by native_decide
-  inf_comm := by native_decide
-  inf_idem := by native_decide
-  inf_zero := by native_decide
-  zero_inf := by native_decide
+  meet_assoc := by native_decide
+  meet_comm := by native_decide
+  meet_idem := by native_decide
+  meet_top := by native_decide
+  top_meet := by native_decide
 
   seq_assoc := by native_decide
   zero_seq := by native_decide
   seq_zero := by native_decide
-  bot_seq := by native_decide
-  seq_bot := by native_decide
+  top_seq := by native_decide
+  seq_top := by native_decide
 
-  seq_inf := by native_decide
-  inf_seq := by native_decide
+  seq_meet := by native_decide
+  meet_seq := by native_decide
 
-instance : Monoid UAExtendedMonoid where
-  one := .one
-  mul := mul
+inductive Many where | many
 
-  mul_assoc := by native_decide
-  one_mul := by native_decide
-  mul_one := by native_decide
+instance : Modality Many UAExtendedSemiring where
+  box n _ := match n with
+  | .top => .top
+  | .zero => .zero
+  | .A => .AM
+  | .one => .M
+  | .AM => .AM
+  | .M => .M
+  | .CA => .CAM
+  | .CAM => .CAM
+  | .bot => .bot
 
-instance : ModeTheory UAExtendedMonoid UAExtendedSemiring where
-  ε := .one
-  act := act
+  lock _ m := match m with
+  | .top => .top
+  | .zero => .zero
+  | .A => .AM
+  | .one => .M
+  | .AM => .AM
+  | .M => .M
+  | .CA => .bot
+  | .CAM => .bot
+  | .bot => .bot
 
-  act_mul := by native_decide
-  act_one := by native_decide
+  zero_box := by grind
+  top_box := by grind
+  meet_box := by grind
+  seq_box := by grind
 
-  bot_act := by native_decide
-  zero_act := by native_decide
+  lock_top := by grind
+  lock_zero := by grind
+  lock_meet := by grind
+  lock_seq_monotone := by grind
 
-  act_inf := by native_decide
-  act_seq_monotone := by native_decide
+instance : Comonadic Many UAExtendedSemiring where
+  lock_dec := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
+    grind
+  box_dec := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
+    grind
 
-theorem left_residual (q r : UAExtendedSemiring) :
-    (act .CA r) ≤ q ↔ r ≤ (act .A q) := by grind
+inductive Aliased where | aliased
+
+instance : Modality Aliased UAExtendedSemiring where
+  box n _ := match n with
+  | .top => .top
+  | .zero => .zero
+  | .A => .A
+  | .one => .A
+  | .AM => .AM
+  | .M => .AM
+  | .CA => .CA
+  | .CAM => .CAM
+  | .bot => .bot
+
+  lock _ m := match m with
+  | .top => .top
+  | .zero => .zero
+  | .A => .A
+  | .one => .A
+  | .AM => .AM
+  | .M => .AM
+  | .CA => .CA
+  | .CAM => .CAM
+  | .bot => .bot
+
+  zero_box := by grind
+  top_box := by grind
+  meet_box := by grind
+  seq_box := by grind
+
+  lock_top := by grind
+  lock_zero := by grind
+  lock_meet := by grind
+  lock_seq_monotone := by grind
+
+instance : Monadic Aliased UAExtendedSemiring where
+  lock_inc := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
+    grind
+  box_inc := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
+    grind
+
+inductive Unique where | unique
+
+instance : Modality Unique UAExtendedSemiring where
+  box n _ := match n with
+  | .top => .top
+  | .zero => .zero
+  | .A => .CA
+  | .one => .CA
+  | .AM => .bot
+  | .M => .bot
+  | .CA => .CA
+  | .CAM => .bot
+  | .bot => .bot
+
+  lock _ m := match m with
+  | .top => .top
+  | .zero => .zero
+  | .A => .A
+  | .one => .CA
+  | .AM => .AM
+  | .M => .CAM
+  | .CA => .CA
+  | .CAM => .CAM
+  | .bot => .bot
+
+  zero_box := by grind
+  top_box := by grind
+  meet_box := by grind
+  seq_box := by grind
+
+  lock_top := by grind
+  lock_zero := by grind
+  lock_meet := by grind
+  lock_seq_monotone := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq]
+    grind
+
+instance : Comonadic Unique UAExtendedSemiring where
+  lock_dec := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
+    grind
+  box_dec := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
+    grind
+
+theorem right_residual_lock (q r : UAExtendedSemiring) :
+    Modality.lock Aliased.aliased q ≤ r ↔ q ≤ Modality.lock Unique.unique r := by
+    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
+    grind

@@ -5,53 +5,38 @@ namespace QUANaive
 
 @[grind cases]
 inductive UANaiveSemiring where
-  | bot
-  | zero
-  | one
-  | A
-  | M
-  | AM
-  | top
-  deriving DecidableEq, Repr, Fintype
-
-@[grind cases]
-inductive UANaiveMonoid where
-  | one
-  | A
-  | M
-  | AM
+  |     top
+  |     zero
+  |      A
+  |  one
+  |          AM
+  |      M
+  |     bot
   deriving DecidableEq, Repr, Fintype
 
 @[grind]
 def meet : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
-  | .bot, _    => .bot
-  | _, .bot    => .bot
-  | .zero, _   => .zero
-  | _, .zero   => .zero
-  | .one, .one => .one
-  | .one, .A   => .A
-  | .one, .M   => .one
-  | .one, .AM  => .A
-  | .A, _      => .A
-  | .M, .one   => .one
-  | .M, .A     => .A
-  | .M, .M     => .M
-  | .M, .AM    => .AM
-  | .AM, .one  => .A
-  | .AM, .A    => .A
-  | .AM, .M    => .AM
-  | .AM, .AM   => .AM
   | n, .top    => n
   | .top, n    => n
+  | .zero, n   => n
+  | n, .zero   => n
+  | .A, n      => n
+  | n, .A      => n
+  | .one, .one => .one
+  | .one, .AM  => .M
+  | .AM, .one  => .M
+  | .AM, .AM   => .AM
+  | .bot, _    => .bot
+  | _, .bot    => .bot
+  | .M, _      => .M
+  | _, .M      => .M
 
 @[grind]
 def seq : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
-  | .bot, _   => .bot
-  | _, .bot   => .bot
-  | .zero, n  => n
-  | n, .zero  => n
   | .top, _   => .top
   | _, .top   => .top
+  | .zero, n  => n
+  | n, .zero  => n
   | .one, .one => .M
   | .one, .M   => .M
   | .M, .one   => .M
@@ -68,45 +53,14 @@ def seq : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
   | .A, .AM    => .AM
   | .AM, .A    => .AM
   | .AM, .AM   => .AM
-
-@[grind]
-def mul : UANaiveMonoid → UANaiveMonoid → UANaiveMonoid
-  | .one, n    => n
-  | n, .one    => n
-  | .A, .A      => .A
-  | .M, .M      => .M
-  | .A, .M      => .AM
-  | .A, .AM     => .AM
-  | .M, .A      => .AM
-  | .M, .AM     => .AM
-  | .AM, .A     => .AM
-  | .AM, .M     => .AM
-  | .AM, .AM    => .AM
-
-@[grind]
-def act : UANaiveMonoid → UANaiveSemiring → UANaiveSemiring
+  | .bot, _   => .bot
   | _, .bot   => .bot
-  | _, .zero   => .zero
-  | _, .top    => .top
-  | .one, n    => n
-  | .A, .one   => .A
-  | .A, .A      => .A
-  | .A, .M      => .AM
-  | .A, .AM     => .AM
-  | .M, .one   => .M
-  | .M, .M      => .M
-  | .M, .A      => .AM
-  | .M, .AM     => .AM
-  | .AM, .one   => .AM
-  | .AM, .A     => .AM
-  | .AM, .M     => .AM
-  | .AM, .AM    => .AM
 
-instance : Bot UANaiveSemiring where
-  bot := .bot
+instance : Top UANaiveSemiring where
+  top := .top
 
-@[grind =] theorem UANaiveSemiring.bot_eq :
-    (⊥ : UANaiveSemiring) = .bot := rfl
+@[grind =] theorem UANaiveSemiring.top_eq :
+    (⊤ : UANaiveSemiring) = .top := rfl
 
 instance : Zero UANaiveSemiring where
   zero := .zero
@@ -132,45 +86,96 @@ instance : Min UANaiveSemiring where
 @[grind =] theorem UANaiveSemiring.hmin_eq (a b : UANaiveSemiring) :
     a ⊓ b = meet a b := rfl
 
-instance : LE UANaiveSemiring where
-  le a b := a ⊓ b = a
-
-@[grind =] theorem UANaiveSemiring.hle_eq (a b : UANaiveSemiring) :
-    (a ≤ b) = (a ⊓ b = a) := rfl
-
 instance : Quantale UANaiveSemiring where
-  inf_assoc := by native_decide
-  inf_comm := by native_decide
-  inf_idem := by native_decide
-  inf_zero := by native_decide
-  zero_inf := by native_decide
+  meet_assoc := by native_decide
+  meet_comm := by native_decide
+  meet_idem := by native_decide
+  meet_top := by native_decide
+  top_meet := by native_decide
 
   seq_assoc := by native_decide
   zero_seq := by native_decide
   seq_zero := by native_decide
-  bot_seq := by native_decide
-  seq_bot := by native_decide
+  top_seq := by native_decide
+  seq_top := by native_decide
 
-  seq_inf := by native_decide
-  inf_seq := by native_decide
+  seq_meet := by native_decide
+  meet_seq := by native_decide
 
-instance : Monoid UANaiveMonoid where
-  one := .one
-  mul := mul
+inductive Many where | default
 
-  mul_assoc := by native_decide
-  one_mul := by native_decide
-  mul_one := by native_decide
+instance : Modality Many UANaiveSemiring where
+  box n _ := match n with
+  | .top => .top
+  | .zero => .zero
+  | .A => .AM
+  | .one => .M
+  | .AM => .AM
+  | .M => .M
+  | .bot => .bot
 
-instance : ModeTheory UANaiveMonoid UANaiveSemiring where
-  ε := .one
-  act := act
+  lock _ m := match m with
+  | .top => .top
+  | .zero => .zero
+  | .A => .AM
+  | .one => .M
+  | .AM => .AM
+  | .M => .M
+  | .bot => .bot
 
-  act_mul := by native_decide
-  act_one := by native_decide
+  zero_box := by grind
+  top_box := by grind
+  meet_box := by grind
+  seq_box := by grind
 
-  bot_act := by native_decide
-  zero_act := by native_decide
+  lock_top := by grind
+  lock_zero := by grind
+  lock_meet := by grind
+  lock_seq_monotone := by grind
 
-  act_inf := by native_decide
-  act_seq_monotone := by native_decide
+instance : Comonadic Many UANaiveSemiring where
+  lock_dec := by
+    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
+    grind
+  box_dec := by
+    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
+    grind
+
+inductive Aliased where | default
+
+instance : Modality Aliased UANaiveSemiring where
+  box n _ := match n with
+  | .bot => .bot
+  | .zero => .zero
+  | .A => .A
+  | .one => .A
+  | .AM => .AM
+  | .M => .AM
+  | .top => .top
+
+  lock _ m := match m with
+  | .bot => .bot
+  | .zero => .zero
+  | .A => .A
+  | .one => .A
+  | .AM => .AM
+  | .M => .AM
+  | .top => .top
+
+  zero_box := by grind
+  top_box := by grind
+  meet_box := by grind
+  seq_box := by grind
+
+  lock_top := by grind
+  lock_zero := by grind
+  lock_meet := by grind
+  lock_seq_monotone := by grind
+
+instance : Monadic Aliased UANaiveSemiring where
+  lock_inc := by
+    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
+    grind
+  box_inc := by
+    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
+    grind
