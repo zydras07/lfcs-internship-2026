@@ -897,6 +897,11 @@ If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, 
   \case_q\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y] : A
 \end{align*}
 
+\begin{lemma}[Type Preservation for Beta Laws]
+\label{lem:graded-modal-type-preservation-beta-laws}
+  If\/ $e_1 \equiv e_2 : A$, then $\Gamma \tee e_1 : A$ if and only if $\Gamma \tee e_2 : A$.
+\end{lemma}
+
 \paragraph{Eta laws}
 
 \begin{align*}
@@ -907,6 +912,11 @@ If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, 
   \case_1\, v\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv v : A + B \\
   \llet_{1} \bbox_{q} x = v \lin \bbox_{q}\, x &\equiv v : \boxempty^{q} A
 \end{align*}
+
+\begin{lemma}[Type Preservation for Eta Laws]
+\label{lem:graded-modal-type-preservation-eta-laws}
+  If\/ $e_1 \equiv e_2 : A$, then $\Gamma \tee e_1 : A$ if and only if $\Gamma \tee e_2 : A$.
+\end{lemma}
 
 \paragraph{Evaluation contexts}
 Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
@@ -928,13 +938,18 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
     && (x, y \notin \mathrm{fv}(E))
 \end{align*}
 
-\begin{theorem}[Type Preservation (Forward) for Graded Modal Type Theory]
-  If\/ $e_1 \equiv e_2 : A$ and $\Gamma \tee e_1 : A$, then $\Gamma \tee e_2 : A$.
-\end{theorem}
+\begin{lemma}[Type Preservation for Commuting Conversions]
+\label{lem:graded-modal-type-preservation-commuting-conversions}
+  If\/ $e_1 \equiv e_2 : A$, then $\Gamma \tee e_1 : A$ if and only if $\Gamma \tee e_2 : A$.
+\end{lemma}
 
-\begin{theorem}[Type Preservation (Backward) for Graded Modal Type Theory]
-  If\/ $e_1 \equiv e_2 : A$ and $\Gamma \tee e_2 : A$, then $\Gamma \tee e_1 : A$.
+\begin{theorem}[Type Preservation for Graded Modal Type Theory]
+\label{lem:graded-modal-type-preservation}
+  If\/ $e_1 \equiv e_2 : A$, then $\Gamma \tee e_1 : A$ if and only if $\Gamma \tee e_2 : A$.
 \end{theorem}
+\begin{proof}
+  By Lemmas~\ref{lem:graded-modal-type-preservation-beta-laws}, \ref{lem:graded-modal-type-preservation-eta-laws} and \ref{lem:graded-modal-type-preservation-commuting-conversions}.
+\end{proof}
 
 \subsection{Equational Laws for Mode Qualifiers}
 
@@ -949,6 +964,11 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
   \case_{\mu_1}\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y] : A \at \mu_2
 \end{align*}
 
+\begin{lemma}[Type Preservation for Beta Laws]
+\label{lem:mode-qualifiers-type-preservation-beta-laws}
+  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+\end{lemma}
+
 \paragraph{Eta laws}
 
 \begin{align*}
@@ -959,6 +979,11 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
   \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e : A + B \at \mu \\
   \bbox_\nu\, (\unbox_\nu\, e) &\equiv e : \boxempty^\nu A \at \mu
 \end{align*}
+
+\begin{lemma}[Type Preservation for Eta Laws]
+\label{lem:mode-qualifiers-type-preservation-eta-laws}
+  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+\end{lemma}
 
 \paragraph{Evaluation contexts}
 Recall:
@@ -983,13 +1008,17 @@ Recall:
     && (x, y \notin \mathrm{fv}(E))
 \end{align*}
 
-\begin{theorem}[Type Preservation (Forward) for Mode Qualifiers]
-  If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_1 : A \at \mu$, then $\Gamma \tee e_2 : A \at \mu$.
-\end{theorem}
+\begin{lemma}[Type Preservation for Commuting Conversions]
+\label{lem:mode-qualifiers-type-preservation-commuting-conversions}
+  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+\end{lemma}
 
-\begin{theorem}[Type Preservation (Backward) for Mode Qualifiers]
-  If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$.
+\begin{theorem}[Type Preservation for Mode Qualifiers]
+  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
 \end{theorem}
+\begin{proof}
+  By Lemmas~\ref{lem:mode-qualifiers-type-preservation-beta-laws}, \ref{lem:mode-qualifiers-type-preservation-eta-laws} and \ref{lem:mode-qualifiers-type-preservation-commuting-conversions}.
+\end{proof}
 
 \begin{acks}
 
