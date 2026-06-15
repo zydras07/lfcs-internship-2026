@@ -884,6 +884,105 @@ If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, 
   \end{description}
 \end{proof}
 
+\subsection{Equational Laws for Graded Modal Type Theory}
+
+\paragraph{Beta laws}
+
+\begin{align*}
+  (\lambda x.\, e)\, v &\equiv e[v/x] \\
+  \llet x \leftarrow v \lin e &\equiv e[v/x] \\
+  \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2}\, v \lin e &\equiv e[v/x] \\
+  \llet_q (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] \\
+  \case_q\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] \\
+  \case_q\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y]
+\end{align*}
+
+\paragraph{Eta laws}
+
+\begin{align*}
+  \lambda x.\, v\, x &\equiv v
+    && (x \notin \mathrm{fv}(v)) \\
+  v &\equiv ()
+    && (v : \unit) \\
+  \llet_q (x, y) = v \lin (x, y) &\equiv v
+    && (v : A \times B) \\
+  \case_q\, v\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv v
+    && (v : A + B) \\
+  \llet_{q_1} \bbox_{q_2} x = v \lin \bbox_{q_2}\, x &\equiv v
+    && (v : \boxempty^{q_2} A)
+\end{align*}
+
+\paragraph{Evaluation contexts}
+Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
+
+\paragraph{Commuting conversions}
+
+\begin{align*}
+  E[\llet x \leftarrow e_1 \lin e_2]
+    &\equiv \llet x \leftarrow e_1 \lin E[e_2]
+    && (x \notin \mathrm{fv}(E)) \\
+  E[\llet_{q_1} \bbox_{q_2} x = v \lin e]
+    &\equiv \llet_{q_1} \bbox_{q_2} x = v \lin E[e]
+    && (x \notin \mathrm{fv}(E)) \\
+  E[\llet_q (x, y) = v \lin e]
+    &\equiv \llet_q (x, y) = v \lin E[e]
+    && (x, y \notin \mathrm{fv}(E)) \\
+  E[\case_q\, v\, \{x.e_1;\; y.e_2\}]
+    &\equiv \case_q\, v\, \{x.\, E[e_1];\; y.\, E[e_2]\}
+    && (x, y \notin \mathrm{fv}(E))
+\end{align*}
+
+\subsection{Equational Laws for Mode Qualifiers}
+
+\paragraph{Beta laws}
+
+\begin{align*}
+  (\lambda x.\, e)\, v &\equiv e[v/x] \\
+  \llet x = v \lin e &\equiv e[v/x] \\
+  \unbox_\nu\, (\bbox_\nu\, v) &\equiv v \\
+  \llet_\mu (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] \\
+  \case_\mu\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] \\
+  \case_\mu\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y]
+\end{align*}
+
+\paragraph{Eta laws}
+
+\begin{align*}
+  \lambda x.\, v\, x &\equiv v
+    && (x \notin \mathrm{fv}(v)) \\
+  v &\equiv ()
+    && (v : \unit) \\
+  \llet_\mu (x, y) = v \lin (x, y) &\equiv v
+    && (v : A \times B) \\
+  \case_\mu\, v\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv v
+    && (v : A + B) \\
+  \bbox_\nu\, (\unbox_\nu\, v) &\equiv v
+    && (v : \boxempty^\nu A)
+\end{align*}
+
+\paragraph{Evaluation contexts}
+Recall:
+\begin{align*}
+  E &::= [\cdot] \mid \bbox_\nu\, E \mid (E, e) \mid (v, E) \mid \inl\, E \mid \inr\, E \\
+    &\mid E\, e_2 \mid v_1\, E \mid \unbox_\nu\, E \\
+    &\mid \llet x = E \lin e \mid \llet_\mu (x, y) = E \lin e \\
+    &\mid \case_\mu\, E\, \{x.e_1;\; y.e_2\}
+\end{align*}
+
+\paragraph{Commuting conversions}
+
+\begin{align*}
+  E[\llet x = e_1 \lin e_2]
+    &\equiv \llet x = e_1 \lin E[e_2]
+    && (x \notin \mathrm{fv}(E)) \\
+  E[\llet_\mu (x, y) = e_1 \lin e_2]
+    &\equiv \llet_\mu (x, y) = e_1 \lin E[e_2]
+    && (x, y \notin \mathrm{fv}(E)) \\
+  E[\case_\mu\, e\, \{x.e_1;\; y.e_2\}]
+    &\equiv \case_\mu\, e\, \{x.\, E[e_1];\; y.\, E[e_2]\}
+    && (x, y \notin \mathrm{fv}(E))
+\end{align*}
+
 \begin{acks}
 
 The internship was supervised by Anton Lorenzen and Sam Lindley.
