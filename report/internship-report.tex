@@ -186,7 +186,7 @@ A fine-grained call-by-value calculus in the style of \cite{Abel:unified,Choudhu
   \inferrule*[right=var]{
     \phantom{.}
   }{
-    0\cdot\Gamma, x :^1 A, 0\cdot\Gamma' \tee x : A
+    \Gamma, x :^1 A, \Gamma' \tee x : A
   } \and
   \inferrule*[right=sub]{
     q \leq q' \\
@@ -299,7 +299,7 @@ Aside from the usual semiring axioms, we require that $+$ and $\cdot$ are monoto
 For local and global modes, we take the three-element semiring $\{0, 1, \mathbb{G}\}$ with
 $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \mathbb{G}$.
 
-We also have a division operator $\setminus$, which is defined by saying that $\mu_1 \setminus \mu_2$ is the maximum $\mu$ such that $\mu_2 \circ \mu = \mu_1$. $\setminus$ may not be defined if there are no $\mu$ satisfying the condition. $\setminus$ over contexts is defined point-wise over variables.
+We also have a division operator $\setminus$, which is defined by saying that $q_1 \setminus q_2$ is the maximum $q$ such that $q_2 \circ q = q_1$. $q_1 \setminus q_2$ is not defined if $q_1 < q_2$. $\setminus$ over contexts is defined point-wise over variables.
 
 \subsection{Mode Qualifiers}
 
@@ -341,23 +341,23 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma_2 \tee e_2 : A \at \mu_1 \\
     \mu_2 \geq \mu_3
   }{
-    \Gamma_1 + q \circ \Gamma_2 \tee e_1\, e_2 : B \at \mu_3
+    \Gamma_1 + \Gamma_2 \tee e_1\, e_2 : B \at \mu_3
   } \and
   \inferrule*[right=$\boxempty$I]{
-    \Gamma \tee e : A \at \nu \circ \mu
+    \Gamma \tee e : A \at \mu \circ \nu
   }{
     \Gamma \tee \bbox_\nu\, e : \boxempty^\nu A \at \mu
   } \and
   \inferrule*[right=$\boxempty$E]{
     \Gamma \tee e : \boxempty^\nu A \at \mu
   }{
-    \Gamma \tee \unbox_\nu\, e : A \at \nu \circ \mu
+    \Gamma \tee \unbox_\nu\, e : A \at \mu \circ \nu
   } \and
   \inferrule*[right=let]{
     \Gamma_1 \tee e_1 : A \at \mu_1 \\
     \Gamma_2, x : A \at \mu_1 \tee e_2 : B \at \mu_2
   }{
-    q \circ \Gamma_1 + \Gamma_2 \tee \llet x = e_1 \lin e_2 : B \at \mu_2
+    \Gamma_1 + \Gamma_2 \tee \llet x = e_1 \lin e_2 : B \at \mu_2
   } \and
   \inferrule*[right=unit]{
     \phantom{.}
@@ -374,7 +374,7 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma_1 \tee e_1 : A \times B \at \mu_1 \\\\
     \Gamma_2, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2
   }{
-    \mu_1 \circ \Gamma_1 + \Gamma_2 \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2
+    \Gamma_1 + \Gamma_2 \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2
   } \and
   \inferrule*[right=inl]{
     \Gamma \tee e : A \at \mu
@@ -391,7 +391,7 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
     \Gamma_2, x : A \at \mu_1 \tee e_1 : C \at \mu_2 \\\\
     \Gamma_2, y : B \at \mu_1 \tee e_2 : C \at \mu_2
   }{
-    \mu_1 \circ \Gamma_1 + \Gamma_2 \tee \case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\} : C \at \mu_2
+    \Gamma_1 + \Gamma_2 \tee \case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\} : C \at \mu_2
   }
 \end{mathpar}
 
@@ -447,7 +447,7 @@ We also have $+$ and $\setminus$ operators for modes.
 
 $+$ is defined with $\mu_1 + \mu_2 = \max(\mu_1, \mu_2)$. $+$ over contexts is defined point-wise over variables.
 
-$\setminus$ is defined by saying that $\mu_1 \setminus \mu_2$ is the maximum $\mu$ such that $\mu_2 \circ \mu = \mu_1$. $\setminus$ may not be defined if there are no $\mu$ satisfying the condition. $\setminus$ over contexts is defined point-wise over variables.
+$\setminus$ is defined by saying that $\mu_1 \setminus \mu_2$ is the maximum $\mu$ such that $\mu_2 \circ \mu = \mu_1$. $\mu_1 \setminus \mu_2$ is not defined if $\mu_1 < \mu_2$. $\setminus$ over contexts is defined point-wise over variables.
 
 For this parameterisation, it is also possible to define the lock as a left-division operator:
 \begin{align*}
@@ -520,54 +520,68 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 \end{theorem}
 
 \begin{proof}
-   Proceed by induction over the structure of the derivation of $\Gamma \tee x : A$.\\
-   \begin{description}
-      \item[Case VAR.]
-      By assumption, have $\mu_1 \ge \mathrm{locks}(\Gamma_2) \circ \mu_2 \ge \mathrm{locks}(\Gamma_2) \circ \mu_2^\prime$. By this and the definition of $\le$ in contexts, we have $\mu_1^\prime \ge \mu_1 \ge \mathrm{locks}(\Gamma^\prime) \circ \mu_2^\prime$ for every $\mu_1^\prime$ and $\mu_1$ such that $\Gamma \tee x : A \at \mu_1$ and $\Gamma^\prime \tee x : A \at \mu^\prime_1$. Thus, by VAR, have $\Gamma^\prime_1, x : A \at \mu_1^\prime, \Gamma^\prime_2 \tee x : A \at \mu_2^\prime$, as required.
-      \\
-      \item[Case LAM.]
-      By the inductive hypothesis, have $\Gamma^\prime, \lock_{\mu^\prime}, x : A \at \mu_1 \tee e : B \at \mu_2$. By LAM on this, $\Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
-      \\
-      \item[Case APP.]
-      By the inductive hypothesis, have $\Gamma^\prime \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and $\Gamma^\prime \tee e_2 : A \at \mu_1$. By APP on these and assumption $\mu_2^\prime \le \mu_2$, $\Gamma^\prime \tee e_1 e_2 : B \at \mu_2^\prime$ as required.
-      \\
-      \item[Case $\boxempty$I.]
-      By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$.
-      By $\boxempty$I on this, $\Gamma^\prime \tee \mathrm{box}_ve : \boxempty^vA \at \mu^\prime$, as required.
-      \\
-      \item[Case $\boxempty$E.]
-      By the inductive hypothesis, have $\Gamma^\prime \tee e : \boxempty^vA \at \mu^\prime$.
-      By $\boxempty$E on this, $\Gamma^\prime \tee \mathrm{unbox}_ve : A \at \nu \circ \mu^\prime$, as required.
-      \\
-      \item[Case LET.]
-      By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime \tee e_1 : A \at \mu_1$
-      and \textbf{(2)} $\Gamma^\prime, x : A \at \mu_1 \tee e_2 : B \at \mu_2^\prime$.
-      By LET on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime \tee \llet x = e_1 \lin e_2 : B \at \mu_2^\prime$, as required.
-      \\
-      \item[Case UNIT.]
-      By UNIT, $\Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
-      \\
-      \item[Case PAIR.]
-      By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime \tee e_1 : A \at \mu^\prime$
-      and \textbf{(2)} $\Gamma^\prime \tee e_2 : B \at \mu^\prime.$
-      By PAIR on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime \tee (e_1, e_2) : A \times B \at \mu^\prime$, as required.
-      \\
-      \item[Case SPLIT.]
-      By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime \tee e : A \times B \at \mu_1$ and \textbf{(2)} $\Gamma^\prime, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2^\prime$.
-      By SPLIT on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2^\prime$, as required.
-      \\
-      \item[Case INL.]
-      By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \mu^\prime$.
-      By INL on this, $\Gamma^\prime \tee \inl e : A + B \at \mu^\prime$, as required.
-      \\
-      \item[Case INR.]
-      By the inductive hypothesis, have $\Gamma^\prime \tee e : B \at \mu^\prime$.
-      By INR on this, $\Gamma^\prime \tee \inr e : A + B \at \mu^\prime$, as required.
-      \\
-      \item[Case CASE.]
-      By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime \tee e : A + B \at \mu_1$, \textbf{(2)} $\Gamma^\prime, x : A \at \mu_1 \tee e_1 : C \at \mu_2^\prime$ and \textbf{(3)} $\Gamma^\prime, y : B \at \mu_1 \tee e_2 : C \at \mu_2^\prime$.
-      By CASE on \textbf{(1)}, \textbf{(2)} and \textbf{(3)}, $\Gamma^\prime \tee \case_{\mu_1} e \{x.e_1; y.e_2\} : C \at \mu_2^\prime$, as required.
-   \end{description}
+  Proceed by induction over the structure of the derivation of $\Gamma \tee x : A$.\\
+  \begin{description}
+    \item[Case VAR.]
+    By assumption, have $\mu_1 \ge \mathrm{locks}(\Gamma_2) \circ \mu_2 \ge \mathrm{locks}(\Gamma_2) \circ \mu_2^\prime$. 
+    
+    By this and the definition of $\le$ in contexts, we have $\mu_1^\prime \ge \mu_1 \ge \mathrm{locks}(\Gamma^\prime) \circ \mu_2^\prime$ for every $\mu_1^\prime$ and $\mu_1$ such that $\Gamma \tee x : A \at \mu_1$ and $\Gamma^\prime \tee x : A \at \mu^\prime_1$. 
+    
+    Thus, by VAR, have $\Gamma^\prime_1, x : A \at \mu_1^\prime, \Gamma^\prime_2 \tee x : A \at \mu_2^\prime$, as required.
+    \\
+    \item[Case LAM.]
+    By the inductive hypothesis, have $\Gamma^\prime, \lock_{\mu^\prime}, x : A \at \mu_1 \tee e : B \at \mu_2$. 
+    
+    By LAM on this, $\Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
+    \\
+    \item[Case APP.]
+    By the inductive hypothesis, have $\Gamma^\prime_1 \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and $\Gamma^\prime_2 \tee e_2 : A \at \mu_1$. 
+    
+    By APP on these and assumption $\mu_2^\prime \le \mu_2$, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee e_1 e_2 : B \at \mu_2^\prime$ as required.
+    \\
+    \item[Case $\boxempty$I.]
+    By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$.
+    
+    By $\boxempty$I on this, $\Gamma^\prime \tee \mathrm{box}_ve : \boxempty^vA \at \mu^\prime$, as required.
+    \\
+    \item[Case $\boxempty$E.]
+    By the inductive hypothesis, have $\Gamma^\prime \tee e : \boxempty^vA \at \mu^\prime$.
+    
+    By $\boxempty$E on this, $\Gamma^\prime \tee \mathrm{unbox}_ve : A \at \nu \circ \mu^\prime$, as required.
+    \\
+    \item[Case LET.]
+    By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime_1 \tee e_1 : A \at \mu_1$ and \textbf{(2)} $\Gamma^\prime_2, x : A \at \mu_1 \tee e_2 : B \at \mu_2^\prime$.
+    
+    By LET on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee \llet x = e_1 \lin e_2 : B \at \mu_2^\prime$, as required.
+    \\
+    \item[Case UNIT.]
+    By UNIT, $\Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
+    \\
+    \item[Case PAIR.]
+    By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime_1 \tee e_1 : A \at \mu^\prime$ and \textbf{(2)} $\Gamma^\prime_2 \tee e_2 : B \at \mu^\prime.$
+    
+    By PAIR on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee (e_1, e_2) : A \times B \at \mu^\prime$, as required.
+    \\
+    \item[Case SPLIT.]
+    By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime_1 \tee e : A \times B \at \mu_1$ and \textbf{(2)} $\Gamma^\prime_2, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2^\prime$.
+    
+    By SPLIT on \textbf{(1)} and \textbf{(2)}, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2^\prime$, as required.
+    \\
+    \item[Case INL.]
+    By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \mu^\prime$.
+    
+    By INL on this, $\Gamma^\prime \tee \inl e : A + B \at \mu^\prime$, as required.
+    \\
+    \item[Case INR.]
+    By the inductive hypothesis, have $\Gamma^\prime \tee e : B \at \mu^\prime$.
+    
+    By INR on this, $\Gamma^\prime \tee \inr e : A + B \at \mu^\prime$, as required.
+    \\
+    \item[Case CASE.]
+    By the inductive hypothesis, have \textbf{(1)} $\Gamma^\prime_1 \tee e : A + B \at \mu_1$, \textbf{(2)} $\Gamma^\prime_2, x : A \at \mu_1 \tee e_1 : C \at \mu_2^\prime$ and \textbf{(3)} $\Gamma^\prime_2, y : B \at \mu_1 \tee e_2 : C \at \mu_2^\prime$.
+    
+    By CASE on \textbf{(1)}, \textbf{(2)} and \textbf{(3)}, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee \case_{\mu_1} e \{x.e_1; y.e_2\} : C \at \mu_2^\prime$, as required.
+  \end{description}
 \end{proof}
 
 % \begin{lemma}
@@ -590,24 +604,24 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 %   \end{description}
 % \end{proof}
 
-\begin{lemma}
-  For all $\Gamma_1$ and $\Gamma_2$, $\Gamma_1 \le \Gamma_1 + \Gamma_2$.
-\end{lemma}
+% \begin{lemma}
+%   For all $\Gamma_1$ and $\Gamma_2$, $\Gamma_1 \le \Gamma_1 + \Gamma_2$.
+% \end{lemma}
 
-\begin{proof}
-  By the definition of $\le$ and $+$ over contexts being point-wise, it suffices to show that $\mu_1 \le \mu_1 + \mu_2$.
-  Proceed by cases over $\mu_1$ and $\mu_2$.
-  \begin{description}
-%      \item[Case $\mu_1 = 0$.] 
-%      $0 \le \mu_2$ holds since $0$ is the least element of the semiring.
-%      \item[Case $\mu_2 = 0$.] 
-%      $\mu_1 \le \mu_1$ holds by the reflexivity of $\le$.
-      \item[Case $\mu_1 = 1, \mu_2 = 1$.] 
-      $1 \le 1$ holds by the reflexivity of $\le$.
-      \item[Case $otherwise$.]
-      $\mu_1 \le \mathbb{G}$ holds since $\mathbb{G}$ is the greatest mode.
-  \end{description}
-\end{proof}
+% \begin{proof}
+%   By the definition of $\le$ and $+$ over contexts being point-wise, it suffices to show that $\mu_1 \le \mu_1 + \mu_2$.
+%   Proceed by cases over $\mu_1$ and $\mu_2$.
+%   \begin{description}
+%     \item[Case $\mu_1 = 0$.] 
+%     $0 \le \mu_2$ holds since $0$ is the least element of the semiring.
+%     \item[Case $\mu_2 = 0$.] 
+%     $\mu_1 \le \mu_1$ holds by the reflexivity of $\le$.
+%     \item[Case $\mu_1 = 1, \mu_2 = 1$.] 
+%     $1 \le 1$ holds by the reflexivity of $\le$.
+%     \item[Case $otherwise$.]
+%     $\mu_1 \le \mathbb{G}$ holds since $\mathbb{G}$ is the greatest mode.
+%   \end{description}
+% \end{proof}
 
 \begin{lemma}
   If $\mu^\prime \setminus \mu$ is defined, then $\mu^\prime = \mu \circ \mu^\prime \setminus \mu$.
@@ -616,10 +630,10 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 \begin{proof}
   Proceed by induction over $\mu$ and $\mu^\prime$.
   \begin{description}
-      \item[Case $\mu = 1$.]
-      $1 \circ \mu^\prime \setminus 1 = \mu^\prime \setminus 1$. Since $\mu = \mu^\prime$ is the only $\mu$ such that $1 \circ \mu = \mu^\prime$, it follows that $\mu^\prime = \mu^\prime \setminus 1$, as required.
-      \item[Case $\mu^\prime = \mathbb{G}$, $\mu = \mathbb{G}$.] 
-      $\mathbb{G} \circ \mathbb{G} \setminus \mathbb{G} = \mathbb{G} \setminus \mathbb{G}$. Both $\mu = 1$ and $\mu = \mathbb{G}$ satisfy $\mathbb{G} \circ \mu = \mathbb{G}$ so, since $1 \le \mathbb{G}$, $\mathbb{G} = \mathbb{G} \setminus \mu$, as required.
+    \item[Case $\mu = 1$.]
+    $1 \circ \mu^\prime \setminus 1 = \mu^\prime \setminus 1$. Since $\mu = \mu^\prime$ is the only $\mu$ such that $1 \circ \mu = \mu^\prime$, it follows that $\mu^\prime = \mu^\prime \setminus 1$, as required.
+    \item[Case $\mu^\prime = \mathbb{G}$, $\mu = \mathbb{G}$.] 
+    $\mathbb{G} \circ \mathbb{G} \setminus \mathbb{G} = \mathbb{G} \setminus \mathbb{G}$. Both $\mu = 1$ and $\mu = \mathbb{G}$ satisfy $\mathbb{G} \circ \mu = \mathbb{G}$ so, since $1 \le \mathbb{G}$, $\mathbb{G} = \mathbb{G} \setminus \mu$, as required.
   \end{description}
 \end{proof}
 
@@ -632,6 +646,18 @@ For this parameterisation, it is also possible to define the lock as a left-divi
   
 \end{proof}
 
+\begin{lemma}
+  $q \setminus q \ge 1$.
+\end{lemma}
+
+\begin{proof}
+  Proceed by cases over $q$.
+  \begin{description}
+      \item[Case $\mu = 1$].
+      \item[Case $\mu = \mathbb{G}$].
+  \end{description}
+\end{proof}
+
 \begin{theorem}[Division to Locks for Mode Qualifiers]
   If $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \mu^\prime$, then $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A \at \mu^\prime$.
 \end{theorem}
@@ -639,64 +665,85 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 \begin{proof}
   Proceed by induction over the structure of $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \mu^\prime$.
   \begin{description}
-  \item[Case VAR.]
-  By assumption, have $\mu_1 \setminus \mu \ge \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
-  By the monotonicity of $\circ$, have $\mu \circ \mu_1 \setminus \mu \ge \mu \circ \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
-  By (1.4), have $\mu_1 \ge \mu \circ \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
-  Thus, by VAR, $\Gamma, x : A \at \mu_1, \lock_\mu, \Gamma^\prime \tee x : A \at \mu_2$, as required.
-  \\
-  \item[Case LAM.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime, \lock_\mu^\prime, x : A \at \mu_1 \tee e : B \at \mu_2$. 
-  By inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime, \lock_{\mu^\prime}, x : A \at \mu_1 \tee e : B \at \mu_2$.
-  Thus, by LAM on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
-  \\
-  \item[Case APP.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$, \textbf{(2)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_2 : A \at \mu_1$ and \textbf{(3)} $\mu_2 \ge \mu_3$. 
-  By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(4)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and \textbf{(5)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_2 : A \at \mu_1$.
-  Thus, by APP on \textbf{(3)}, \textbf{(4)} and \textbf{(5)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 e_2 : B \at \mu_3$, as required.
-  \\
-  \item[Case $\boxempty$I.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$. 
-  By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$. 
-  Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{box}_v e : \boxempty^\nu A \at \circ \mu^\prime$, as required.
-  \\
-  \item[Case $\boxempty$E.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : \boxempty^\nu A \at \mu^\prime$. 
-  By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : \boxempty^\nu A \at \mu^\prime$. 
-  Thus, by $\boxempty$E on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{unbox}_v e : A \at \nu \circ \mu^\prime$, as required.
-  \\
-  \item[Case LET.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_1 : A \at \mu_1$ and \textbf{(2)} $\Gamma \setminus \mu, \Gamma^\prime, x : A \at \mu_1 \tee e_2 : B \at \mu_2$. 
-  By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 : A \at \mu_1$ and \textbf{(4)} $\Gamma, \lock_\mu, \Gamma^\prime, x : A \at \mu_1 \tee e_2 : B \at \mu_2$. 
-  Thus, by LET on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \llet x = e_1 \lin e_2 : B \at \mu_2$, as required.
-  \\
-  \item[Case UNIT.]
-  $\Gamma, \lock_\mu, \Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
-  \\
-  \item[Case PAIR.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_1 : A \at \mu^\prime$ and \textbf{(2)} $\Gamma \setminus \mu, \Gamma_\prime \tee e_2 : B \at \mu^\prime$. 
-  By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 : A \at \mu^\prime$ and \textbf{(4)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_2 : B \at \mu^\prime$. 
-  Thus, by PAIR on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee (e_1, e_2) : A \times B \at \mu^\prime$, as required.
-  \\
-  \item[Case SPLIT.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e_1 : A \times B \at \mu_1$ and \textbf{(2)} $\Gamma \setminus \mu, \Gamma^\prime, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
-  By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 : A \times B \at \mu_1$ and \textbf{(4)} $\Gamma, \lock_\mu, \Gamma^\prime, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
-  Thus, by SPLIT on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2$, as required.
-  \\
-  \item[Case INL.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \mu^\prime$. 
-  By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A \at \mu^\prime$. 
-  Thus, by INL on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \inl e : A + B \at \mu^\prime$, as required.
-  \\
-  \item[Case INR.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : B \at \mu^\prime$. 
-  By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : B \at \mu^\prime$. 
-  Thus, by INR on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \inr e : A + B \at \mu^\prime$, as required.
-  \\
-  \item[Case CASE.]
-  By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : A + B \at \mu_1$, \textbf{(2)} $\Gamma \setminus \mu, \Gamma^\prime, x : A \at \mu_1 \tee e_1 : C \at \mu_2$ and \textbf{(3)} $\Gamma \setminus \mu, \Gamma^\prime, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
-  By the inductive hypothesis on each of \textbf{(1)}, \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A + B \at \mu_1$, \textbf{(5)} $\Gamma, \lock_\mu, \Gamma^\prime, x : A \at \mu_1 \tee e_1 : C \at \mu_2$ and \textbf{(6)} $\Gamma, \lock_\mu, \Gamma^\prime, y : B \at \mu_1 \tee e_2 : C \at \mu_2$ 
-  Thus, by LET on \textbf{(4)}, \textbf{(5)} and \textbf{(6)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{case}_{\mu_1} e \{x.e_1; y.e_2\} : C \at \mu_2$, as required.
+    \item[Case VAR.]
+    By assumption, have $\mu_1 \setminus \mu \ge \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
+    
+    By the monotonicity of $\circ$, have $\mu \circ \mu_1 \setminus \mu \ge \mu \circ \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
+    
+    By (1.4), have $\mu_1 \ge \mu \circ \mathrm{locks}(\Gamma^\prime) \circ \mu_2$. 
+    
+    Thus, by VAR, $\Gamma, x : A \at \mu_1, \lock_\mu, \Gamma^\prime \tee x : A \at \mu_2$, as required.
+    \\
+    \item[Case LAM.]
+    By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime, \lock_\mu^\prime, x : A \at \mu_1 \tee e : B \at \mu_2$. 
+    
+    By inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime, \lock_{\mu^\prime}, x : A \at \mu_1 \tee e : B \at \mu_2$.
+    
+    Thus, by LAM on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
+    \\
+    \item[Case APP.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \setminus \mu, \Gamma^\prime \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$, \textbf{(2)} $\Gamma_2 \setminus \mu, \Gamma^\prime \tee e_2 : A \at \mu_1$ and \textbf{(3)} $\mu_2 \ge \mu_3$. 
+    
+    By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(4)} $\Gamma_1, \lock_\mu, \Gamma^\prime_1 \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and \textbf{(5)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2 \tee e_2 : A \at \mu_1$.
+    
+    Thus, by APP on \textbf{(3)}, \textbf{(4)} and \textbf{(5)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee e_1 e_2 : B \at \mu_3$, as required.
+    \\
+    \item[Case $\boxempty$I.]
+    By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$. 
+    
+    By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A \at \nu \circ \mu^\prime$. 
+    
+    Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{box}_v e : \boxempty^\nu A \at \circ \mu^\prime$, as required.
+    \\
+    \item[Case $\boxempty$E.]
+    By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : \boxempty^\nu A \at \mu^\prime$. 
+    
+    By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : \boxempty^\nu A \at \mu^\prime$. 
+    
+    Thus, by $\boxempty$E on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{unbox}_v e : A \at \nu \circ \mu^\prime$, as required.
+    \\
+    \item[Case LET.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \setminus \mu, \Gamma^\prime_1 \tee e_1 : A \at \mu_1$ and \textbf{(2)} $\Gamma_2 \setminus \mu, \Gamma^\prime_2, x : A \at \mu_1 \tee e_2 : B \at \mu_2$. 
+    
+    By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma_1, \lock_\mu, \Gamma^\prime_1 \tee e_1 : A \at \mu_1$ and \textbf{(4)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2, x : A \at \mu_1 \tee e_2 : B \at \mu_2$. 
+    
+    Thus, by LET on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \llet x = e_1 \lin e_2 : B \at \mu_2$, as required.
+    \\
+    \item[Case UNIT.]
+    $\Gamma, \lock_\mu, \Gamma^\prime \tee () : \unit \at \mu^\prime$, as required.
+    \\
+    \item[Case PAIR.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \setminus \mu, \Gamma^\prime_1 \tee e_1 : A \at \mu^\prime$ and \textbf{(2)} $\Gamma_2 \setminus \mu, \Gamma^\prime_2 \tee e_2 : B \at \mu^\prime$. 
+    
+    By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma_1, \lock_\mu, \Gamma^\prime_1 \tee e_1 : A \at \mu^\prime$ and \textbf{(4)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2 \tee e_2 : B \at \mu^\prime$. 
+    
+    Thus, by PAIR on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee (e_1, e_2) : A \times B \at \mu^\prime$, as required.
+    \\
+    \item[Case SPLIT.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \setminus \mu, \Gamma^\prime_1 \tee e_1 : A \times B \at \mu_1$ and \textbf{(2)} $\Gamma_2 \setminus \mu, \Gamma^\prime_2, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
+    
+    By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\Gamma_1, \lock_\mu, \Gamma^\prime_1 \tee e_1 : A \times B \at \mu_1$ and \textbf{(4)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2, x : A \at \mu_1, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
+    
+    Thus, by SPLIT on \textbf{(3)} and \textbf{(4)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \llet_{\mu_1} (x, y) = e_1 \lin e_2 : C \at \mu_2$, as required.
+    \\
+    \item[Case INL.]
+    By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : A \at \mu^\prime$. 
+    
+    By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : A \at \mu^\prime$. 
+    Thus, by INL on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \inl e : A + B \at \mu^\prime$, as required.
+    \\
+    \item[Case INR.]
+    By assumption, have \textbf{(1)} $\Gamma \setminus \mu, \Gamma^\prime \tee e : B \at \mu^\prime$. 
+    
+    By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\Gamma, \lock_\mu, \Gamma^\prime \tee e : B \at \mu^\prime$. 
+    Thus, by INR on \textbf{(2)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \inr e : A + B \at \mu^\prime$, as required.
+    \\
+    \item[Case CASE.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \setminus \mu, \Gamma^\prime_1 \tee e : A + B \at \mu_1$, \textbf{(2)} $\Gamma_2 \setminus \mu, \Gamma^\prime_2, x : A \at \mu_1 \tee e_1 : C \at \mu_2$ and \textbf{(3)} $\Gamma_2 \setminus \mu, \Gamma^\prime_2, y : B \at \mu_1 \tee e_2 : C \at \mu_2$. 
+    
+    By the inductive hypothesis on each of \textbf{(1)}, \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1, \lock_\mu, \Gamma^\prime_1 \tee e : A + B \at \mu_1$, \textbf{(5)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2, x : A \at \mu_1 \tee e_1 : C \at \mu_2$ and \textbf{(6)} $\Gamma_2, \lock_\mu, \Gamma^\prime_2, y : B \at \mu_1 \tee e_2 : C \at \mu_2$.
+    
+    Thus, by LET on \textbf{(4)}, \textbf{(5)} and \textbf{(6)}, $\Gamma, \lock_\mu, \Gamma^\prime \tee \mathrm{case}_{\mu_1} e \{x.e_1; y.e_2\} : C \at \mu_2$, as required.
   \end{description}
 \end{proof}
 
@@ -705,44 +752,60 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 \end{theorem}
 
 \begin{proof}
-   Proceed by induction over the structure of the derivation of $q \cdot \Gamma \tee v : A$.\\
-   \begin{description}
-      \item[Case VAR.]
-      Have $q \le q$ by reflexivity of $\le$. 
-      Thus, by VAR, $\cdot, x : \sem{A} \at q \tee x : \sem{A} \at q$, as required.
-      \\
-      \item[Case SUB.]
-      By the inductive hypothesis, have $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q^\prime \circ q_1, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$. 
-      Thus, by the assumption $q_1 \le q_2$ and weakening, $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q_2, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$, as required.
-      \\
-      \item[Case LAM.]
-      By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q \tee \sem{e} : \sem{B} \at 1$. 
-      By (1.5), have $q^\prime \circ \sem{\Gamma} \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
-      By (1.6), have $q^\prime \circ \sem{\Gamma}, \lock_q, x : \sem{A} \at q \tee \sem{e} : B \at 1$. Thus, by LAM, $q^\prime \circ \sem{\Gamma} \tee \lambda x.\sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at q^\prime$ which, by the translation, is equivalent to $q^\prime \circ \sem{\Gamma} \tee \sem{\lambda x.e} : \sem{\,^qA \rightarrow B} \at q^\prime$, as required.
-      \\
-      \item[Case UNIT.]
-      By UNIT, $q \circ \sem{\Gamma} \tee () : \unit \at q$ as required.
-      \\ 
-      \item[Case PAIR.]
-      By assumption, have \textbf{(1)} $\Gamma_1 \tee v_1 : A$ and \textbf{(2)} $\Gamma_2 \tee v_2 : B$.
-      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
-      By weakening, and then right distributivity of $\circ$ over $+$ on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(6)} $q \circ \sem{\Gamma_1 + \Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
-      By PAIR on \textbf{(6)} and \textbf{(7)}, $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
-      \\ 
-      \item[Case INL.]
-      By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
-      By INL on this, $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + B^\prime \at q$. 
-      Since, for all mode qualifier types $B^\prime$, there exists a graded modal type $B$ such that $B^\prime = \sem{B}$, we have $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inl e} : \sem{A + B} \at q$, as required.
-      \\
-      \item[Case INR.]
-      By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{B} \at q$. 
-      By INR on this, $q \circ \sem{\Gamma} \tee \inr \sem{e} : A^\prime + \sem{B} @ q$. 
-      Since, for all mode qualifier types $A^\prime$, there exists a graded modal type $A$ such that $A^\prime = \sem{A}$, we have $q \circ \sem{\Gamma} \tee \inr \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inr e} : \sem{A + B} \at q$, as required.
-      \\
-      \item[Case $\boxempty$I.]
-      By the inductive hypothesis, have $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{v} : \sem{A} \at q^\prime \circ q$. 
-      Thus, by $\boxempty$I, $q^\prime \circ q \circ \Gamma \tee \mathrm{box}_qv : \boxempty_qA \at q^\prime$.
-   \end{description}
+  Proceed by induction over the structure of the derivation of $q \cdot \Gamma \tee v : A$.\\
+  \begin{description}
+    \item[Case VAR.]
+    Have $q \le q$ by reflexivity of $\le$, and note that $\sem{\Gamma}$ and $\sem{\Gamma^\prime}$ must not have any locks. 
+    
+    Thus, by VAR, $\sem{\Gamma}, x : \sem{A} \at q, \sem{\Gamma^\prime} \tee x : \sem{A} \at q$, as required.
+    \\
+    \item[Case SUB.]
+    By the inductive hypothesis, have $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q^\prime \circ q_1, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$. 
+    
+    Thus, by the assumption $q_1 \le q_2$ and weakening, $q^\prime \circ \sem{\Gamma}, x : \sem{A} \at q_2, q^\prime \circ \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$, as required.
+    \\
+    \item[Case LAM.]
+    By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q \tee \sem{e} : \sem{B} \at 1$. 
+    
+    By (1.5), have $q^\prime \circ \sem{\Gamma} \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
+    
+    By (1.6), have $q^\prime \circ \sem{\Gamma}, \lock_q, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
+    
+    Thus, by LAM, $q^\prime \circ \sem{\Gamma} \tee \lambda x.\sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at q^\prime$ which, by the translation, is equivalent to $q^\prime \circ \sem{\Gamma} \tee \sem{\lambda x.e} : \sem{\,^qA \rightarrow B} \at q^\prime$, as required.
+    \\
+    \item[Case UNIT.]
+    By UNIT, $q \circ \sem{\Gamma} \tee () : \unit \at q$ as required.
+    \\ 
+    \item[Case PAIR.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v_1 : A$ and \textbf{(2)} $\Gamma_2 \tee v_2 : B$.
+    
+    By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
+    
+    % By weakening, and then right distributivity of $\circ$ over $+$ on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(6)} $q \circ \sem{\Gamma_1 + \Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
+    
+    By PAIR on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$
+    
+    Thus, by the left distributivity of $\circ$ over $+$, $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
+    \\ 
+    \item[Case INL.]
+    By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
+    
+    By INL on this, $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + B^\prime \at q$. 
+    
+    Since, for all mode qualifier types $B^\prime$, there exists a graded modal type $B$ such that $B^\prime = \sem{B}$, we have $q \circ \sem{\Gamma} \tee \inl \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inl e} : \sem{A + B} \at q$, as required.
+    \\
+    \item[Case INR.]
+    By the inductive hypothesis, have $q \circ \sem{\Gamma} \tee \sem{e} : \sem{B} \at q$. 
+    
+    By INR on this, $q \circ \sem{\Gamma} \tee \inr \sem{e} : A^\prime + \sem{B} @ q$. 
+    
+    Since, for all mode qualifier types $A^\prime$, there exists a graded modal type $A$ such that $A^\prime = \sem{A}$, we have $q \circ \sem{\Gamma} \tee \inr \sem{e} : \sem{A} + \sem{B} \at q$, and thus, by the translation, $q \circ \sem{\Gamma} \tee \sem{\inr e} : \sem{A + B} \at q$, as required.
+    \\
+    \item[Case $\boxempty$I.]
+    By the inductive hypothesis, have $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{v} : \sem{A} \at q^\prime \circ q$. 
+    
+    Thus, by $\boxempty$I, $q^\prime \circ q \circ \sem{\Gamma} \tee \mathrm{box}_q \sem{v} : \boxempty^q \sem{A} \at q^\prime$, which, by the translation, is equivalent to $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{\mathrm{box}^q v} : \sem{\boxempty_q A} \at q^\prime$, as required.
+  \end{description}
 \end{proof}
 
 \begin{theorem}[Graded Type Theory Expressions to Mode Qualifiers]
@@ -750,39 +813,57 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 \end{theorem}
 
 \begin{proof} 
-    Proceed by induction over the structure of the derivation of  $\Gamma \tee e : A$.\\
-    \begin{description}
-       \item[Case APP.]
-       By assumption, have \textbf{(1)} $\Gamma_1 \tee e : \,^qA \rightarrow B$ and \textbf{(2)} $\Gamma_2 \tee v : A$. 
-       By inductive hypothesis on \textbf{(1)} and (1.7) on \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$. 
-       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$. 
-       Thus, by APP on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} \sem{v} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + q \cdot \Gamma_2} \tee \sem{e v} : \sem{B} \at 1$, as required.
-       \\
-       \item[Case BIND.]
-       By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A$ and \textbf{(2)} $\Gamma_2, x :^1 A \tee e_2 : B$. 
-       By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \sem{A} \at 1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
-       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{e_1} : A \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
-       Thus, by LET on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\llet x \leftarrow e_1 \lin e_2} : \sem{B} \at 1$, as required.
-       \\
-       \item[Case $\boxempty$E.]
-       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : \boxempty^{q_2} A$ and \textbf{(2)} $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$. 
-       By (1.7) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q_1 \circ \sem{\Gamma_1} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
-       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
-       By $\boxempty$E on \textbf{(5)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{unbox}_{q_2}\sem{v} : \sem{A} \at q_1 \circ q_2$. 
-       Thus, by LET on \textbf{(6)} and \textbf{(7)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \mathrm{unbox}_{q_2}\sem{v} \lin \sem{e} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_{q_1} \mathrm{box}_{q_2} x = v \lin e} : \sem{B} \at 1$, as required.
-       \\
-       \item[Case SPLIT.]
-       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A_1 \times A_2$ and \textbf{(2)} $\Gamma_2, x :^q A_1, y :^q A_2 \tee e : B$. 
-       By (1.7) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A_1} \times \sem{A_2} \at q$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e} : \sem{B} \at 1$. 
-       By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A_1 \times A_2 \at 1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e_2} : \sem{B} \at 1$. 
-       Thus, by SPLIT on \textbf{(5)} and \textbf{(6)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet_q(x, y) = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_q(x, y) = e_1 \lin e_2} : \sem{B} \at 1$, as required.
-       \\
-       \item[Case CASE.]
-       By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A + B$, \textbf{(2)} $\Gamma_2, x :^q A \tee e_1 : C$ and \textbf{(3)} $\Gamma_2, y :^q B \tee e_2 : C$. 
-       By (1.7) on \textbf{(1)} and inductive hypothesis on each of \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A} + \sem{B} \at q$, \textbf{(5)} $\sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(6)} $\sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
-       By weakening on each of \textbf{(4)}, \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A + B \at 1$, \textbf{(8)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(9)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
-       Thus, by CASE on \textbf{(7)}, \textbf{(8)} and \textbf{(9)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{case}_q\sem{v}\{x.\sem{e_1}, y.\sem{e_2}\} : \sem{C} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\case_q\{x.e_1, y.e_2\}} : \sem{C} \at 1$, as required.
-    \end{description}
+  Proceed by induction over the structure of the derivation of  $\Gamma \tee e : A$.\\
+  \begin{description}
+    \item[Case APP.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee e : \,^qA \rightarrow B$ and \textbf{(2)} $\Gamma_2 \tee v : A$. 
+    
+    By inductive hypothesis on \textbf{(1)} and (1.7) on \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(4)} $\sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$. 
+
+    By APP on \textbf{(3)} and \textbf({4}), have $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{e} \sem{v} : \sem{B} \at 1$
+    
+    Thus, by weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} : (\sem{A} \at q \rightarrow \sem{B} \at 1) \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{v} : \sem{A} \at q$.
+    
+    Thus, by APP on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee \sem{e} \sem{v} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + q \cdot \Gamma_2} \tee \sem{e \, v} : \sem{B} \at 1$, as required.
+    \\
+    \item[Case BIND.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A$ and \textbf{(2)} $\Gamma_2, x :^1 A \tee e_2 : B$. 
+    
+    By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \sem{A} \at 1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
+    
+    By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{e_1} : A \at 1$ and \textbf{(6)} $\sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at 1 \tee \sem{e_2} : \sem{B} \at 1$. 
+    
+    Thus, by LET on \textbf{(5)} and \textbf{(6)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\llet x \leftarrow e_1 \lin e_2} : \sem{B} \at 1$, as required.
+    \\
+    \item[Case $\boxempty$E.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : \boxempty^{q_2} A$ and \textbf{(2)} $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$. 
+    
+    By (1.7) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q_1 \circ \sem{\Gamma_1} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
+    
+    By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : \boxempty^{q_2} \sem{A} \at q_1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q_1 \circ q_2 \tee \sem{e} : \sem{B} \at 1$. 
+    
+    By $\boxempty$E on \textbf{(5)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{unbox}_{q_2}\sem{v} : \sem{A} \at q_1 \circ q_2$. 
+    
+    Thus, by LET on \textbf{(6)} and \textbf{(7)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x = \mathrm{unbox}_{q_2}\sem{v} \lin \sem{e} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_{q_1} \mathrm{box}_{q_2} x = v \lin e} : \sem{B} \at 1$, as required.
+    \\
+    \item[Case SPLIT.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A_1 \times A_2$ and \textbf{(2)} $\Gamma_2, x :^q A_1, y :^q A_2 \tee e : B$. 
+    
+    By (1.7) on \textbf{(1)} and inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A_1} \times \sem{A_2} \at q$ and \textbf{(4)} $\sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e} : \sem{B} \at 1$. 
+    
+    By weakening on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A_1 \times A_2 \at 1$ and \textbf{(6)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A_1} \at q, y : \sem{A_2} \at q \tee \sem{e_2} : \sem{B} \at 1$. 
+    
+    Thus, by SPLIT on \textbf{(5)} and \textbf{(6)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet_q(x, y) = \sem{e_1} \lin \sem{e_2} : \sem{B} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\llet_q(x, y) = e_1 \lin e_2} : \sem{B} \at 1$, as required.
+    \\
+    \item[Case CASE.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A + B$, \textbf{(2)} $\Gamma_2, x :^q A \tee e_1 : C$ and \textbf{(3)} $\Gamma_2, y :^q B \tee e_2 : C$. 
+    
+    By (1.7) on \textbf{(1)} and inductive hypothesis on each of \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $q \circ \sem{\Gamma_1} \tee \sem{v} : \sem{A} + \sem{B} \at q$, \textbf{(5)} $\sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(6)} $\sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
+    
+    By weakening on each of \textbf{(4)}, \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \sem{v} : A + B \at 1$, \textbf{(8)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, x : \sem{A} \at q \tee \sem{e_1} : \sem{C} \at 1$ and \textbf{(9)} $q \circ \sem{\Gamma_1} + \sem{\Gamma_2}, y : \sem{B} \at q \tee \sem{e_2} : \sem{C} \at 1$. 
+    
+    Thus, by CASE on \textbf{(7)}, \textbf{(8)} and \textbf{(9)}, $q \circ \sem{\Gamma_1} + \sem{\Gamma_2} \tee \mathrm{case}_q\sem{v}\{x.\sem{e_1}, y.\sem{e_2}\} : \sem{C} \at 1$, which, by translation, is equivalent to $\sem{q \cdot \Gamma_1 + \Gamma_2} \tee \sem{\case_q\{x.e_1, y.e_2\}} : \sem{C} \at 1$, as required.
+  \end{description}
 \end{proof}
 
 \subsection{Converting Mode Qualifiers to Graded Modal Type Theory}
@@ -827,11 +908,11 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   \sem{\inr\, e} &= \llet x \leftarrow \sem{e} \lin \\
                  &\quad \llet \bbox_q x' = x \lin \\
                  &\quad \bbox_q (\inr\; x') \\
-  \sem{e_1\, e_2} &= \llet x \leftarrow \sem{e_1} \lin \\
-                   &\quad \llet \bbox_q x' = x \lin \\
-                   &\quad \llet y \leftarrow \sem{e_2} \lin \\
-                   &\quad \llet \bbox_q y' = y \lin \\
-                   &\quad x'\, y' \\
+  \sem{e_1\, e_2} &= \llet x_1 \leftarrow \sem{e_1} \lin \\
+                   &\quad \llet \bbox_q x_1' = x_1 \lin \\
+                   &\quad \llet x_2 \leftarrow \sem{e_2} \lin \\
+                   &\quad \llet \bbox_q x_2' = x_2 \lin \\
+                   &\quad x_1'\, x_2' \\
 \end{align*}
 %
 \begin{align*}
@@ -856,31 +937,115 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 \end{align*}
 \\
 
+\begin{lemma}
+  If $\Gamma_1 \tee e_1 : \boxempty^q A$ and $\Gamma_2, x^\prime :^q A \tee e_2 : \boxempty^q B$, then $\Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_q x^\prime = x \lin e_2 : \boxempty^q B$.
+\end{lemma}
+
+\begin{proof}
+  By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : \boxempty^q A$ and \textbf{(2)} $q \cdot \Gamma_2, x^\prime :^q A \tee \bbox_q e_2 : \boxempty^q B$.
+
+  By LET, have \textbf{(3)} $\cdot, x :^1 \boxempty^q A \tee x : \boxempty^q A$.
+
+  By $\boxempty$E on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\cdot, x :^1 \boxempty^q A + q \cdot \Gamma_2 \tee \llet \bbox_q x^\prime = x \lin \bbox_q e_2 : \boxempty^q B$.
+
+  Thus, by LET on \textbf{(1)} and \textbf{(5)}, $\Gamma_1 + q \cdot \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_q x^\prime = x \lin \bbox_q e_2 : \boxempty^q B$, as required.
+  
+\end{proof}
+
 \begin{theorem}[Mode Qualifiers to Graded Type Theory]
-If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, \sem{A}$.
+  If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, \sem{A}$.
 \end{theorem}
 \begin{proof}
   Proceed by induction over the derivation of $\Gamma \tee e : A \at q$.
   \begin{description}
-      \item[Case VAR.] 
-      \item[Case LAM.] 
-      \item[Case APP.] 
-      \item[Case $\boxempty$I.] 
-      \item[Case $\boxempty$E.] 
-      \item[Case LET.] 
-      \item[Case UNIT.]
-      By UNIT, \textbf{(1)} $\sem{\Gamma} \tee () : A$. 
-      Thus, by $\boxempty$I on \textbf{(1)}, $\sem{\Gamma} \tee \mathrm{box}_q() : \boxempty^qA$, as required. 
-      \\
-      \item[Case PAIR.] 
-      By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A \at q$ and \textbf{(2)} $\Gamma_2 \tee e_2 : B \at q$. 
-      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(1)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^qA$ and $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^qB$.
-      Thus, by PAIR on \textbf{(3)} and \textbf{(4)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee ( , )$
-      \\
-      \item[Case SPLIT.] 
-      \item[Case INL.] 
-      \item[Case INR.] 
-      \item[Case CASE.] 
+     \item[Case VAR.]
+     By VAR, have \textbf{(1)} $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^1 A, \Gamma^\prime \tee x : A$.
+
+     By weakening on \textbf{(1)}, using (1.5), have \textbf({2}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2\setminus q_2} A, \Gamma^\prime \tee x : A$.
+     
+     By (1.3) on \textbf{(2)}, have \textbf({3}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{\mathrm{locks}(\Gamma^\prime) \cdot q_2 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} A, \Gamma^\prime \tee x : A$.
+     
+     By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf({4}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} A, \Gamma^\prime \tee x : A$.
+     
+     By $\boxempty$I on \textbf{(4)}, have \textbf({5}) $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} A, q_2 \cdot \Gamma^\prime \tee x : \boxempty^{q_2} A$.
+     
+     Since only the locks of $\Gamma^\prime$ are being used to construct $x : A$, we may strengthen \textbf{(5)} to \textbf{(6)} $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} A, \Gamma^\prime \tee x : \boxempty^{q_2} A$.
+     
+     Thus, by (1.3) on \textbf{(6)}, $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime), x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} A, \Gamma^\prime \tee x : A$, which, by the translation, is equivalent to $\sem{\Gamma, x : A \at q_1, \Gamma^\prime} \tee \sem{x} : \sem{A} \at q_2$, as required.
+     \\
+     \item[Case LAM.]
+     \item[Case APP.] 
+     By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : (A \at q_1 \rightarrow B \at q_2) \at q$ and \textbf{(2)} $\Gamma_2 \tee e_2 : A \at q_1$.
+
+     By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^q (\,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B})$ and \textbf{(4)} $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^{q_1} \sem{A}$.
+
+     By LET, have \textbf{(5)} $\cdot, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee x_1^\prime : \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{A} \tee x_2^\prime : \sem{A}$.
+
+     By APP on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $\cdot, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B}, x_2^\prime :^{q_1} \sem{A}, \tee x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$.
+
+     By (1.9) on \textbf{(2)} and \textbf{(7)}, have \textbf{(8)} $\sem{\Gamma_2}, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$.
+     
+     By weakening on \textbf{(8)}, have \textbf{(9)} $\sem{\Gamma_2}, x_1^\prime :^q \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$.
+     
+     Thus, by (1.9) on \textbf{(1)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{x_1^\prime \, x_2^\prime} : \sem{\boxempty^{q_2} B}$, as required.
+     \\
+     \item[Case $\boxempty$I TODO.]
+     By assumption, have \textbf{(1)} $\Gamma \tee e : A \at q \circ q^\prime$.
+     
+     By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^{q \cdot q^\prime} \sem{A}$.
+     
+     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{\boxempty^{q_2} A} \tee x^\prime : \sem{\boxempty^{q_2} A}$.
+     \\
+     \item[Case $\boxempty$E.] 
+     \item[Case LET.] 
+     \item[Case UNIT.]
+     By UNIT, have \textbf{(1)} $\sem{\Gamma} \tee () : A$.      
+     
+     Thus, by $\boxempty$I on \textbf{(1)}, $\sem{\Gamma} \tee \mathrm{box}_q() : \boxempty^qA$, as required. 
+     \\
+     \item[Case PAIR.] 
+     By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A \at q$ and \textbf{(2)} $\Gamma_2 \tee e_2 : B \at q$.
+
+     By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^q \sem{A}$ and \textbf{(4)} $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^q \sem{B}$.
+
+     By LET, have \textbf{(5)} $\cdot, x_1^\prime :^1 \sem{A} \tee x_1^\prime : \sem{A}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{B} \tee x_2^\prime : \sem{B}$.
+
+     By PAIR on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $\cdot, x_1^\prime :^1 \sem{A}, x_2^\prime :^1 \sem{B} \tee (x_1^\prime, x_2^\prime) : \sem{A} \times \sem{B}$.
+
+     By $\boxempty$I on \textbf{(7)}, have \textbf{(8)} $\cdot, x_1^\prime :^q \sem{A}, x_2^\prime :^q \sem{B} \tee \bbox_q (x_1^\prime, x_2^\prime) : \boxempty_q (\sem{A} \times \sem{B})$.
+
+     By (1.9) on \textbf{(2)} and \textbf{(8)}, have \textbf{(9)} $\sem{\Gamma_2}, x_1^\prime :^q \sem{A} \tee \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_q x_2^\prime = x_2 \lin \bbox_q (x_1^\prime, x_2^\prime) : \boxempty^q (\sem{A} \times \sem{B})$.
+     
+     Thus, by (1.9) on \textbf{(1)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_q x_2^\prime = x_2 \lin \bbox_q (x_1^\prime, x_2^\prime) : \boxempty^q (\sem{A} \times \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{(x_1^\prime, x_2^\prime)} : \boxempty^q \sem{A \times B}$, as required.
+     \\
+     \item[Case SPLIT.] 
+     \item[Case INL.]
+     By assumption, have \textbf{(1)} $\Gamma \tee e : A \at q$.
+     
+     By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^q \sem{A}$.
+     
+     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{A} \tee x^\prime : \sem{A}$.
+     
+     By INL on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^1 \sem{A} \tee \inl x^\prime : \sem{A} + \sem{B}$.
+
+     By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $\cdot, x^\prime :^q \sem{A} \tee \bbox_q(\inl x^\prime) : \boxempty^q(\sem{A} + \sem{B})$.
+
+     Thus, by (1.9) on \textbf{(2)} and \textbf{(5)}, $\sem{\Gamma} \tee \llet x \leftarrow \sem{e} \lin \llet \bbox_q x^\prime = x \lin \bbox_q (\inl x^\prime) : \boxempty^q (\sem{A} + \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma} \tee \sem{\inl e} : \boxempty^q \sem{A + B}$, as required.
+     \\
+     \item[Case INR.] 
+     By assumption, have \textbf{(1)} $\Gamma \tee e : B \at q$.
+     
+     By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^q \sem{B}$.
+     
+     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{B} \tee x^\prime : \sem{B}$.
+     
+     By INR on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^1 \sem{B} \tee \inr x^\prime : \sem{A} + \sem{B}$
+     
+     By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $\cdot, x^\prime :^q \sem{B} \tee \bbox_q(\inr x^\prime) : \boxempty^q(\sem{A} + \sem{B})$.
+
+     Thus, by (1.9) on \textbf{(2)} and \textbf{(5)}, $\sem{\Gamma} \tee \llet x \leftarrow \sem{e} \lin \llet \bbox_q x^\prime = x \lin \bbox_q (\inr x^\prime) : \boxempty^q (\sem{A} + \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma} \tee \sem{\inr e} : \boxempty^q \sem{A + B}$, as required.
+     \\
+     \item[Case CASE.] 
   \end{description}
 \end{proof}
 
