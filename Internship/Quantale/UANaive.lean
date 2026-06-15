@@ -133,13 +133,17 @@ instance : Modality Many UANaiveSemiring where
   lock_meet := by grind
   lock_seq_monotone := by grind
 
+  box_lock_assoc := by grind
+
 instance : Comonadic Many UANaiveSemiring where
   lock_dec := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
     grind
+  lock_idem := by simp [Modality.lock]; grind
   box_dec := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
     grind
+  box_idem := by simp [Modality.box]; grind
 
 inductive Aliased where | default
 
@@ -172,10 +176,24 @@ instance : Modality Aliased UANaiveSemiring where
   lock_meet := by grind
   lock_seq_monotone := by grind
 
+  box_lock_assoc := by grind
+
 instance : Monadic Aliased UANaiveSemiring where
   lock_inc := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
     grind
+  lock_idem := by simp [Modality.lock]; grind
   box_inc := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
     grind
+  box_idem := by simp [Modality.box]; grind
+
+instance : Distributive Many Aliased UANaiveSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+instance : Distributive Aliased Many UANaiveSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+end QUANaive

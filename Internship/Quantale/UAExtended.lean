@@ -3,6 +3,20 @@ open Base
 
 namespace QUAExtended
 
+-- |
+-- ({top, zero, bot} ∪ { A, U, M }^*) / { (MU, bot), (UA, A), (U, AU), (AM, MA), (UU, U), (AA, A), (MM, M) }
+
+-- mode many with
+--   many many = many
+-- mode unique with
+--   unique unique = unique
+--   many unique = bottom
+-- mode aliased with
+--   aliased aliased = aliased
+--   unique aliased = aliased
+--   aliased unique = unique
+--   many aliased = aliased many
+
 @[grind cases]
 inductive UAExtendedSemiring where
   |          top
@@ -155,13 +169,17 @@ instance : Modality Many UAExtendedSemiring where
   lock_meet := by grind
   lock_seq_monotone := by grind
 
+  box_lock_assoc := by grind
+
 instance : Comonadic Many UAExtendedSemiring where
   lock_dec := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
     grind
+  lock_idem := by simp [Modality.lock]; grind
   box_dec := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
     grind
+  box_idem := by simp [Modality.box]; grind
 
 inductive Aliased where | aliased
 
@@ -198,13 +216,17 @@ instance : Modality Aliased UAExtendedSemiring where
   lock_meet := by grind
   lock_seq_monotone := by grind
 
+  box_lock_assoc := by grind
+
 instance : Monadic Aliased UAExtendedSemiring where
   lock_inc := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
     grind
+  lock_idem := by simp [Modality.lock]; grind
   box_inc := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
     grind
+  box_idem := by simp [Modality.box]; grind
 
 inductive Unique where | unique
 
@@ -243,15 +265,43 @@ instance : Modality Unique UAExtendedSemiring where
     simp [LE.le, UAExtendedSemiring.hmin_eq]
     grind
 
+  box_lock_assoc := by grind
+
 instance : Comonadic Unique UAExtendedSemiring where
   lock_dec := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
     grind
+  lock_idem := by simp [Modality.lock]; grind
   box_dec := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
     grind
+  box_idem := by simp [Modality.box]; grind
 
 theorem right_residual_lock (q r : UAExtendedSemiring) :
     Modality.lock Aliased.aliased q ≤ r ↔ q ≤ Modality.lock Unique.unique r := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.lock]
     grind
+
+instance : Distributive Many Aliased UAExtendedSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+instance : Distributive Aliased Many UAExtendedSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+instance : Distributive Aliased Unique UAExtendedSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [LE.le, Modality.lock, Modality.box]; grind
+
+instance : Distributive Unique Aliased UAExtendedSemiring where
+  swap_box_lock := by simp [LE.le, Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+instance : Distributive Many Unique UAExtendedSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
+
+instance : Distributive Unique Many UAExtendedSemiring where
+  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
+  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
