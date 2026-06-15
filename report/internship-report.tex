@@ -889,27 +889,23 @@ If $\Gamma \tee e : A \at q$, then $\sem{\Gamma} \tee \sem{e} : \boxempty^{q}\, 
 \paragraph{Beta laws}
 
 \begin{align*}
-  (\lambda x.\, e)\, v &\equiv e[v/x] \\
-  \llet x \leftarrow v \lin e &\equiv e[v/x] \\
-  \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2}\, v \lin e &\equiv e[v/x] \\
-  \llet_q (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] \\
-  \case_q\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] \\
-  \case_q\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y]
+  (\lambda x.\, e)\, v &\equiv e[v/x] : A \\
+  \llet x \leftarrow v \lin e &\equiv e[v/x] : A \\
+  \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2}\, v \lin e &\equiv e[v/x] : A \\
+  \llet_q (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] : A \\
+  \case_q\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] : A \\
+  \case_q\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y] : A
 \end{align*}
 
 \paragraph{Eta laws}
 
 \begin{align*}
-  \lambda x.\, v\, x &\equiv v
-    && (v : \,^q A \rightarrow B,\; x \notin \mathrm{fv}(v)) \\
-  \llet x \leftarrow v \lin () &\equiv v
-    && (v : \unit) \\
-  \llet_1 (x, y) = v \lin (x, y) &\equiv v
-    && (v : A \times B) \\
-  \case_1\, v\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv v
-    && (v : A + B) \\
-  \llet_{1} \bbox_{q} x = v \lin \bbox_{q}\, x &\equiv v
-    && (v : \boxempty^{q} A)
+  \lambda x.\, v\, x &\equiv v : \,^q A \rightarrow B
+    && (x \notin \mathrm{fv}(v)) \\
+  \llet x \leftarrow v \lin () &\equiv v : \unit \\
+  \llet_1 (x, y) = v \lin (x, y) &\equiv v : A \times B \\
+  \case_1\, v\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv v : A + B \\
+  \llet_{1} \bbox_{q} x = v \lin \bbox_{q}\, x &\equiv v : \boxempty^{q} A
 \end{align*}
 
 \paragraph{Evaluation contexts}
@@ -919,45 +915,49 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
 
 \begin{align*}
   E[\llet x \leftarrow e_1 \lin e_2]
-    &\equiv \llet x \leftarrow e_1 \lin E[e_2]
+    &\equiv \llet x \leftarrow e_1 \lin E[e_2] : A
     && (x \notin \mathrm{fv}(E)) \\
   E[\llet_{q_1} \bbox_{q_2} x = v \lin e]
-    &\equiv \llet_{q_1} \bbox_{q_2} x = v \lin E[e]
+    &\equiv \llet_{q_1} \bbox_{q_2} x = v \lin E[e] : A
     && (x \notin \mathrm{fv}(E)) \\
   E[\llet_q (x, y) = v \lin e]
-    &\equiv \llet_q (x, y) = v \lin E[e]
+    &\equiv \llet_q (x, y) = v \lin E[e] : A
     && (x, y \notin \mathrm{fv}(E)) \\
   E[\case_q\, v\, \{x.e_1;\; y.e_2\}]
-    &\equiv \case_q\, v\, \{x.\, E[e_1];\; y.\, E[e_2]\}
+    &\equiv \case_q\, v\, \{x.\, E[e_1];\; y.\, E[e_2]\} : A
     && (x, y \notin \mathrm{fv}(E))
 \end{align*}
+
+\begin{theorem}[Type Preservation (Forward) for Graded Modal Type Theory]
+  If\/ $e_1 \equiv e_2 : A$ and $\Gamma \tee e_1 : A$, then $\Gamma \tee e_2 : A$.
+\end{theorem}
+
+\begin{theorem}[Type Preservation (Backward) for Graded Modal Type Theory]
+  If\/ $e_1 \equiv e_2 : A$ and $\Gamma \tee e_2 : A$, then $\Gamma \tee e_1 : A$.
+\end{theorem}
 
 \subsection{Equational Laws for Mode Qualifiers}
 
 \paragraph{Beta laws}
 
 \begin{align*}
-  (\lambda x.\, e)\, v &\equiv e[v/x] \\
-  \llet x = v \lin e &\equiv e[v/x] \\
-  \unbox_\nu\, (\bbox_\nu\, v) &\equiv v \\
-  \llet_\mu (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] \\
-  \case_\mu\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] \\
-  \case_\mu\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y]
+  (\lambda x.\, e)\, v &\equiv e[v/x] : A \at \mu_2 \\
+  \llet x = v \lin e &\equiv e[v/x] : A \at \mu_2 \\
+  \unbox_\nu\, (\bbox_\nu\, v) &\equiv v : A \at \nu \circ \mu \\
+  \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e &\equiv e[v_1/x, v_2/y] : A \at \mu_2 \\
+  \case_{\mu_1}\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_1[v/x] : A \at \mu_2 \\
+  \case_{\mu_1}\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\equiv e_2[v/y] : A \at \mu_2
 \end{align*}
 
 \paragraph{Eta laws}
 
 \begin{align*}
-  \lambda x.\, v\, x &\equiv v
-    && (v : A \at \mu_1 \rightarrow B \at \mu_2,\; x \notin \mathrm{fv}(v)) \\
-  \llet x = e \lin () &\equiv e
-    && (e : \unit) \\
-  \llet_1 (x, y) = e \lin (x, y) &\equiv e
-    && (e : A \times B) \\
-  \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e
-    && (e : A + B) \\
-  \bbox_\nu\, (\unbox_\nu\, e) &\equiv e
-    && (e : \boxempty^\nu A)
+  \lambda x.\, v\, x &\equiv v : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu
+    && (x \notin \mathrm{fv}(v)) \\
+  \llet x = e \lin () &\equiv e : \unit \at \mu \\
+  \llet_1 (x, y) = e \lin (x, y) &\equiv e : A \times B \at \mu \\
+  \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e : A + B \at \mu \\
+  \bbox_\nu\, (\unbox_\nu\, e) &\equiv e : \boxempty^\nu A \at \mu
 \end{align*}
 
 \paragraph{Evaluation contexts}
@@ -973,15 +973,23 @@ Recall:
 
 \begin{align*}
   E[\llet x = e_1 \lin e_2]
-    &\equiv \llet x = e_1 \lin E[e_2]
+    &\equiv \llet x = e_1 \lin E[e_2] : A \at \mu_2
     && (x \notin \mathrm{fv}(E)) \\
-  E[\llet_\mu (x, y) = e_1 \lin e_2]
-    &\equiv \llet_\mu (x, y) = e_1 \lin E[e_2]
+  E[\llet_{\mu_1} (x, y) = e_1 \lin e_2]
+    &\equiv \llet_{\mu_1} (x, y) = e_1 \lin E[e_2] : A \at \mu_2
     && (x, y \notin \mathrm{fv}(E)) \\
-  E[\case_\mu\, e\, \{x.e_1;\; y.e_2\}]
-    &\equiv \case_\mu\, e\, \{x.\, E[e_1];\; y.\, E[e_2]\}
+  E[\case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\}]
+    &\equiv \case_{\mu_1}\, e\, \{x.\, E[e_1];\; y.\, E[e_2]\} : A \at \mu_2
     && (x, y \notin \mathrm{fv}(E))
 \end{align*}
+
+\begin{theorem}[Type Preservation (Forward) for Mode Qualifiers]
+  If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_1 : A \at \mu$, then $\Gamma \tee e_2 : A \at \mu$.
+\end{theorem}
+
+\begin{theorem}[Type Preservation (Backward) for Mode Qualifiers]
+  If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$.
+\end{theorem}
 
 \begin{acks}
 
