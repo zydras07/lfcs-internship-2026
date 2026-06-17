@@ -653,8 +653,10 @@ For this parameterisation, it is also possible to define the lock as a left-divi
 \begin{proof}
   Proceed by cases over $q$.
   \begin{description}
-      \item[Case $\mu = 1$].
-      \item[Case $\mu = \mathbb{G}$].
+      \item[Case $q = 1$.]
+      $q = 1$ is the greatest (and only) q such that $1 \cdot q = 1$, so $1 \setminus 1 = 1 \ge 1$, as required.
+      \item[Case $q = \mathbb{G}$.]
+      $q = \mathbb{G}$ is the greatest q such that $\mathbb{G} \cdot q = \mathbb{G}$ (candidates for $q$ are 1 and $\mathbb{G}$), so $\mathbb{G} \setminus \mathbb{G} = \mathbb{G} \ge 1$, as required.
   \end{description}
 \end{proof}
 
@@ -781,8 +783,6 @@ For this parameterisation, it is also possible to define the lock as a left-divi
     
     By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q \circ \sem{\Gamma_1} \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(4)} $q \circ \sem{\Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
     
-    % By weakening, and then right distributivity of $\circ$ over $+$ on each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{v_1} : \sem{A} \at q$ and \textbf{(6)} $q \circ \sem{\Gamma_1 + \Gamma_2} \tee \sem{v_2} : \sem{B} \at q$.
-    
     By PAIR on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \circ \sem{\Gamma_1} + q \circ \sem{\Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$
     
     Thus, by the left distributivity of $\circ$ over $+$, $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \circ (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
@@ -804,7 +804,7 @@ For this parameterisation, it is also possible to define the lock as a left-divi
     \item[Case $\boxempty$I.]
     By the inductive hypothesis, have $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{v} : \sem{A} \at q^\prime \circ q$. 
     
-    Thus, by $\boxempty$I, $q^\prime \circ q \circ \sem{\Gamma} \tee \mathrm{box}_q \sem{v} : \boxempty^q \sem{A} \at q^\prime$, which, by the translation, is equivalent to $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{\mathrm{box}^q v} : \sem{\boxempty_q A} \at q^\prime$, as required.
+    Thus, by $\boxempty$I, $q^\prime \circ q \circ \sem{\Gamma} \tee \mathrm{box}_q \sem{v} : \boxempty^q \sem{A} \at q^\prime$, which, by the translation, is equivalent to $q^\prime \circ q \circ \sem{\Gamma} \tee \sem{\mathrm{box}_q v} : \sem{\boxempty_q A} \at q^\prime$, as required.
   \end{description}
 \end{proof}
 
@@ -895,7 +895,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   \sem{()} &= \bbox_{q} () \\
   \sem{\lambda x.\, e} &= \bbox_q (\lambda x.\, \sem{e}) \\
   \sem{\bbox_{q'}\, e} &= \llet x \leftarrow \sem{e} \lin \\
-                    &\quad \llet \bbox_{q'\circ q} x' = x \lin \\
+                    &\quad \llet \bbox_{q \cdot q'} x' = x \lin \\
                     &\quad \bbox_{q}\; (\bbox_{q'} x') \\
   \sem{(e_1, e_2)} &= \llet x_1 \leftarrow \sem{e_1} \lin \\
                    &\quad \llet \bbox_q x_1' =  \lin \\
@@ -924,7 +924,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
     &= \llet x \leftarrow \sem{e} \lin \\
     &\quad \llet \bbox_q x' = x \lin \\
     &\quad \llet \bbox_{q'} x'' = x' \lin \\
-    &\quad \bbox_{q' \circ q} x' \\
+    &\quad \bbox_{q \cdot q'} x' \\
   \sem{\llet_q (x, y) = e_1 \lin e_2}
     &= \llet z \leftarrow \sem{e_1} \lin \\
     &\quad \llet \bbox_q z' = z \lin \\
@@ -938,17 +938,17 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 \\
 
 \begin{lemma}
-  If $\Gamma_1 \tee e_1 : \boxempty^q A$ and $\Gamma_2, x^\prime :^q A \tee e_2 : \boxempty^q B$, then $\Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_q x^\prime = x \lin e_2 : \boxempty^q B$.
+  If $\Gamma_1 \tee e_1 : \boxempty^{q_1} A$ and $\Gamma_2, x^\prime :^{q_1} A \tee e_2 : \boxempty^{q_2} B$, then $\Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_{q_1} x^\prime = x \lin e_2 : \boxempty^{q_2} B$.
 \end{lemma}
 
 \begin{proof}
-  By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : \boxempty^q A$ and \textbf{(2)} $q \cdot \Gamma_2, x^\prime :^q A \tee \bbox_q e_2 : \boxempty^q B$.
+  By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : \boxempty^{q_1} A$ and \textbf{(2)} $\Gamma_2, x^\prime :^{q_1} A \tee e_2 : \boxempty^{q_2} B$.
 
-  By LET, have \textbf{(3)} $\cdot, x :^1 \boxempty^q A \tee x : \boxempty^q A$.
+  By VAR, have \textbf{(3)} $\cdot, x :^1 \boxempty^{q_1} A \tee x : \boxempty^{q_1} A$.
 
-  By $\boxempty$E on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\cdot, x :^1 \boxempty^q A + q \cdot \Gamma_2 \tee \llet \bbox_q x^\prime = x \lin \bbox_q e_2 : \boxempty^q B$.
+  By $\boxempty$E on \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\cdot, x :^1 \boxempty^{q_1} A + \Gamma_2 \tee \llet \bbox_{q_1} x^\prime = x \lin e_2 : \boxempty^{q_2} B$.
 
-  Thus, by LET on \textbf{(1)} and \textbf{(5)}, $\Gamma_1 + q \cdot \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_q x^\prime = x \lin \bbox_q e_2 : \boxempty^q B$, as required.
+  Thus, by BIND on \textbf{(1)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin \llet \bbox_{q_1} x^\prime = x \lin e_2 : \boxempty^{q_2} B$, as required.
   
 \end{proof}
 
@@ -959,19 +959,19 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
   Proceed by induction over the derivation of $\Gamma \tee e : A \at q$.
   \begin{description}
      \item[Case VAR.]
-     By VAR, have \textbf{(1)} $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^1 A, \Gamma^\prime \tee x : A$.
+     By VAR, have \textbf{(1)} $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^1 \sem{A}, \Gamma^\prime \tee x : \sem{A}$.
 
-     By weakening on \textbf{(1)}, using (1.5), have \textbf({2}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2\setminus q_2} A, \Gamma^\prime \tee x : A$.
+     By weakening on \textbf{(1)}, using (1.5), have \textbf({2}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2\setminus q_2} \sem{A}, \Gamma^\prime \tee x : \sem{A}$.
      
-     By (1.3) on \textbf{(2)}, have \textbf({3}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{\mathrm{locks}(\Gamma^\prime) \cdot q_2 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} A, \Gamma^\prime \tee x : A$.
+     By (1.3) on \textbf{(2)}, have \textbf({3}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{\mathrm{locks}(\Gamma^\prime) \cdot q_2 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A}, \Gamma^\prime \tee x : \sem{A}$.
      
-     By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf({4}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} A, \Gamma^\prime \tee x : A$.
+     By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf({4}) $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A}, \Gamma^\prime \tee x : \sem{A}$.
      
-     By $\boxempty$I on \textbf{(4)}, have \textbf({5}) $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} A, q_2 \cdot \Gamma^\prime \tee x : \boxempty^{q_2} A$.
+     By $\boxempty$I on \textbf{(4)}, have \textbf({5}) $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A}, q_2 \cdot \Gamma^\prime \tee x : \boxempty^{q_2} \sem{A}$.
      
-     Since only the locks of $\Gamma^\prime$ are being used to construct $x : A$, we may strengthen \textbf{(5)} to \textbf{(6)} $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} A, \Gamma^\prime \tee x : \boxempty^{q_2} A$.
+     Since only the locks of $\Gamma^\prime$ are being used to construct $x : \sem{A}$, we may strengthen \textbf{(5)} to \textbf{(6)} $q_2 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A}, \Gamma^\prime \tee x : \boxempty^{q_2} \sem{A}$.
      
-     Thus, by (1.3) on \textbf{(6)}, $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime), x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} A, \Gamma^\prime \tee x : A$, which, by the translation, is equivalent to $\sem{\Gamma, x : A \at q_1, \Gamma^\prime} \tee \sem{x} : \sem{A} \at q_2$, as required.
+     Thus, by (1.3) on \textbf{(6)}, $\sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime), x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A}, \Gamma^\prime \tee x : \boxempty^{q_2} \sem{\sem{A}}$, which, by the translation, is equivalent to $\sem{\Gamma}, x : \sem{A} \at q_1, \sem{\Gamma^\prime} \tee \sem{x} : \boxempty^{q_2} \sem{A}$, as required.
      \\
      \item[Case LAM.]
      \item[Case APP.] 
@@ -979,7 +979,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 
      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^q (\,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B})$ and \textbf{(4)} $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^{q_1} \sem{A}$.
 
-     By LET, have \textbf{(5)} $\cdot, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee x_1^\prime : \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{A} \tee x_2^\prime : \sem{A}$.
+     By VAR, have \textbf{(5)} $\cdot, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee x_1^\prime : \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{A} \tee x_2^\prime : \sem{A}$.
 
      By APP on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $\cdot, x_1^\prime :^1 \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B}, x_2^\prime :^{q_1} \sem{A}, \tee x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$.
 
@@ -987,17 +987,42 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
      
      By weakening on \textbf{(8)}, have \textbf{(9)} $\sem{\Gamma_2}, x_1^\prime :^q \,^{q_1} \sem{A} \rightarrow \boxempty^{q_2} \sem{B} \tee \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$.
      
-     Thus, by (1.9) on \textbf{(1)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{x_1^\prime \, x_2^\prime} : \sem{\boxempty^{q_2} B}$, as required.
+     Thus, by (1.9) on \textbf{(3)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_{q_1} x_2^\prime = x_2 \lin x_1^\prime \, x_2^\prime : \boxempty^{q_2} \sem{B}$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{x_1^\prime \, x_2^\prime} : \boxempty^{q_2} \sem{B}$, as required.
      \\
      \item[Case $\boxempty$I TODO.]
      By assumption, have \textbf{(1)} $\Gamma \tee e : A \at q \circ q^\prime$.
      
      By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^{q \cdot q^\prime} \sem{A}$.
      
-     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{\boxempty^{q_2} A} \tee x^\prime : \sem{\boxempty^{q_2} A}$.
+     By VAR, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{A} \tee x^\prime : \sem{A}$.
+
+     By $\boxempty$I twice on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^{q \cdot q^\prime} \sem{A} \tee \bbox_q \bbox_{q^\prime} x^\prime : \boxempty^q \boxempty^{q^\prime} \sem{A}$.
+     By $\boxempty$I twice on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^{q \cdot q^\prime} \sem{A} \tee \bbox_q \bbox_{q^\prime} x^\prime : \boxempty^q \boxempty^{q^\prime} \sem{A}$.
+     
+     Thus, by (1.9) on \textbf{(1)} and \textbf{(4)}, $\sem{\Gamma} \tee \llet x \leftarrow \sem{e} \lin \llet \bbox_{q \cdot q^\prime} x^\prime = x \lin \bbox_q (\bbox_{q^\prime} x^\prime)$, which, by the translation, is equivalent to $\sem{\Gamma} \tee \sem{\bbox_{q^\prime} e} : \boxempty^{q_2} \sem{B}$, as required.
      \\
-     \item[Case $\boxempty$E.] 
-     \item[Case LET.] 
+     \item[Case $\boxempty$E.]
+     By assumption, have \textbf{(1)} $\Gamma \tee e : \boxempty^{q^\prime} \at q$.
+     
+     By inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^q \boxempty^{q^\prime} \sem{A}$.
+
+     By VAR, have \textbf{(3)} $\cdot, x^{\prime\prime} :^1 \sem{A} \tee x^{\prime\prime} : \sem{A}$, \textbf{(4)} $\cdot, x^\prime :^1 \boxempty^{q^\prime} \sem{A} \tee x^\prime : \boxempty^{q^\prime} \sem{A}$ , and \textbf{(5)} $\cdot, x :^1 \boxempty^q \boxempty^{q^\prime} \sem{A} \tee x : \boxempty^q \boxempty^{q^\prime} \sem{A}$.
+
+     By $\boxempty$I on \textbf{(3)}, have \textbf{(6)} $\cdot, x^{\prime\prime} :^{q \cdot q^\prime} \sem{A} \tee \bbox_{q \cdot q^\prime} x^{\prime\prime} : \boxempty^{q \cdot q^\prime} \sem{A}$.
+     
+     By $\boxempty$E on \textbf{(4)} and \textbf{(6)}, have \textbf{(7)} $\cdot, x^\prime :^q \boxempty^{q^\prime} \sem{A} \tee \llet \bbox_{q^\prime} x^{\prime\prime} = x^\prime \lin \bbox_{q \cdot q^\prime} x^{\prime\prime} : \boxempty^{q \cdot q^\prime} \sem{A}$.
+     
+     By $\boxempty$E on \textbf{(5)} and \textbf{(7)}, have \textbf{(8)} $\cdot, x :^1 \boxempty^q \boxempty^{q^\prime} \sem{A} \tee \llet \bbox_q x^\prime = x \lin \llet \bbox_{q^\prime} x^{\prime\prime} = x^\prime \lin \bbox_{q \cdot q^\prime} x^{\prime\prime} : \boxempty^{q \cdot q^\prime} \sem{A}$.
+     
+     Thus, by BIND on \textbf{(2)} and \textbf{(8)}, have \textbf{(8)} $\sem{\Gamma} \tee \llet x \leftarrow \sem{e} \lin \llet \bbox_q x^\prime = x \lin \llet \bbox_{q^\prime} x^{\prime\prime} = x^\prime \lin \bbox_{q \cdot q^\prime} x^{\prime\prime} : \boxempty^{q \cdot q^\prime} A$, which, by the translation, is equivalent to $\sem{\Gamma} \tee \sem{\mathrm{unbox}_{q^\prime} e} : \boxempty_{q \circ q^\prime} \sem{A}$, as required.
+     \\
+     \item[Case LET.]
+     By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A \at q_1$ and \textbf{(2)} $\Gamma_2, x : A \at q_1 \tee e_2 : B \at q_2$.
+     
+     By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^{q_1} \sem{A}$ and \textbf{(4)} $\sem{\Gamma_2}, x :^{q_1} \sem{A} \tee \sem{e_2} : \boxempty^{q_2} \sem{B}$.
+
+     Thus, by (1.9) on \textbf{(3)} and \textbf{(4)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x \leftarrow \sem{e_1} \lin \llet \bbox_{q_1} x^\prime = x \lin \sem{e_2} : \boxempty^{q_2} \sem{B}$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\llet x = e_1 \lin e_2} : \boxempty^{q_2} \sem{B}$, as required.
+     \\
      \item[Case UNIT.]
      By UNIT, have \textbf{(1)} $\sem{\Gamma} \tee () : A$.      
      
@@ -1008,7 +1033,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 
      By the inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^q \sem{A}$ and \textbf{(4)} $\sem{\Gamma_2} \tee \sem{e_2} : \boxempty^q \sem{B}$.
 
-     By LET, have \textbf{(5)} $\cdot, x_1^\prime :^1 \sem{A} \tee x_1^\prime : \sem{A}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{B} \tee x_2^\prime : \sem{B}$.
+     By VAR, have \textbf{(5)} $\cdot, x_1^\prime :^1 \sem{A} \tee x_1^\prime : \sem{A}$ and \textbf{(6)} $\cdot, x_2^\prime :^1 \sem{B} \tee x_2^\prime : \sem{B}$.
 
      By PAIR on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $\cdot, x_1^\prime :^1 \sem{A}, x_2^\prime :^1 \sem{B} \tee (x_1^\prime, x_2^\prime) : \sem{A} \times \sem{B}$.
 
@@ -1016,15 +1041,25 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 
      By (1.9) on \textbf{(2)} and \textbf{(8)}, have \textbf{(9)} $\sem{\Gamma_2}, x_1^\prime :^q \sem{A} \tee \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_q x_2^\prime = x_2 \lin \bbox_q (x_1^\prime, x_2^\prime) : \boxempty^q (\sem{A} \times \sem{B})$.
      
-     Thus, by (1.9) on \textbf{(1)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_q x_2^\prime = x_2 \lin \bbox_q (x_1^\prime, x_2^\prime) : \boxempty^q (\sem{A} \times \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{(x_1^\prime, x_2^\prime)} : \boxempty^q \sem{A \times B}$, as required.
+     Thus, by (1.9) on \textbf{(3)} and \textbf{(9)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet x_1 \leftarrow \sem{e_1} \lin \llet \bbox_q x_1^\prime = x_1 \lin \llet x_2 \leftarrow \sem{e_2} \lin \llet \bbox_q x_2^\prime = x_2 \lin \bbox_q (x_1^\prime, x_2^\prime) : \boxempty^q (\sem{A} \times \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{(x_1^\prime, x_2^\prime)} : \boxempty^q \sem{A \times B}$, as required.
      \\
-     \item[Case SPLIT.] 
+     \item[Case SPLIT.]
+     By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A \times B \at q_1$ and \textbf{(2)} $\Gamma_2, x : A \at q_1, y : B \at q_1 \tee e_2 : C \at q_2$.
+     
+     By inductive hypothesis on each of \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^{q_1} (\sem{A} \times \sem{B})$ and \textbf{(4)} $\sem{\Gamma_2}, x :^{q_1} \sem{A}, y :^{q_1} \sem{B} \tee \sem{e_2} : \boxempty^{q_2} \sem{C}$.
+
+     By VAR, have \textbf{(5)} $\cdot, z^\prime :^1 \sem{A} \times \sem{B} \tee z^\prime : \sem{A} \times \sem{B}$.
+
+     By SPLIT on \textbf{(4)} and \textbf{(5)}, have \textbf{(6)} $\sem{\Gamma_2}, z^\prime :^{q_1} \sem{A} \times \sem{B} \tee \llet (x, y) = z^\prime \lin \sem{e_2} : \boxempty^{q_2} \sem{C}$.
+     
+     Thus, by (1.9) on \textbf{(3)} and \textbf{(6)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet z \leftarrow \sem{e_1} \lin \llet \bbox_{q_1} z^\prime = z \lin \llet (x, y) = z^\prime \lin \sem{e_2} : \boxempty^{q_2} \sem{C}$, which, by translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\llet_{q_1} (x, y) = e_1 \lin e_2} : \boxempty^{q_2} \sem{C}$, as required.
+     \\
      \item[Case INL.]
      By assumption, have \textbf{(1)} $\Gamma \tee e : A \at q$.
      
      By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^q \sem{A}$.
      
-     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{A} \tee x^\prime : \sem{A}$.
+     By VAR, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{A} \tee x^\prime : \sem{A}$.
      
      By INL on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^1 \sem{A} \tee \inl x^\prime : \sem{A} + \sem{B}$.
 
@@ -1037,7 +1072,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
      
      By the inductive hypothesis on \textbf{(1)}, have \textbf{(2)} $\sem{\Gamma} \tee \sem{e} : \boxempty^q \sem{B}$.
      
-     By LET, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{B} \tee x^\prime : \sem{B}$.
+     By VAR, have \textbf{(3)} $\cdot, x^\prime :^1 \sem{B} \tee x^\prime : \sem{B}$.
      
      By INR on \textbf{(3)}, have \textbf{(4)} $\cdot, x^\prime :^1 \sem{B} \tee \inr x^\prime : \sem{A} + \sem{B}$
      
@@ -1045,7 +1080,16 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 
      Thus, by (1.9) on \textbf{(2)} and \textbf{(5)}, $\sem{\Gamma} \tee \llet x \leftarrow \sem{e} \lin \llet \bbox_q x^\prime = x \lin \bbox_q (\inr x^\prime) : \boxempty^q (\sem{A} + \sem{B})$, which, by the translation, is equivalent to $\sem{\Gamma} \tee \sem{\inr e} : \boxempty^q \sem{A + B}$, as required.
      \\
-     \item[Case CASE.] 
+     \item[Case CASE.]
+     By assumption, have \textbf{(1)} $\Gamma_1 \tee e_1 : A + B \at q_1$, \textbf{(2)} $\Gamma_2, x : A \at q_1 \tee e_3 : C \at q_2$, and \textbf{(3)} $\Gamma_2, y : B \at q_1 \tee e_3 : C \at q_2$.
+     
+     By inductive hypothesis on each of \textbf{(1)}, \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\sem{\Gamma_1} \tee \sem{e_1} : \boxempty^{q_1} (\sem{A} + \sem{B})$, \textbf{(5)} $\sem{\Gamma_2}, x :^{q_1} \sem{A} \tee \sem{e_3} : \boxempty^{q_2} \sem{C}$ and \textbf{(6)} $\sem{\Gamma_2}, y :^{q_1} \sem{B} \tee \sem{e_3} : \boxempty^{q_2} \sem{C}$.
+
+     By VAR, have \textbf{(7)} $\cdot, z^\prime :^1 \sem{A} + \sem{B} \tee z^\prime : \sem{A} + \sem{B}$.
+
+     By CASE on \textbf{(5)}, \textbf{(6)} and \textbf{(7)}, have \textbf{(8)} $\sem{\Gamma_2}, z^\prime :^{q_1} \sem{A} + \sem{B} \tee \mathrm{case} \, z^\prime \{x.\sem{e_2}; y.\sem{e_3}\} : \boxempty^{q_2} \sem{C}$.
+     
+     Thus, by (1.9) on \textbf{(4)} and \textbf{(8)}, $\sem{\Gamma_1} + \sem{\Gamma_2} \tee \llet z \leftarrow \sem{e_1} \lin \llet \bbox_{q_1} z^\prime = z \lin \mathrm{case} \, z^\prime \{x.\sem{e_2}; y.\sem{e_3}\} : \boxempty^{q_2} \sem{C}$, which, by translation, is equivalent to $\sem{\Gamma_1 + \Gamma_2} \tee \sem{\mathrm{case}_{q_1} e_1 \{x.e_2; y.e_3\}} : \boxempty^{q_2} \sem{C}$, as required.
   \end{description}
 \end{proof}
 
