@@ -25,6 +25,10 @@ class Quantale (α : Type*)
 
 open Quantale
 
+instance [Quantale α] : Std.Commutative (α := α) (· ⊓ ·) := ⟨meet_comm⟩
+instance [Quantale α] : Std.Associative (α := α) (· ⊓ ·) := ⟨meet_assoc⟩
+instance [Quantale α] : Std.Associative (α := α) (· + ·) := ⟨seq_assoc⟩
+
 instance [Quantale α] : Preorder α where
   le a b := a ⊓ b = a
   le_refl := by simp [meet_idem]
@@ -33,10 +37,66 @@ instance [Quantale α] : Preorder α where
     rw [←h1,←h2]
     simp [meet_assoc, meet_idem]
 
-class Modality (α : Type*) (β : Type*) [Quantale β] where
+instance [Quantale α] [DecidableEq α] : DecidableRel (α := α) (· ≤ ·) :=
+  fun a b => inferInstanceAs (Decidable (a ⊓ b = a))
+
+class CompleteQuantale (α : Type*)
+    extends Quantale α, Max α, Bot α where
+
+  join_assoc : ∀ a b c : α, (a ⊔ b) ⊔ c = a ⊔ (b ⊔ c)
+  join_comm : ∀ a b : α, a ⊔ b = b ⊔ a
+  join_idem : ∀ a : α, a ⊔ a = a
+  join_bot : ∀ a : α, a ⊔ ⊥ = a
+  bot_join : ∀ a : α, ⊥ ⊔ a = a
+
+  -- seq_join : ∀ a b c : α,
+    -- a + (b ⊔ c) = (a + b) ⊔ (a + c)
+
+  -- join_seq : ∀ a b c : α,
+    -- (a ⊔ b) + c = (a + c) ⊔ (b + c)
+
+open CompleteQuantale
+
+instance [CompleteQuantale α] : Std.Commutative (α := α) (· ⊔ ·) := ⟨join_comm⟩
+instance [CompleteQuantale α] : Std.Associative (α := α) (· ⊔ ·) := ⟨join_assoc⟩
+
+class Mode (α : Type*)
+    extends Quantale α, One α where
+
+  scale : α → α → α
+
+  scale_assoc : ∀ (a b c : α), b = ⊤ ∨
+    scale a (scale b c) ≥ scale (scale a b) c
+  scale_top : ∀ a : α, scale a ⊤ = ⊤
+  top_scale : ∀ a : α, scale ⊤ a = a
+  scale_zero : ∀ a : α, scale a 0 = 0
+  zero_scale : ∀ a : α, a = ⊤ ∨ scale 0 a = 0
+  scale_one : ∀ a : α, a = ⊤ ∨ scale a 1 = a
+  one_scale : ∀ a : α, scale 1 a = a
+
+  scale_meet : ∀ (a b c : α),
+    scale a (b ⊓ c) = scale a b ⊓ scale a c
+  meet_scale : ∀ (a b c : α), a = ⊤ ∨ b = ⊤ ∨
+    scale (a ⊓ b) c = scale a c ⊓ scale b c
+  scale_seq : ∀ (a b c : α),
+    scale a (b + c) ≥ (scale a b) + (scale a c)
+  seq_scale : ∀ (a b c : α), a = ⊤ ∨ b = ⊤ ∨
+    scale (a + b) c ≤ (scale a c) + (scale b c)
+
+open Mode
+
+class CompleteMode (α : Type*)
+    extends Mode α, CompleteQuantale α where
+
+  div : α → α → α
+
+  scale_div : ∀ (a b c : α), b = 0 ∨ (scale b c ≤ a ↔ c ≤ div a b)
+
+open CompleteMode
+
+class Modality (α : Type*) (β : Type*) [Mode β] where
 
   box : β → α → β
-  lock : α → β → β
 
   zero_box : ∀ a : α, box 0 a = 0
   top_box : ∀ a : α, box ⊤ a = ⊤
@@ -45,116 +105,168 @@ class Modality (α : Type*) (β : Type*) [Quantale β] where
   seq_box : ∀ (a : α) (b c : β),
     box (b + c) a = box b a + box c a
 
-  lock_top : ∀ a : α, lock a ⊤ = ⊤
-  lock_zero : ∀ a : α, lock a 0 = 0
-  lock_meet : ∀ (a : α) (b c : β),
-    lock a (b ⊓ c) = lock a b ⊓ lock a c
-  lock_seq_monotone : ∀ (a : α) (b c : β),
-    lock a (b + c) ≥ (lock a b) + (lock a c)
-
-  box_lock_assoc : ∀ (a1 a2 : α) (b : β),
-    box (lock a1 b) a2 ≤ lock a1 (box b a2)
-
 open Modality
 
-theorem lock_monotone {α β} [Quantale β] [Modality α β] (a : α) (b c : β) :
-    b ≤ c → lock a b ≤ lock a c := by
-    simp [LE.le]
-    intro h
-    simp [←lock_meet,h]
+class Comonadic (α : Type*) (β : Type*) [Mode β]
+    extends Modality α β where
 
-theorem box_monotone {α β} [Quantale β] [Modality α β] (a : α) (b c : β) :
+  box_dec : ∀ (a : α) (b : β), box b a ≤ b
+  box_idem : ∀ (a : α) (b : β), box (box b a) a = box b a
+
+class Monadic (α : Type*) (β : Type*) [Mode β]
+    extends Modality α β where
+
+  box_inc : ∀ (a : α) (b : β), box b a ≥ b
+  box_idem : ∀ (a : α) (b : β), box (box b a) a = box b a
+
+-- Lemmas
+
+theorem box_monotone {α β} [Mode β] [Modality α β] (a : α) (b c : β) :
     b ≤ c → box b a ≤ box c a := by
     simp [LE.le]
     intro h
     simp [←meet_box,h]
 
-class Distributive (α1 α2 : Type*) (β : Type*)
-    [Quantale β] [Modality α1 β] [Modality α2 β] where
-  swap_box_lock : ∀ (a1 : α1) (a2 : α2) (b : β),
-    box (lock a1 b) a2 ≤ lock a1 (box b a2)
-  swap_lock_box : ∀ (a1 : α1) (a2 : α2) (b : β),
-    lock a2 (box b a1) ≥ box (lock a2 b) a1
+-- Meet-semilattice lemmas
 
-instance swap_refl [Quantale β] [Modality α β] : Distributive α α β where
-  swap_box_lock := by simp [box_lock_assoc]
-  swap_lock_box := by simp [box_lock_assoc]
+theorem meet_le_left [Quantale α] (a b : α) : a ⊓ b ≤ a := by
+  show (a ⊓ b) ⊓ a = a ⊓ b
+  rw [meet_assoc, meet_comm b a, ← meet_assoc, meet_idem]
 
-class Comonadic (α : Type*) (β : Type*) [Quantale β]
-    extends Modality α β where
+theorem meet_le_right [Quantale α] (a b : α) : a ⊓ b ≤ b := by
+  rw [meet_comm]; exact meet_le_left b a
 
-  lock_dec : ∀ (a : α) (b : β), lock a b ≤ b
-  lock_idem : ∀ (a : α) (b : β), lock a (lock a b) = lock a b
-  box_dec : ∀ (a : α) (b : β), box b a ≤ b
-  box_idem : ∀ (a : α) (b : β), box (box b a) a = box b a
+theorem le_meet [Quantale α] {a b c : α} (h1 : c ≤ a) (h2 : c ≤ b) : c ≤ a ⊓ b := by
+  show c ⊓ (a ⊓ b) = c
+  rw [← meet_assoc, show c ⊓ a = c from h1, show c ⊓ b = c from h2]
 
-class Monadic (α : Type*) (β : Type*) [Quantale β]
-    extends Modality α β where
+theorem le_antisymm' [Quantale α] {a b : α} (h1 : a ≤ b) (h2 : b ≤ a) : a = b := by
+  have h1' : a ⊓ b = a := h1
+  have h2' : b ⊓ a = b := h2
+  rw [meet_comm] at h2'
+  exact h1'.symm.trans h2'
 
-  lock_inc : ∀ (a : α) (b : β), lock a b ≥ b
-  lock_idem : ∀ (a : α) (b : β), lock a (lock a b) = lock a b
-  box_inc : ∀ (a : α) (b : β), box b a ≥ b
-  box_idem : ∀ (a : α) (b : β), box (box b a) a = box b a
+theorem le_top [Quantale α] (a : α) : a ≤ ⊤ := by
+  show a ⊓ ⊤ = a; exact meet_top a
+
+-- Fold lemmas
+
+theorem fold_le_of_mem [Quantale α] [DecidableEq α] (s : Finset α) {x : α} (hx : x ∈ s) :
+    s.fold Min.min ⊤ id ≤ x := by
+  induction s using Finset.induction_on with
+  | empty => simp at hx
+  | insert _ _ hna ih =>
+    rw [Finset.fold_insert hna]; simp only [id]
+    rcases Finset.mem_insert.mp hx with rfl | hx'
+    · exact meet_le_left _ _
+    · exact Preorder.le_trans _ _ _ (meet_le_right _ _) (ih hx')
+
+theorem le_fold [Quantale α] [DecidableEq α] (s : Finset α) {y : α} (hy : ∀ x ∈ s, y ≤ x) :
+    y ≤ s.fold Min.min ⊤ id := by
+  induction s using Finset.induction_on with
+  | empty => exact le_top y
+  | insert _ _ hna ih =>
+    rw [Finset.fold_insert hna]; simp only [id]
+    exact le_meet
+      (hy _ (Finset.mem_insert_self _ _))
+      (ih (fun x hx => hy x (Finset.mem_insert_of_mem hx)))
+
+-- Instances
+
+instance [Fintype α] [Quantale α] : Bot α where
+  bot := Finset.univ.fold (· ⊓ ·) ⊤ id
+
+instance [Fintype α] [Quantale α] [DecidableEq α] : Max α where
+  max a b := (Finset.univ.filter fun x => a ≤ x ∧ b ≤ x).fold (· ⊓ ·) ⊤ id
+
+-- Helper: ⊥ ≤ a for all a
+theorem bot_le [Fintype α] [Quantale α] [DecidableEq α] (a : α) : ⊥ ≤ a :=
+  fold_le_of_mem Finset.univ (Finset.mem_univ a)
+
+-- Helper: a ≤ a ⊔ b
+theorem le_join_left [Fintype α] [Quantale α] [DecidableEq α] (a b : α) : a ≤ a ⊔ b := by
+  apply le_fold
+  intro x hx
+  exact (Finset.mem_filter.mp hx).2.1
+
+theorem le_join_right [Fintype α] [Quantale α] [DecidableEq α] (a b : α) : b ≤ a ⊔ b := by
+  apply le_fold
+  intro x hx
+  exact (Finset.mem_filter.mp hx).2.2
+
+-- Helper: if a ≤ c and b ≤ c then a ⊔ b ≤ c
+theorem join_le [Fintype α] [Quantale α] [DecidableEq α] {a b c : α}
+    (h1 : a ≤ c) (h2 : b ≤ c) : a ⊔ b ≤ c := by
+  apply fold_le_of_mem
+  exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, h1, h2⟩
+
+instance [Fintype α] [Quantale α] [DecidableEq α] : CompleteQuantale α where
+  join_assoc := by
+    intro a b c
+    apply le_antisymm'
+    · -- (a ⊔ b) ⊔ c ≤ a ⊔ (b ⊔ c)
+      apply join_le
+      · apply join_le
+        · exact le_join_left a (b ⊔ c)
+        · exact Preorder.le_trans _ _ _ (le_join_left b c) (le_join_right a (b ⊔ c))
+      · exact Preorder.le_trans _ _ _ (le_join_right b c) (le_join_right a (b ⊔ c))
+    · -- a ⊔ (b ⊔ c) ≤ (a ⊔ b) ⊔ c
+      apply join_le
+      · exact Preorder.le_trans _ _ _ (le_join_left a b) (le_join_left (a ⊔ b) c)
+      · apply join_le
+        · exact Preorder.le_trans _ _ _ (le_join_right a b) (le_join_left (a ⊔ b) c)
+        · exact le_join_right (a ⊔ b) c
+  join_comm  := by simp [max, And.comm]
+  join_idem  := by
+    intro a
+    apply le_antisymm'
+    · exact join_le (Preorder.le_refl a) (Preorder.le_refl a)
+    · exact le_join_left a a
+  join_bot   := by
+    intro a
+    apply le_antisymm'
+    · exact join_le (Preorder.le_refl a) (bot_le a)
+    · exact le_join_left a ⊥
+  bot_join   := by
+    intro a
+    apply le_antisymm'
+    · exact join_le (bot_le a) (Preorder.le_refl a)
+    · exact le_join_right ⊥ a
+
+instance [Fintype α] [DecidableEq α] [Mode α] : CompleteMode α where
+  div a b := (Finset.univ.filter fun x => scale b x ≤ a).fold (· ⊔ ·) ⊥ id
+
+  scale_div := by sorry
+
+-- Modalities
 
 inductive Id where | default
 
-instance [Quantale α] : Modality Id α where
+instance [Mode α] : Modality Id α where
   box a _ := a
-  lock _ a := a
 
   zero_box := by simp
   top_box := by simp
   meet_box := by simp
   seq_box := by simp
 
-  lock_top := by simp
-  lock_zero := by simp
-  lock_meet := by simp
-  lock_seq_monotone := by simp
-
-  box_lock_assoc := by simp
-
-instance [Quantale α] : Comonadic Id α where
-  lock_dec := by simp [lock]
-  lock_idem := by simp [lock]
+instance [Mode α] : Comonadic Id α where
   box_dec := by simp [box]
   box_idem := by simp [box]
 
-instance [Quantale α] : Monadic Id α where
-  lock_inc := by simp [lock]
-  lock_idem := by simp [lock]
+instance [Mode α] : Monadic Id α where
   box_inc := by simp [box]
   box_idem := by simp [box]
 
 inductive Comp (α1 α2 : Type*)
 | comp : α1 → α2 → Comp α1 α2
 
-instance [Quantale β] [Modality α1 β] [Modality α2 β] [Distributive α1 α2 β] : Modality (Comp α1 α2) β where
+instance [Mode β] [Modality α1 β] [Modality α2 β] : Modality (Comp α1 α2) β where
   box := λ b (.comp a1 a2) => box (box b a1) a2
-  lock := λ (.comp a1 a2) b => lock a1 (lock a2 b)
 
   top_box := by simp [top_box]
   zero_box := by simp [zero_box]
   meet_box := by simp [meet_box]
   seq_box := by simp [seq_box]
-
-  lock_top := by simp [lock_top]
-  lock_zero := by simp [lock_zero]
-  lock_meet := by simp [lock_meet]
-  lock_seq_monotone := by
-    intro (.comp a1 a2) b c; simp
-    apply (le_trans (lock_seq_monotone a1 (lock a2 b) (lock a2 c)))
-    apply (lock_monotone a1)
-    exact (lock_seq_monotone a2 b c)
-
-  box_lock_assoc := by
-    intro (.comp a1 a2) (.comp a3 a4) b
-    simp
-    apply (le_trans (box_monotone a4 _ _ (box_lock_assoc a1 a3 _)))
-    apply (le_trans (Distributive.swap_box_lock a1 a4 _))
-    apply (lock_monotone a1)
-    apply (le_trans (box_monotone a4 _ _ (Distributive.swap_lock_box a3 a2 _)))
-    apply (le_trans (box_lock_assoc _ _ _))
-    exact (le_refl _)
 
 end Base

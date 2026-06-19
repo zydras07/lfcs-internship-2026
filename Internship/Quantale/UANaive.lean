@@ -56,6 +56,42 @@ def seq : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
   | .bot, _   => .bot
   | _, .bot   => .bot
 
+@[grind]
+def scale : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
+  | .top, n   => n
+  | .zero, n  => match n with
+    | .top => .top
+    | _ => .zero
+  | .one, n   => n
+  | .A, n     => match n with
+    | .bot => .bot
+    | .zero => .zero
+    | .A => .A
+    | .one => .A
+    | .AM => .AM
+    | .M => .AM
+    | .top => .top
+  | .M, n     => match n with
+    | .top => .top
+    | .zero => .zero
+    | .A => .AM
+    | .one => .M
+    | .AM => .AM
+    | .M => .M
+    | .bot => .bot
+  | .AM, n    => match n with
+    | .top => .top
+    | .zero => .zero
+    | .A => .AM
+    | .one => .AM
+    | .AM => .AM
+    | .M => .AM
+    | .bot => .bot
+  | .bot, n   => match n with
+    | .top => .top
+    | .zero => .zero
+    | _ => .bot
+
 instance : Top UANaiveSemiring where
   top := .top
 
@@ -102,19 +138,40 @@ instance : Quantale UANaiveSemiring where
   seq_meet := by native_decide
   meet_seq := by native_decide
 
+instance : Mode UANaiveSemiring where
+  scale := scale
+
+  scale_assoc := by simp [LE.le]; native_decide
+  scale_top := by native_decide
+  top_scale := by native_decide
+  scale_zero := by native_decide
+  zero_scale := by native_decide
+  scale_one := by native_decide
+  one_scale := by native_decide
+  scale_meet := by native_decide
+  meet_scale := by native_decide
+  scale_seq := by simp [LE.le]; native_decide
+  seq_scale := by simp [LE.le]; native_decide
+
+lemma join_seq : ∀ a b c : UANaiveSemiring,
+    (a ⊔ b) + c = (a + c) ⊔ (b + c) := by native_decide
+
+lemma seq_join : ∀ a b c : UANaiveSemiring,
+    a + (b ⊔ c) = (a + b) ⊔ (a + c) := by native_decide
+
+lemma scale_join : ∀ (a b : UANaiveSemiring),
+    scale a b ≤ a ⊔ b := by native_decide
+
+lemma scale_div : ∀ (a b c : UANaiveSemiring), b = 0 ∨
+    (scale b c ≤ a ↔ c ≤ CompleteMode.div a b) := by native_decide
+
+lemma div_one : ∀ (a : UANaiveSemiring) (b : { x : UANaiveSemiring // x ≠ ⊤ ∧ x ≠ 0 }),
+    CompleteMode.div a b.val ≥ 1 → a ≥ b.val := by native_decide
+
 inductive Many where | default
 
 instance : Modality Many UANaiveSemiring where
   box n _ := match n with
-  | .top => .top
-  | .zero => .zero
-  | .A => .AM
-  | .one => .M
-  | .AM => .AM
-  | .M => .M
-  | .bot => .bot
-
-  lock _ m := match m with
   | .top => .top
   | .zero => .zero
   | .A => .AM
@@ -128,18 +185,7 @@ instance : Modality Many UANaiveSemiring where
   meet_box := by grind
   seq_box := by grind
 
-  lock_top := by grind
-  lock_zero := by grind
-  lock_meet := by grind
-  lock_seq_monotone := by grind
-
-  box_lock_assoc := by grind
-
 instance : Comonadic Many UANaiveSemiring where
-  lock_dec := by
-    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
-    grind
-  lock_idem := by simp [Modality.lock]; grind
   box_dec := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
     grind
@@ -157,43 +203,15 @@ instance : Modality Aliased UANaiveSemiring where
   | .M => .AM
   | .top => .top
 
-  lock _ m := match m with
-  | .bot => .bot
-  | .zero => .zero
-  | .A => .A
-  | .one => .A
-  | .AM => .AM
-  | .M => .AM
-  | .top => .top
-
   zero_box := by grind
   top_box := by grind
   meet_box := by grind
   seq_box := by grind
 
-  lock_top := by grind
-  lock_zero := by grind
-  lock_meet := by grind
-  lock_seq_monotone := by grind
-
-  box_lock_assoc := by grind
-
 instance : Monadic Aliased UANaiveSemiring where
-  lock_inc := by
-    simp [LE.le, UANaiveSemiring.hmin_eq, Modality.lock]
-    grind
-  lock_idem := by simp [Modality.lock]; grind
   box_inc := by
     simp [LE.le, UANaiveSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
-
-instance : Distributive Many Aliased UANaiveSemiring where
-  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
-  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
-
-instance : Distributive Aliased Many UANaiveSemiring where
-  swap_box_lock := by simp [Modality.lock, Modality.box]; grind
-  swap_lock_box := by simp [Modality.lock, Modality.box]; grind
 
 end QUANaive
