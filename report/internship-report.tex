@@ -483,23 +483,13 @@ The laws that must hold for the algebra are:
 \end{law}
 
 \begin{law}
-\label{law:mul-assoc-2}
-  $(q_1 \cdot q_2) \cdot q_3 \le q_1 \cdot (q_2 \cdot q_3)$.
-\end{law}
-
-\begin{law}
-\label{law:mul-distr-add-left-1}
-  $q_1 \cdot q_2 + q_1 \cdot q_3 \le q_1 \cdot (q_2 + q_3)$.
+\label{law:mul-distr-add-left-2}
+  $q_1 \cdot (q_2 + q_3) \le q_1 \cdot q_2 + q_1 \cdot q_3$.
 \end{law}
 
 \begin{law}
 \label{law:mul-distr-add-right-1}
   $q_1 \cdot q_3 + q_2 \cdot q_3 \le (q_1 + q_2) \cdot q_3$.
-\end{law}
-
-\begin{law}
-\label{law:mul-distr-add-right-2}
-  $(q_1 + q_2) \cdot q_3 \le q_1 \cdot q_3 + q_2 \cdot q_3$.
 \end{law}
 
 \begin{law}
@@ -511,6 +501,24 @@ The laws that must hold for the algebra are:
 \label{law:mul-mono-left}
   If $q_2 \le q_3$, then $q_1 \cdot q_2 \le q_1 \cdot q_3$.
 \end{law}
+
+The laws that must hold for the beta-laws are:
+
+\begin{law}
+\label{law:mul-assoc-2}
+  $(q_1 \cdot q_2) \cdot q_3 \le q_1 \cdot (q_2 \cdot q_3)$.
+\end{law}
+
+\begin{law}
+\label{law:mul-distr-add-left-1}
+  $q_1 \cdot q_2 + q_1 \cdot q_3 \le q_1 \cdot (q_2 + q_3)$.
+\end{law}
+
+\begin{law}
+\label{law:mul-distr-add-right-2}
+  $(q_1 + q_2) \cdot q_3 \le q_1 \cdot q_3 + q_2 \cdot q_3$.
+\end{law}
+
 
 For local and global modes, we have S = $\{0, 1, \mathbb{G}\}$ with
 $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \mathbb{G}$.
@@ -1603,8 +1611,7 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
 \paragraph{Eta laws}
 
 \begin{align*}
-  \lambda x.\, v\, x &\equiv v : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu
-    && (x \notin \mathrm{fv}(v)) \\
+  \llet x = e \lin \lambda y.\, x\, y &\equiv e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu \\
   \llet x = e \lin () &\equiv e : \unit \at \mu \\
   \llet_1 (x, y) = e \lin (x, y) &\equiv e : A \times B \at \mu \\
   \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e : A + B \at \mu \\
