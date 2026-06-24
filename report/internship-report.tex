@@ -845,7 +845,7 @@ $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \
     
     By PAIR on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \cdot \sem{\Gamma_1} + q \cdot \sem{\Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$
     
-    Thus, by law \ref{law:mul-distr-add-left}, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
+    Thus, by law \ref{law:mul-distr-add-left-1}, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
     \\ 
     \item[Case INL.]
     By the inductive hypothesis, have $q \cdot \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
@@ -1438,7 +1438,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By \ref{lem:graded-modal-forward-substitution} on \textbf{(3)} and \textbf{(5)}, then \textbf{(4)}, have \textbf{(6)} $q \cdot \Gamma_{1_1} + q \cdot \Gamma_{1_2} + \Gamma_2 \tee e[v_2/y][v_1/x] : C$.
 
-    Thus, by law \ref{law:mul-distr-add-left} on \textbf{(6)}, $q \cdot \Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : C$, as required.
+    Thus, by law \ref{law:mul-distr-add-left-1} on \textbf{(6)}, $q \cdot \Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : C$, as required.
     \\
     \item[\mbox{Case $\case_q (\inl v) \{x.e_1; y.e_2\} \equiv e_1[v/x]$}.] 
     By assumption, have \textbf{(1)} $\Gamma \tee \case_q (\inl v) \{x.e_1; y.e_2\} : C$.
