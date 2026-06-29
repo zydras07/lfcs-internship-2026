@@ -473,6 +473,11 @@ We also have a division operator $\setminus$, which is defined by saying that $q
 The laws that must hold for the algebra are:
 
 \begin{law}
+\label{law:add-assoc}
+  $q_1 + (q_2 + q_3) = (q_1 + q_2) + q_3$.
+\end{law}
+
+\begin{law}
 \label{law:add-comm}
   $q_1 + q_2 = q_2 + q_1$.
 \end{law}
@@ -480,11 +485,6 @@ The laws that must hold for the algebra are:
 \begin{law}
 \label{law:mul-assoc-1}
   $q_1 \cdot (q_2 \cdot q_3) \le (q_1 \cdot q_2) \cdot q_3$.
-\end{law}
-
-\begin{law}
-\label{law:mul-distr-add-left-2}
-  $q_1 \cdot (q_2 + q_3) \le q_1 \cdot q_2 + q_1 \cdot q_3$.
 \end{law}
 
 \begin{law}
@@ -519,6 +519,10 @@ The laws that must hold for the beta-laws are:
   $(q_1 + q_2) \cdot q_3 \le q_1 \cdot q_3 + q_2 \cdot q_3$.
 \end{law}
 
+\begin{law}
+\label{law:add-mono}
+  If $q_1 \le q_3$ and $q_2 \le q_4$, then $q_1 + q_2 \le q_3 + q_4$.
+\end{law}
 
 For local and global modes, we have S = $\{0, 1, \mathbb{G}\}$ with
 $0 \leq 1 \leq \mathbb{G}$, $+$ as maximum, and $\mathbb{G} \cdot \mathbb{G} = \mathbb{G}$.
@@ -1317,8 +1321,6 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
   \end{description}
 \end{proof}
 
-
-
 \begin{lemma}
 \label{lem:graded-modal-equal-contexts}
   If $\Gamma_1 \tee v : A$ and $\Gamma_2 \tee v : A$, then $\Gamma_1 = \Gamma_2$.
@@ -1331,7 +1333,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
 \begin{lemma}[Backward Substitution for Graded Type Theory]
 \label{lem:graded-modal-backward-substitution}
-  If $\Gamma \tee e[v/x] : B$ and $\Gamma_1 \tee v : A$, then there exists $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that $\Gamma = q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$.
+  If $\Gamma \tee e[v/x] : B$ and $\Gamma_1 \tee v : A$, then there exists $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$.
 \end{lemma}
 
 \begin{proof}
@@ -1340,19 +1342,39 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     \item[Case VAR.] 
     By assumption, have \textbf{(1)} $\Gamma \tee v : A$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
     
-    Let $q = 1$ and $\Gamma_2 = \Gamma_2^\prime = \cdot$.
+    For the exists statement, let $q = 1$ and $\Gamma_2 = \Gamma_2^\prime = \cdot$.
 
     By \ref{lem:graded-modal-equal-contexts}, $\Gamma = \Gamma_1 = \cdot, 1 \cdot \Gamma_1, \cdot$, as required.
     
     By VAR, $\cdot, x :^1 A \tee x : A$, as required.
     \\
     \item[Case SUB.]
+    By assumption, have \textbf{(1)} $\Gamma, y :^{q_2} B, \Gamma^\prime \tee e[v/x] : C$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
+
+    By SUB on \textbf{(1)}, have \textbf{(3)} $q_1 \le q_2$ and \textbf{(4)} $\Gamma, y :^{q_1} B, \Gamma^\prime \tee e[v/x] : C$.
+
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(4)}, have $q$, $\Gamma_{2_1}$ and $\Gamma_{2_2}$ such that $q \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_2} \le \Gamma, y :^{q_1} B, \Gamma^\prime$ and \textbf{(5)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : C$.
+
+    For the exists statement, let $q = q$, $\Gamma_2 = \Gamma_2$ and $\Gamma_2^\prime = \Gamma_2^\prime$.
+
+    By \textbf{(3)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma, y :^{q_1} B, \Gamma^\prime \le \Gamma, y :^{q_2} B, \Gamma^\prime$, as required.
+
+    \textbf{(5)} is as required.
+    \\
     \item[Case LAM.] 
     By assumption, have \textbf{(1)} $\Gamma \tee \lambda y.e[v/x] : \,^{q^\prime} B_1 \rightarrow B_2$ and $\Gamma_1 \tee v : A$.
 
     By LAM, have \textbf{(2)} $\Gamma, y :^{q^\prime} B_1 \tee e[v/x] : B_2$.
 
-    By the inductive hypothesis on \textbf{(2)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that $\Gamma = q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$
+    By the inductive hypothesis on \textbf{(2)}, have $q$, $\Gamma_{2_1}$ and $\Gamma_{2_2}$ such that $q \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_2} \le \Gamma$ and \textbf{(3)} $\Gamma_{2_1}, x :^q A, \Gamma_{2_2} \tee e : B$.
+
+    For the exists statement, let $q = q$, and $\Gamma_2$ and $\Gamma_2^\prime$ be equal to $\Gamma_{2_1}$ and $\Gamma_{2_2}$ for all variables except $y$, where $y : ^0 B_1$ in $\Gamma_2$ and $\Gamma_2^\prime$.
+
+    Hence, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le q \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_2} \le \Gamma$, as required.
+
+    By weakening on \textbf{(3)}, have \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime, y :^{q^\prime} B_1 \tee e : B_2$.
+
+    By LAM on \textbf{(4)}, $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \lambda y.e : \,^{q^\prime} B_1 \rightarrow B_2$, as required.
     \\
     \item[Case UNIT.] 
     By assumption, have \textbf{(1)} $\Gamma \tee () : \unit$.
@@ -1362,49 +1384,153 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     Thus, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime = \Gamma_2 = \Gamma$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee () : \unit$, as required.
     \\
     \item[Case PAIR.] 
-    By assumption, have \textbf{(1)} $\Gamma \tee (v_1[v/x], v_2[v/x]) : B_1 \times B_2$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
+    By assumption, have \textbf{(1)} $\Gamma \tee (v_1[v/x], v_2[v/x]) : B_1 \times B_2$ and \textbf{(2)} $\Gamma_1^\prime \tee v : A$.
     
     By PAIR on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee v_1[v/x] : B_1$ and \textbf{(4)} $\Gamma_2 \tee v_2[v/x] : B_2$.
 
-    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $\Gamma_1 = q_1 \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_1}^\prime$ and \textbf{(4)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee v^\prime : B_1$.
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(5)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee v_1 : B_1$.
     
-    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $\Gamma_2 = q_1 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime$ and \textbf{(4)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee v_2 : B_2$.
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2$ and \textbf{(6)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee v_2 : B_2$.
 
-    Let $q = q_1 + q_2$, $\Gamma_2 = \Gamma_{2_1} + \Gamma_{2_2}$, and $\Gamma_2^\prime = \Gamma_{2_1}^\prime + \Gamma_{2_1}^\prime$.
+    Let $q = q_1 + q_2$, $\Gamma_2^\prime = \Gamma_{2_1} + \Gamma_{2_2}$, and $\Gamma_2^{\prime\prime} = \Gamma_{2_1}^\prime + \Gamma_{2_1}^\prime$.
 
-    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1 + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime$, which is equal to $\Gamma = \Gamma$
+    By laws \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime \le q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime \le \Gamma_1 + \Gamma_2$, as required.
+
+    By PAIR on \textbf{(5)} and \textbf{(6)}, $\Gamma_{2_1} + \Gamma_{2_2}, x :^{q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime \tee (v_1, v_2) : B_1 \times B_2$, as required.
     \\
     \item[Case INL.]
     By assumption, have \textbf{(1)} $\Gamma \tee \inl v^\prime[v/x] : B_1 + B_2$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
     
     By INL on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v^\prime[v/x] : B_1$.
 
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that $\Gamma = q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime$, as required, and \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B_1$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma$ and \textbf{(5)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B_1$.
+    
+    For the exists statement, let $q = q$, $\Gamma_2 = \Gamma_2$ and $\Gamma_2^\prime = \Gamma_2^\prime$.
 
-    Thus, by INL on \textbf{(4)}, $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \inl v^\prime : B_1 + B_2$, as required.
+    \textbf{(4)} is as required.
+
+    By INL on \textbf{(5)}, $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \inl v^\prime : B_1 + B_2$, as required.
     \\
     \item[Case INR.] 
     By assumption, have \textbf{(1)} $\Gamma \tee \inr v^\prime[v/x] : B_1 + B_2$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
 
     By INR on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v^\prime[v/x] : B_2$.
 
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that $\Gamma = q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime$, as required, and \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B_2$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma$ and \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B_2$.
+    
+    For the exists statement, let $q = q$, $\Gamma_2 = \Gamma_2$ and $\Gamma_2^\prime = \Gamma_2^\prime$.
 
-    Thus, by INR on \textbf{(4)}, $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \inr v^\prime : B_1 + B_2$, as required.
+    \textbf{(4)} is as required.
+    
+    By INR on \textbf{(5)}, $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \inr v^\prime : B_1 + B_2$, as required.
     \\
     \item[Case $\boxempty$I.] 
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma \tee \bbox_{q^\prime} v^\prime[v/x] : \boxempty^q B$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
+
+    By $\boxempty$I on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v^\prime[v/x] : B$.
+    
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma$ and \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B$.
+    
+    For the exists statement, let $q = q^\prime \cdot q$, $\Gamma_2 = q^\prime \cdot \Gamma_2$ and $\Gamma_2^\prime = q^\prime \cdot \Gamma_2^\prime$.
+
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-mono-left}, $q^\prime \cdot q \cdot \Gamma_1 + q^\prime \cdot \Gamma_2, q^\prime \cdot \Gamma_2^\prime \le q^\prime \cdot (q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime) \le q^\prime \cdot \Gamma$, as required.
+    
+    By $\boxempty$I on \textbf{(5)}, $q^\prime \cdot \Gamma_2, x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee \bbox_{q^\prime} v^\prime : \boxempty^{q^\prime} B$, as required.
+    \\
     \item[Case APP.] 
+    By assumption, have \textbf{(1)} $\Gamma_1 + q^\prime \cdot \Gamma_2 \tee e[v/x] \, v^\prime[v/x] : B_2$ and \textbf{(2)} $\Gamma_1 \tee v : A$.
+
+    By APP on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee e[v/x] : \,^{q^\prime} B_1 \rightarrow B_1$ and \textbf{(4)} $\Gamma_2 \tee v^\prime[v/x] : B_2$.
+
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(5)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee e : B_1$.
+    
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2$ and \textbf{(6)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee v^\prime : B_2$.
+
+    For the exists statement, let $q = q_1 + q^\prime \cdot q_2$, $\Gamma_2^\prime = \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}$ and $\Gamma_2^{\prime\prime} = \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime$.
+
+    By laws \ref{law:mul-mono-left}, \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime \le q_1 \cdot \Gamma_1^\prime + q^\prime \cdot q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime \le \Gamma_1 + q^\prime \cdot \Gamma_2$, as required.
+
+    By APP on \textbf{(5)} and \textbf{(6)}, $\Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, x :^{q_1 + q^\prime \cdot q_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime \tee e \, v^\prime : B_2$, as required.
+    \\
     \item[Case BIND.] 
-    \item[Case $\boxempty$E.] 
+    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \llet y \leftarrow e_1[v/x] \lin e_2[v/x] : B_2$ and \textbf{(2)} $\Gamma_1^\prime \tee v : A$.
+    
+    By BIND on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee e_1[v/x] : B_1$ and \textbf{(4)} $\Gamma_2, y :^1 B_1 \tee e_2[v/x] : B_2$.
+
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(5)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee e_1 : B_1$.
+    
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2, y :^1 B_1$ and \textbf{(6)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee e_2 : B_2$.
+
+    For the exists statement, let $q = q_1 + q_2$, $\Gamma_2^\prime = \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$.
+
+    By laws \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le \Gamma_1 + \Gamma_2$, as required.
+    
+    By weakening on \textbf{(6)}, have \textbf{(7)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_2^{\prime\prime\prime}, y :^1 B_1 \tee e_2 : B_2$.
+
+    By BIND on \textbf{(5)} and \textbf{(7)}, $\Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, x :^{q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \tee \llet y \leftarrow e_1 \lin e_2 : B_2$, as required.
+    \\
+    \item[Case $\boxempty$E.]
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma_1 + \Gamma_2 \tee \llet_{q^\prime} \bbox_{q^{\prime\prime}} y = v^\prime[v/x] \lin e[v/x] : B_2$ and \textbf{(2)} $\Gamma_1^\prime \tee v : A$.
+    
+    By $\boxempty$E on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee v^\prime[v/x] : \boxempty^{q^{\prime\prime}} B_1$ and \textbf{(4)} $\Gamma_2, y :^{q^\prime \cdot q^{\prime\prime}} B_1 \tee e[v/x] : B_2$.
+
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(5)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee v^\prime : \boxempty^{q^{\prime\prime}} B_1$.
+    
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2, y :^{q^\prime \cdot q^{\prime\prime}} B_1$ and \textbf{(6)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee e : B_2$.
+
+    For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$.
+
+    By laws \ref{law:mul-mono-left}, \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    
+    By weakening on \textbf{(6)}, have \textbf{(7)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime \cdot q^{\prime\prime}} B_1 \tee e : B_2$.
+
+    By $\boxempty$E on \textbf{(5)} and \textbf{(7)}, $\Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, x :^{q^\prime \cdot q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \tee \llet_{q^\prime} \bbox_{q^{\prime\prime}} y = v \lin e : B_2$, as required.
+    \\
     \item[Case SPLIT.] 
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma_1 + \Gamma_2 \tee \llet_{q^\prime} (y, z) = v^\prime[v/x] \lin e[v/x] : C$ and \textbf{(2)} $\Gamma_1^\prime \tee v : A$.
+    
+    By SPLIT on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee v^\prime[v/x] : B_1 \times B_2$ and \textbf{(4)} $\Gamma_2, y :^{q^\prime} B_1, z :^{q^\prime} B_2 \tee e[v/x] : C$.
+
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(5)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee v^\prime : B_1 \times B_2$.
+    
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2, y :^{q^\prime} B_1, z :^{q^\prime} B_2$ and \textbf{(6)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee e : C$.
+
+    For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$ and $z :^0 B_2$.
+
+    By laws \ref{law:mul-mono-left}, \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    
+    By weakening on \textbf{(6)}, have \textbf{(7)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime} B_1, z :^{q^\prime} B_2 \tee e : C$.
+
+    By SPLIT on \textbf{(5)} and \textbf{(7)}, $\Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, x :^{q^\prime \cdot q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \tee \llet_{q^\prime} (y, z) = v \lin e : C$, as required.
+    \\
     \item[Case CASE.] 
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma_1 + \Gamma_2 \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$ and \textbf{(2)} $\Gamma_1^\prime \tee v : A$.
+    
+    By CASE on \textbf{(1)}, have \textbf{(3)} $\Gamma_1 \tee v^\prime[v/x] : B_1 + B_2$, \textbf{(4)} $\Gamma_2, y :^{q^\prime} B_1 \tee e_1[v/x] : C$ and \textbf{(5)} $\Gamma_2, z :^{q^\prime} B_2 \tee e_2[v/x] : C$.
+
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(3)}, have $q_1$, $\Gamma_{2_1}$ and $\Gamma_{2_1}^\prime$ such that $q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \le \Gamma_1$ and \textbf{(6)} $\Gamma_{2_1}, x :^{q_1} A, \Gamma_{2_1}^\prime \tee v^\prime : B_1 + B_2$.
+    
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(4)}, have $q_2$, $\Gamma_{2_2}$ and $\Gamma_{2_2}^\prime$ such that $q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime \le \Gamma_2, y :^{q^\prime} B_1$ and \textbf{(7)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime \tee e_1 : C$.
+
+    By the inductive hypothesis on \textbf{(2)} with \textbf{(5)}, have $q_3$, $\Gamma_{2_3}$ and $\Gamma_{2_3}^\prime$ such that $q_3 \cdot \Gamma_1^\prime + \Gamma_{2_3}, \Gamma_{2_3}^\prime \le \Gamma_2, z :^{q^\prime} B_2$ and \textbf{(8)} $\Gamma_{2_3}, x :^{q_3} A, \Gamma_{2_3}^\prime \tee e : C$.
+    
+    For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$.
+
+    By laws \ref{law:mul-mono-left}, \ref{law:mul-distr-add-right-2} and \ref{law:add-mono}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \le q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    
+    By weakening on \textbf{(7)}, have \textbf{(9)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime} B_1 \tee e : C$.
+    
+    Let $\Gamma_{2_3}^{\prime\prime} = \Gamma_{2_3}$ and $\Gamma_{2_3}^{\prime\prime\prime} = \Gamma_{2_3}^\prime$ where $z :^0 B_2$. By weakening on \textbf{(8)}, have \textbf{(10)} $\Gamma_{2_3}^{\prime\prime}, x :^q A, \Gamma_{2_3}^{\prime\prime\prime}, z :^{q^\prime} B_2 \tee e : C$.
+
+    Note that $\Gamma_{2_2}^{\prime\prime}, \Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_3}^{\prime\prime}, \Gamma_{2_3}^{\prime\prime\prime}$.
+
+    By CASE on \textbf{(6)}, \textbf{(9)} and \textbf{(10)}, $\Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, x :^{q^\prime \cdot q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} \tee \case_{q^\prime} v \{y.e_1; z.e_2\} : C$, as required.
   \end{description}
-  
 \end{proof}
   
 \begin{lemma}[Type Preservation for Beta Laws]
 \label{lem:graded-modal-type-preservation-beta-laws}
-  If\/ $e_1 \equiv e_2 : A$ and $\Gamma \tee e_1 : A$, then $\Gamma \tee e_2 : A$.
+  If\/ $e_1 \equiv e_2 : A$ and $\Gamma_1 \tee v : A$, $\Gamma \tee e_1 : B$ if and only if $\Gamma \tee e_2 : B$.
 \end{lemma}
 
 \begin{proof}
@@ -1420,6 +1546,11 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     By LAM on \textbf{(2)}, have \textbf{(4)} $\Gamma_1, x :^q A \tee e : B$.
 
     Thus, by \ref{lem:graded-modal-forward-substitution} on \textbf{(3)} and \textbf{(4)}, $\Gamma \tee e[v/x] : B$, as required.
+    \\
+
+    Conversely, by assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma \tee e[v/x] : B$.
+
+    By \ref{lem:graded-modal-backward-substitution} on \textbf{(1)} and \textbf{(2)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \le \Gamma$ and \textbf{(5)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B_1$.
     \\
     \item[\mbox{Case $\llet x \leftarrow v \lin e \equiv e[v/x]$}.]
     By assumption, have \textbf{(1)} $\Gamma \tee \llet x \leftarrow v \lin e : B$.
