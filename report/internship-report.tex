@@ -1559,14 +1559,14 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     Thus, by \ref{lem:graded-modal-forward-substitution}, $\Gamma \tee e[v/x] : B$, as required.
     \\
-    \item[\mbox{Case $\llet_{q_1} \bbox_{q_2} v \lin e \equiv e[v/x]$}.] 
-    By assumption, have \textbf{(1)} $\Gamma \tee \llet x \leftarrow v \lin e : B$.
+    \item[\mbox{Case $\llet_{q_1} \bbox_{q_2} x = \bbox_{q_2} v \lin e \equiv e[v/x]$}.] 
+    By assumption, have \textbf{(1)} $\Gamma \tee \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2} v \lin e : B$.
 
-    By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee v : \boxempty^{q_2} A$ and \textbf{(3)} $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$, where $q \cdot \Gamma_1 + \Gamma_2 = \Gamma$.
+    By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $q_2 \cdot \Gamma_1 \tee v : \boxempty^{q_2} A$ and \textbf{(3)} $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$, where $q_1 \cdot (q_2 \cdot \Gamma_1) + \Gamma_2 = \Gamma$.
 
-    By $\boxempty$I on \textbf{(2)}, have \textbf{(4)} $\Gamma_1 \setminus q_2 \tee v : A$.
+    By $\boxempty$I on \textbf{(2)}, have \textbf{(4)} $\Gamma_1 \tee v : A$.
 
-    Thus, by \ref{lem:graded-modal-forward-substitution} on \textbf{(3)} and \textbf{(4)}, $(q_1 \cdot q_2) \cdot \Gamma \setminus q_2 \tee e[v/x] : B$, which, by law \ref{law:mul-assoc-2}, is equal to $\Gamma \tee e[v/x] : B$, as required.
+    Thus, by \ref{lem:graded-modal-forward-substitution} on \textbf{(3)} and \textbf{(4)}, $(q_1 \cdot q_2) \cdot \Gamma \tee e[v/x] : B$, which, by law \ref{law:mul-assoc-2}, is equal to $q_1 \cdot (q_2 \cdot \Gamma) \tee e[v/x] : B$, as required.
     \\
     \item[\mbox{Case $\llet_q (x, y) = (v_1, v_2) \equiv e[v_1/x, v_2/y]$}.]
     By assumption, have \textbf{(1)} $\Gamma \tee \llet_q (x, y) = (v_1, v_2) \lin e : C$.
