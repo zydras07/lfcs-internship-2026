@@ -68,8 +68,8 @@ class Mode (α : Type*)
   scale_assoc : ∀ (a b c : α), b = ⊤ ∨
     scale a (scale b c) ≥ scale (scale a b) c
   scale_top : ∀ a : α, scale a ⊤ = ⊤
-  top_scale : ∀ a : α, scale ⊤ a = a
-  scale_zero : ∀ a : α, scale a 0 = 0
+  top_scale : ∀ a : α, scale ⊤ a = ⊤
+  scale_zero : ∀ a : α, a = ⊤ ∨ scale a 0 = 0
   zero_scale : ∀ a : α, a = ⊤ ∨ scale 0 a = 0
   scale_one : ∀ a : α, a = ⊤ ∨ scale a 1 = a
   one_scale : ∀ a : α, scale 1 a = a
@@ -90,7 +90,7 @@ class CompleteMode (α : Type*)
 
   div : α → α → α
 
-  scale_div : ∀ (a b c : α), b = 0 ∨ (scale b c ≤ a ↔ c ≤ div a b)
+  scale_div : ∀ (a b c : α), b = ⊤ ∨ b = 0 ∨ (scale b c ≤ a ↔ c ≤ div a b)
 
 open CompleteMode
 

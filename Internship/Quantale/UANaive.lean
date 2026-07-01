@@ -58,7 +58,7 @@ def seq : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
 
 @[grind]
 def scale : UANaiveSemiring → UANaiveSemiring → UANaiveSemiring
-  | .top, n   => n
+  | .top, _   => .top
   | .zero, n  => match n with
     | .top => .top
     | _ => .zero
@@ -159,14 +159,14 @@ lemma join_seq : ∀ a b c : UANaiveSemiring,
 lemma seq_join : ∀ a b c : UANaiveSemiring,
     a + (b ⊔ c) = (a + b) ⊔ (a + c) := by native_decide
 
-lemma scale_join : ∀ (a b : UANaiveSemiring),
+lemma scale_leq_join : ∀ (a b : UANaiveSemiring),
     scale a b ≤ a ⊔ b := by native_decide
 
-lemma scale_div : ∀ (a b c : UANaiveSemiring), b = 0 ∨
+lemma scale_div : ∀ (a b c : UANaiveSemiring), b = ⊤ ∨ b = 0 ∨
     (scale b c ≤ a ↔ c ≤ CompleteMode.div a b) := by native_decide
 
 lemma div_one : ∀ (a : UANaiveSemiring) (b : { x : UANaiveSemiring // x ≠ ⊤ ∧ x ≠ 0 }),
-    CompleteMode.div a b.val ≥ 1 → a ≥ b.val := by native_decide
+    CompleteMode.div a b.val ≥ 1 ↔ a ≥ b.val := by native_decide
 
 inductive Many where | default
 

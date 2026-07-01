@@ -76,7 +76,7 @@ def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
 
 @[grind]
 def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
-  | .top, n    => n
+  | .top, _    => .top
   | .zero, n   => match n with
     | .top => .top
     | _ => .zero
@@ -212,11 +212,11 @@ lemma seq_join : ∀ a b c : UAExtendedSemiring,
 lemma scale_join : ∀ (a b : UAExtendedSemiring),
     scale a b ≤ a ⊔ b := by native_decide
 
-lemma scale_div : ∀ (a b c : UAExtendedSemiring), b = 0 ∨
+lemma scale_div : ∀ (a b c : UAExtendedSemiring), b = ⊤ ∨ b = 0 ∨
     (scale b c ≤ a ↔ c ≤ CompleteMode.div a b) := by native_decide
 
-lemma div_one : ∀ (a : UAExtendedSemiring) (b : { x : UAExtendedSemiring // x ≠ ⊤ ∧ x ≠ 0 }),
-    CompleteMode.div a b.val ≥ 1 → a ≥ b.val := by native_decide
+lemma div_one : ∀ (a b : UAExtendedSemiring), b = ⊤ ∨
+    (CompleteMode.div a b ≥ 1 ↔ a ≥ b) := by native_decide
 
 inductive Many where | many
 
@@ -267,3 +267,18 @@ instance : Monadic Aliased UAExtendedSemiring where
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
+
+#eval scale .AM (scale .CA .A)
+#eval (scale .AM .CA)
+
+-- counter-examples:
+--  Law 7: q1 = aliased many, q2 = unique, q3 = aliased
+--  Law 8: q1 = unique, q2 = many, q3 = aliased
+--  Law 9: q1 = unique, q2 = aliased, q3 = aliased
+
+-- theorem  scale_assoc : ∀ (a b c : UAExtendedSemiring), b = ⊤ ∨
+    -- scale a (scale b c) ≤ scale (scale a b) c := by simp [LE.le]; grind
+-- theorem scale_seq : ∀ (a b c : UAExtendedSemiring), b = 1 ∨ (b = .M) ∨ c = 1 ∨ (c = .M) ∨
+    -- scale a (b + c) ≤ (scale a b) + (scale a c) := by simp [LE.le]; grind
+-- theorem seq_scale : ∀ (a b c : UAExtendedSemiring), a = ⊤ ∨ b = ⊤ ∨
+    -- scale (a + b) c ≥ (scale a c) + (scale b c) := by simp [LE.le]; grind
