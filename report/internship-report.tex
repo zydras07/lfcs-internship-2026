@@ -479,7 +479,7 @@ $\Gamma_1 + \Gamma_2$, where $\Gamma_1$ and $\Gamma_2$ are contexts, is defined 
 
 $\Gamma_1 \le \Gamma_2$ is also defined by comparing variables point-wise. In the mode qualifier calculus, if variable modes are equal when compared point-wise, then locks may be compared point-wise contrapositively, where $\mu \le \mu^\prime$ $\Gamma_1, \lock_{\mu^\prime}, \Gamma_2 \le \Gamma_1, \lock_\mu, \Gamma_2$. Two contexts are incomparable if they have a different set of variables or locks in different positions.
 
-We also have a division operator $\setminus$, which is defined by saying that $q_1 \setminus q_2$ is the maximum $q$ such that $q_2 \cdot q \le q_1$. If $q_1 < q_2$, $q_1 \setminus q_2$ does not reduce, but the unreduced $q_1 \setminus q_2$ may still take the place of a mode. $\Gamma \setminus q$ is defined point-wise over the variables in $\Gamma$.
+We also have a division operator $\setminus$, which is defined by saying that $q_1 \setminus q_2$ is the maximum $q$ such that $q_2 \cdot q \le q_1$. If there are no such $q$, $q_1 \setminus q_2$ does not reduce, but the unreduced $q_1 \setminus q_2$ may still take the place of a mode. $\Gamma \setminus q$ is defined point-wise over the variables in $\Gamma$.
 \\
 
 The laws that must hold for the algebra are:
@@ -506,7 +506,7 @@ The laws that must hold for the algebra are:
 
 \begin{law}
 \label{law:mul-inverse-div}
-  If $q_1 \setminus q_2$ can reduce, then $q_1 = q_2 \cdot q_1 \setminus q_2$.
+  If $q_1 \setminus q_2$ can reduce, then $q_2 \cdot q_1 \setminus q_2 \le q_1$.
 \end{law}
 
 \begin{law}
@@ -1073,11 +1073,11 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
     
     By weakening on \textbf{(2)}, using \ref{lem:mul-left-inverse-div-le}, have \textbf{(3)} $\cdot, x :^{\mathrm{locks}(\Gamma^\prime) \cdot q_2 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A} \tee x : \sem{A}$.
     
-    By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf({4}) $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A} \tee x : \sem{A}$.
+    By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf{(4)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A} \tee x : \sem{A}$.
     
     By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $\cdot, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
     
-    Since $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, by law \ref{law:mul-inverse-div} on \textbf{(6)}, have \textbf{(7)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
+    Since $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, by weakening using law \ref{law:mul-inverse-div} on \textbf{(6)}, have \textbf{(7)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
     
     Thus, by weakening on \textbf{(7)}, $0 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime), x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A}, 0 \cdot \sem{\Gamma^\prime} \tee x : \boxempty^{q_2} \sem{A}$, which, by the translation, is equivalent to $\sem{0 \cdot \Gamma, x : A \at q_1, 0 \cdot \Gamma^\prime} \tee \sem{x} : \boxempty^{q_2} \sem{A}$, as required.
     \\
@@ -1925,7 +1925,22 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
 
 \begin{lemma}[Forward Substitution for Mode Qualifiers]
 \label{lem:mode-qualfiers-forward-substitution}
+  If $\Gamma_1 \tee v : A \at q_1$ and $\Gamma_2, x : A \at q_1, \Gamma_2^\prime \tee e : B \at q_2$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : B \at q_2$.
 \end{lemma}
+
+\begin{proof}
+  Proceed by induction over the structure of the derivation of $\Gamma_2, x : A \at q_1, \Gamma_2^\prime \tee e : B$.
+
+  Most cases will be omitted for brevity.
+  \begin{description}
+      \item[Case VAR.] 
+      \item[Case LAM.] 
+      \item[Case APP.] 
+      \item[Case $\boxempty$I.] 
+      \item[Case $\boxempty$E.] 
+      \item[Case LET.] 
+  \end{description}
+\end{proof}
 
 \begin{lemma}[Type Preservation for Beta Reduction Laws]
 \label{lem:mode-qualifiers-type-preservation-beta-reduction-laws}
