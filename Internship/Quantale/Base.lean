@@ -86,11 +86,10 @@ class Mode (α : Type*)
 open Mode
 
 class CompleteMode (α : Type*)
-    extends Mode α, CompleteQuantale α where
+    extends Mode α where
 
   div : α → α → α
-
-  scale_div : ∀ (a b c : α), b = ⊤ ∨ b = 0 ∨ (scale b c ≤ a ↔ c ≤ div a b)
+  scale_div : ∀ (a b c : α), a ≤ scale b c ↔ div a b ≤ c
 
 open CompleteMode
 
@@ -234,7 +233,7 @@ instance [Fintype α] [Quantale α] [DecidableEq α] : CompleteQuantale α where
     · exact le_join_right ⊥ a
 
 instance [Fintype α] [DecidableEq α] [Mode α] : CompleteMode α where
-  div a b := (Finset.univ.filter fun x => scale b x ≤ a).fold (· ⊔ ·) ⊥ id
+  div a b := (Finset.univ.filter fun x => a ≤ scale b x).fold (· ⊓ ·) ⊤ id
 
   scale_div := by sorry
 

@@ -212,11 +212,11 @@ lemma seq_join : ∀ a b c : UAExtendedSemiring,
 lemma scale_join : ∀ (a b : UAExtendedSemiring),
     scale a b ≤ a ⊔ b := by native_decide
 
-lemma scale_div : ∀ (a b c : UAExtendedSemiring), b = ⊤ ∨ b = 0 ∨
-    (scale b c ≤ a ↔ c ≤ CompleteMode.div a b) := by native_decide
+lemma div_scale : ∀ (a b c : UAExtendedSemiring),
+    (a ≤ scale b c ↔ CompleteMode.div a b ≤ c) := by native_decide
 
-lemma div_one : ∀ (a b : UAExtendedSemiring), b = ⊤ ∨
-    (CompleteMode.div a b ≥ 1 ↔ a ≥ b) := by native_decide
+lemma div_one : ∀ (a b : UAExtendedSemiring),
+    (CompleteMode.div a b ≤ 1 ↔ a ≤ b) := by native_decide
 
 inductive Many where | many
 

@@ -162,11 +162,11 @@ lemma seq_join : ∀ a b c : UANaiveSemiring,
 lemma scale_leq_join : ∀ (a b : UANaiveSemiring),
     scale a b ≤ a ⊔ b := by native_decide
 
-lemma scale_div : ∀ (a b c : UANaiveSemiring), b = ⊤ ∨ b = 0 ∨
-    (scale b c ≤ a ↔ c ≤ CompleteMode.div a b) := by native_decide
+lemma div_scale : ∀ (a b c : UANaiveSemiring),
+    (a ≤ scale b c ↔ CompleteMode.div a b ≤ c) := by native_decide
 
-lemma div_one : ∀ (a : UANaiveSemiring) (b : { x : UANaiveSemiring // x ≠ ⊤ ∧ x ≠ 0 }),
-    CompleteMode.div a b.val ≥ 1 ↔ a ≥ b.val := by native_decide
+lemma div_one : ∀ (a b : UANaiveSemiring),
+    CompleteMode.div a b ≤ 1 ↔ a ≤ b := by native_decide
 
 inductive Many where | default
 
