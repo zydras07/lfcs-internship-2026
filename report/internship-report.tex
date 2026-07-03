@@ -225,7 +225,6 @@ A fine-grained call-by-value calculus in the style of \cite{Abel:unified,Choudhu
     \Gamma \tee \inr\, v : A + B
   } \and
   \inferrule*[right=$\boxempty$I]{
-    \Gamma \, reduced \\
     \Gamma \tee v : A
   }{
     q\cdot\Gamma \tee \bbox_q\, v : \boxempty^q A
@@ -479,7 +478,7 @@ $\Gamma_1 + \Gamma_2$, where $\Gamma_1$ and $\Gamma_2$ are contexts, is defined 
 
 $\Gamma_1 \le \Gamma_2$ is also defined by comparing variables point-wise. In the mode qualifier calculus, if variable modes are equal when compared point-wise, then locks may be compared point-wise contrapositively, where $\mu \le \mu^\prime$ $\Gamma_1, \lock_{\mu^\prime}, \Gamma_2 \le \Gamma_1, \lock_\mu, \Gamma_2$. Two contexts are incomparable if they have a different set of variables or locks in different positions.
 
-We also have a division operator $\setminus$, which is defined by saying that $q_1 \setminus q_2$ is the maximum $q$ such that $q_2 \cdot q \le q_1$. If there are no such $q$, $q_1 \setminus q_2$ does not reduce, but the unreduced $q_1 \setminus q_2$ may still take the place of a mode. $\Gamma \setminus q$ is defined point-wise over the variables in $\Gamma$.
+We also have a division operator $\setminus$, which is defined by saying that $q_1 \setminus q_2$ is the maximum $q$ such that $q_2 \cdot q \le q_1$. $\Gamma \setminus q$ is defined point-wise over the variables in $\Gamma$.
 \\
 
 The laws that must hold for the algebra are:
@@ -500,23 +499,28 @@ The laws that must hold for the algebra are:
 \end{law}
 
 \begin{law}
+\label{law:mul-distr-add-left-1}
+  $q_1 \cdot q_2 + q_1 \cdot q_3 \le q_1 \cdot (q_2 + q_3)$.
+\end{law}
+
+\begin{law}
 \label{law:mul-distr-add-right-1}
   $q_1 \cdot q_3 + q_2 \cdot q_3 \le (q_1 + q_2) \cdot q_3$.
 \end{law}
 
 \begin{law}
 \label{law:mul-inverse-div}
-  If $q_1 \setminus q_2$ can reduce, then $q_2 \cdot q_1 \setminus q_2 \le q_1$.
+  $q_2 \cdot (q_1 \setminus q_2) \le q_1$.
 \end{law}
 
 \begin{law}
 \label{law:add-mono}
-  if $q_1 \le q_3$ and $q_2 \le q_4$, then $q_1 + q_2 \le q_3 + q_4$.
+  If $q_1 \le q_3$ and $q_2 \le q_4$, then $q_1 + q_2 \le q_3 + q_4$.
 \end{law}
 
 \begin{law}
 \label{law:mul-mono-left}
-  if $q_2 \le q_3$, then $q_1 \cdot q_2 \le q_1 \cdot q_3$.
+  If $q_2 \le q_3$, then $q_1 \cdot q_2 \le q_1 \cdot q_3$.
 \end{law}
 
 The laws that must hold for the beta-laws are:
@@ -524,11 +528,6 @@ The laws that must hold for the beta-laws are:
 \begin{law}
 \label{law:mul-assoc-2}
   $(q_1 \cdot q_2) \cdot q_3 \le q_1 \cdot (q_2 \cdot q_3)$.
-\end{law}
-
-\begin{law}
-\label{law:mul-distr-add-left-1}
-  $q_1 \cdot q_2 + q_1 \cdot q_3 \le q_1 \cdot (q_2 + q_3)$.
 \end{law}
 
 \begin{law}
@@ -597,23 +596,8 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
 \\
 
 \begin{lemma}
-\label{lem:mul-left-inverse-div-eq}
-  If $q^\prime \setminus q$ can reduce, then $q^\prime = q \cdot q^\prime \setminus q$.
-\end{lemma}
-
-\begin{proof}
-  Proceed by induction over $q$ and $q^\prime$.
-  \begin{description}
-    \item[Case $q = 1$.]
-    $1 \cdot q^\prime \setminus 1 = q^\prime \setminus 1$. since $q = q^\prime$ is the only $q$ such that $1 \cdot q = q^\prime$, it follows that $q^\prime = q^\prime \setminus 1$, as required.
-    \item[Case $q^\prime = \mathbb{G}$, $q = \mathbb{G}$.] 
-    $\mathbb{G} \cdot \mathbb{G} \setminus \mathbb{G} = \mathbb{G} \setminus \mathbb{G}$. both $q = 1$ and $q = \mathbb{G}$ satisfy $\mathbb{G} \cdot q = \mathbb{G}$ so, since $1 \le \mathbb{G}$, $\mathbb{G} = \mathbb{G} \setminus q$, as required.
-  \end{description}
-\end{proof}
-
-\begin{lemma}
 \label{lem:mul-left-inverse-div-le}
-  $q^\prime \le q \cdot q^\prime \setminus q$.
+  $q^\prime \le (q \cdot q^\prime) \setminus q$.
 \end{lemma}
 
 \begin{proof}
@@ -627,11 +611,11 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
 
 \begin{lemma}
 \label{lem:mul-left-inverse-div-le-contexts}
-  If $q^\prime \setminus q$ can reduce for every mode $q^\prime$ in $\Gamma$, then $\Gamma = q \cdot \Gamma \setminus q$.
+  $\Gamma \le (q \cdot \Gamma) \setminus q$.
 \end{lemma}
 
 \begin{proof}
-  By the definition of $\setminus$ over contexts being point-wise, this follows from \ref{lem:mul-left-inverse-div-eq}.
+  By the definition of $\setminus$ over contexts being point-wise, this follows from \ref{lem:mul-left-inverse-div-le}.
   
 \end{proof}
 
@@ -646,26 +630,6 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
   Since 1 is the identity for $\cdot$, it follows that $1 \in M$.
   
   Thus, since $q \setminus q$ is given by $\max(M)$, $1 \le q \setminus q$, as required.
-  
-\end{proof}
-
-\begin{lemma}
-\label{lem:no_neg}
-  $q_1 \le q_1 + q_2$.
-\end{lemma}
-
-\begin{proof}
-  Since $q_1 + q_2$ is given by $\max(q_1, q_2)$, $q_1 \le q_1 + q_2$, as required.
-  
-\end{proof}
-
-\begin{lemma}
-\label{lem:no-neg-contexts}
-  $\Gamma_1 \le \Gamma_1 + \Gamma_2$.
-\end{lemma}
-
-\begin{proof}
-  By the definition of $+$ and $\le$ over contexts being point-wise, this follows from \ref{lem:no_neg}.
   
 \end{proof}
 
@@ -763,9 +727,9 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     \item[Case VAR.]
     By assumption, have $\mu_1 \setminus \mu \ge \mathrm{locks}(\Gamma^\prime) \cdot \mu_2$, with $\mu_1 \setminus \mu$ being reducible. 
     
-    By law \ref{law:mul-mono-left}, have $\mu \cdot \mu_1 \setminus \mu \ge \mu \cdot \mathrm{locks}(\Gamma^\prime) \cdot \mu_2$. 
+    By law \ref{law:mul-mono-left}, have $\mu \cdot (\mu_1 \setminus \mu) \ge \mu \cdot \mathrm{locks}(\Gamma^\prime) \cdot \mu_2$. 
     
-    Since $\mu_1 \setminus \mu$ is reducible, by law \ref{law:mul-inverse-div}, have $\mu_1 \ge \mu \cdot \mathrm{locks}(\Gamma^\prime) \cdot \mu_2$. 
+    By law \ref{law:mul-inverse-div}, have $\mu_1 \ge \mu \cdot \mathrm{locks}(\Gamma^\prime) \cdot \mu_2$. 
     
     Thus, by VAR, $0 \cdot \Gamma, x : A \at \mu_1, \lock_\mu, 0 \cdot \Gamma^\prime \tee x : A \at \mu_2$, as required.
     \\
@@ -872,7 +836,7 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     \item[Case LAM.]
     By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q \tee \sem{e} : \sem{B} \at 1$. 
 
-    By \ref{lem:mul-left-inverse-div-le-contexts}, have $q^\prime \cdot \sem{\Gamma} \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
+    By weakening using \ref{lem:mul-left-inverse-div-le-contexts}, have $(q^\prime \cdot \sem{\Gamma}) \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
     
     By \ref{thm:mode-qualifiers-div-to-lock}, have $q^\prime \cdot \sem{\Gamma}, \lock_q, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
     
@@ -888,7 +852,7 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     
     By PAIR on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \cdot \sem{\Gamma_1} + q \cdot \sem{\Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$
     
-    Thus, by law \ref{law:mul-distr-add-left-1}, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-left-1}, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
     \\ 
     \item[Case INL.]
     By the inductive hypothesis, have $q \cdot \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
@@ -1069,15 +1033,15 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
     \item[Case VAR.]
     By VAR, have \textbf{(1)} $\cdot, x :^1 \sem{A} \tee x : \sem{A}$.
 
-    By weakening on \textbf{(1)}, using \ref{lem:div-identity}, have \textbf{(2)} $\cdot, x :^{q_2\setminus q_2} \sem{A} \tee x : \sem{A}$.
+    By weakening on \textbf{(1)}, using \ref{lem:div-identity}, have \textbf{(2)} $\cdot, x :^{q_2 \setminus q_2} \sem{A} \tee x : \sem{A}$.
     
-    By weakening on \textbf{(2)}, using \ref{lem:mul-left-inverse-div-le}, have \textbf{(3)} $\cdot, x :^{\mathrm{locks}(\Gamma^\prime) \cdot q_2 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A} \tee x : \sem{A}$.
+    By weakening on \textbf{(2)}, using \ref{lem:mul-left-inverse-div-le}, have \textbf{(3)} $\cdot, x :^{((\mathrm{locks}(\Gamma^\prime) \cdot q_2) \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A} \tee x : \sem{A}$.
     
-    By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf{(4)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime) \setminus q_2} \sem{A} \tee x : \sem{A}$.
+    By weakening on \textbf{(3)} using the assumption $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, have \textbf{(4)} $\cdot, x :^{(q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A} \tee x : \sem{A}$.
     
-    By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $\cdot, x :^{q_2 \cdot (q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
+    By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $\cdot, x :^{q_2 \cdot ((q_1 \setminus \mathrm{locks}(\Gamma^\prime)) \setminus q_2)} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
     
-    Since $q_1 \ge \mathrm{locks}(\Gamma^\prime) \cdot q_2$, by weakening using law \ref{law:mul-inverse-div} on \textbf{(6)}, have \textbf{(7)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
+    By weakening using law \ref{law:mul-inverse-div} on \textbf{(6)}, have \textbf{(7)} $\cdot, x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A} \tee x : \boxempty^{q_2} \sem{A}$.
     
     Thus, by weakening on \textbf{(7)}, $0 \cdot \sem{\Gamma} \setminus \mathrm{locks}(\Gamma^\prime), x :^{q_1 \setminus \mathrm{locks}(\Gamma^\prime)} \sem{A}, 0 \cdot \sem{\Gamma^\prime} \tee x : \boxempty^{q_2} \sem{A}$, which, by the translation, is equivalent to $\sem{0 \cdot \Gamma, x : A \at q_1, 0 \cdot \Gamma^\prime} \tee \sem{x} : \boxempty^{q_2} \sem{A}$, as required.
     \\
@@ -1284,7 +1248,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By PAIR on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1 \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee (v_1[v/x], v_2[v/x]) : B_1 \times B_2$.
 
-    Thus, by law \ref{law:mul-distr-add-right-1}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee (v_1[v/x], v_2[v/x]) : B_1 \times B_2$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee (v_1[v/x], v_2[v/x]) : B_1 \times B_2$, as required.
     \\
     \item[Case INL.] 
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \inl v^\prime : B_1 + B_2$.
@@ -1305,13 +1269,17 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     Thus, by INR on \textbf{(4)}, $q \cdot \Gamma_1 + \Gamma_2, x :^q A, \Gamma_2^\prime \tee \inr v^\prime[v/x] : B_1 + B_2$, as required.
     \\
     \item[Case $\boxempty$I.] 
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \bbox_{q^\prime} v^\prime : \boxempty^{q^\prime} B$.
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $q^\prime \cdot \Gamma_2, x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee \bbox_{q^\prime} v^\prime : \boxempty^{q^\prime} B$.
 
-    By $\boxempty$I on \textbf{(2)}, and noting that $\Gamma_2 \setminus q^\prime, x^{q \setminus q^\prime} A, \Gamma_2^\prime \setminus q^\prime$ must be reduced, have \textbf{(3)} $\Gamma_2 \setminus q^\prime, x :^{q \setminus q^\prime} A, \Gamma_2^\prime \setminus q^\prime \tee v^\prime : B$.
+    By $\boxempty$I on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B$.
 
-    By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $(q \setminus q^\prime) \cdot \Gamma_1 + \Gamma_2 \setminus q^\prime, x :^{q \setminus q^\prime} A, \Gamma_2^\prime \setminus q^\prime \tee v^\prime[v/x] : B$.
+    By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee v^\prime[v/x] : B$.
     
-    Thus, by $\boxempty$I on \textbf{(4)}, $q \cdot \Gamma_1 + \Gamma_2, x :^q A, \Gamma_2^\prime \tee \bbox_{q^\prime} v^\prime[v/x] : \boxempty^{q^\prime} B$, as required.
+    By $\boxempty$I on \textbf{(4)}, have \textbf{(5)} $q^\prime \cdot (q \cdot \Gamma_1 + \Gamma_2), x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee v^\prime[v/x] : B$.
+    
+    By weakening using law \ref{law:mul-distr-add-left-2} on \textbf{(5)}, have \textbf{(6)} $q^\prime \cdot (q \cdot \Gamma_1) + q^\prime \cdot \Gamma_2, x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee v^\prime[v/x] : B$.
+    
+    Thus, by weakening using law \ref{law:mul-assoc-1} on \textbf{(6)}, $(q^\prime \cdot q) \cdot \Gamma_1 + q^\prime \cdot \Gamma_2, x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee v^\prime[v/x] : B$, as required.
     \\
     \item[Case APP.] 
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e \, v^\prime : B_2$.
@@ -1320,11 +1288,13 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By the inductive hypothesis on each of \textbf{(3)} and \textbf{(4)} with \textbf{(1)}, have \textbf{(5)} $q_1 \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee e[v/x] : \,^q B_1 \rightarrow B_2$ and \textbf{(6)} $q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime \tee v^\prime[v/x] : B_2$.
 
-    By APP on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1 \cdot \Gamma_1 + q^\prime \cdot (q_2 \cdot \Gamma_1) + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$.
+    By APP on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1 \cdot \Gamma_1 + q^\prime \cdot (q_2 \cdot \Gamma_1 + \Gamma_{2_2}) + \Gamma_{2_1}, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$.
     
-    By law \ref{law:mul-assoc-1} on \textbf{(7)}, have \textbf{(8)} $q_1 \cdot \Gamma_1 + (q^\prime \cdot q_2) \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$.
+    By weakening on \textbf{(7)} using law \ref{law:mul-distr-add-left-2}, have \textbf{(8)} $q_1 \cdot \Gamma_1 + q^\prime \cdot (q_2 \cdot \Gamma_1) + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$.
+    
+    By weakening using law \ref{law:mul-assoc-1} on \textbf{(8)}, have \textbf{(9)} $q_1 \cdot \Gamma_1 + (q^\prime \cdot q_2) \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$.
 
-    Thus, by law \ref{law:mul-distr-add-right-1} on \textbf{(8)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1} on \textbf{(9)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] \, v^\prime[v/x] : B_2$, as required.
     \\
     \item[Case BIND.] 
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \llet y \leftarrow e_1 \lin e_2 : B_2$.
@@ -1335,7 +1305,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By BIND on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1 \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet y \leftarrow e_1 \lin e_2 : B_2$.
 
-    Thus, by law \ref{law:mul-distr-add-right-1}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet y \leftarrow e_1[v/x] \lin e_2[v/x] : B_2$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet y \leftarrow e_1[v/x] \lin e_2[v/x] : B_2$, as required.
     \\
     \item[Case $\boxempty$E.]
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \llet_{q_1^\prime} \bbox_{q_2^\prime} y = v^\prime \lin e : B_2$.
@@ -1344,12 +1314,14 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     
     By the inductive hypothesis on each of \textbf{(3)} and \textbf{(4)} with \textbf{(1)}, have \textbf{(5)} $q_1 \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee v^\prime[v/x] : \boxempty^{q_2} B_1$ and \textbf{(6)} $q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y :^{q_1^\prime \cdot q_2^\prime} B_1 \tee e[v/x] : B_2$.
 
-    By $\boxempty$E on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$.
+    By $\boxempty$E on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q_1^\prime \cdot (q_1 \cdot \Gamma_1 + \Gamma_{2_1}) + q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$.
     
-    By law \ref{law:mul-assoc-1} on \textbf{(7)}, have \textbf{(8)} 
+    By weakening using law \ref{law:mul-distr-add-left-2} on \textbf{(7)}, have \textbf{(8)} $q_1^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$.
+    
+    By weakening using law \ref{law:mul-assoc-1} on \textbf{(8)}, have \textbf{(9)} 
     $(q_1^\prime \cdot q_1) \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$.
 
-    Thus, by law \ref{law:mul-distr-add-right-1} on \textbf{(8)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1} on \textbf{(9)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = v^\prime[v/x] \lin e[v/x] : B_2$, as required.
     \\
     \item[Case SPLIT.] 
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \llet_{q^\prime} (y, z) = v^\prime \lin e : C$.
@@ -1358,24 +1330,28 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     
     By the inductive hypothesis on each of \textbf{(3)} and \textbf{(4)} with \textbf{(1)}, have \textbf{(5)} $q_1 \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee v^\prime[v/x] : B_1 \times B_2$ and \textbf{(6)} $q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y :^{q^\prime} B_1, z :^{q^\prime} B_2 \tee e[v/x] : C$.
 
-    By SPLIT on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$.
+    By SPLIT on \textbf{(5)} and \textbf{(6)}, have \textbf{(7)} $q^\prime \cdot (q_1 \cdot \Gamma_1 + \Gamma_{2_1}) + q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$.
     
-    By law \ref{law:mul-assoc-1} on \textbf{(7)}, have \textbf{(8)}  $(q^\prime \cdot q_1) \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$
+    By weakening using law \ref{law:mul-distr-add-left-2} on \textbf{(7)}, have \textbf{(8)} $q^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$.
+    
+    By weakening using law \ref{law:mul-assoc-1} on \textbf{(8)}, have \textbf{(9)}  $(q^\prime \cdot q_1) \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$
 
-    Thus, by law \ref{law:mul-distr-add-right-1} on \textbf{(8)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1} on \textbf{(9)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q} (y, z) = v^\prime[v/x] \lin e[v/x] : C$, as required.
     \\
     \item[Case CASE.] 
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime\{y.e_1; z.e_2\} : C$.
     
-    By CASE on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x :^{q_1}, \Gamma_{2_1}^\prime \tee v^\prime : B_1 + B_2$, \textbf{(4)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime, y :^{q^\prime} B_1 \tee e_1 : C$, and \textbf{(5)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime, z :^{q^\prime} B_2 \tee e_2 : C$,  where $q_1^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$, $q_1^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$, and $q_1^\prime \cdot q_1 + q_2 = q$.
+    By CASE on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x :^{q_1}, \Gamma_{2_1}^\prime \tee v^\prime : B_1 + B_2$, \textbf{(4)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime, y :^{q^\prime} B_1 \tee e_1 : C$, and \textbf{(5)} $\Gamma_{2_2}, x :^{q_2} A, \Gamma_{2_2}^\prime, z :^{q^\prime} B_2 \tee e_2 : C$,  where $q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$, $q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$, and $q^\prime \cdot q_1 + q_2 = q$.
     
     By the inductive hypothesis on each of \textbf{(3)}, \textbf{(4)} and \textbf{(5)} with \textbf{(1)}, have \textbf{(6)} $q_1 \cdot \Gamma_1 + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee v^\prime[v/x] : B_1 + B_2$, \textbf{(7)} $q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y :^{q^\prime} B_1 \tee e_1[v/x] : C$ and \textbf{(8)} $q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime, z :^{q^\prime} B_2 \tee e_2[v/x] : C$.
 
-    By CASE on \textbf{(6)}, \textbf{(7)} and \textbf{(8)}, have \textbf{(9)} $q^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$.
+    By CASE on \textbf{(6)}, \textbf{(7)} and \textbf{(8)}, have \textbf{(9)} $q^\prime \cdot (q_1 \cdot \Gamma_1 + \Gamma_{2_1}) + q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$.
     
-    By law \ref{law:mul-assoc-1} on \textbf{(9)}, have \textbf{(10)}  $(q^\prime \cdot q_1) \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$
+    By weakening using law \ref{law:mul-distr-add-left-2} on \textbf{(9)}, have \textbf{(10)} $q^\prime \cdot (q_1 \cdot \Gamma_1) + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$.
+    
+    By weakening using law \ref{law:mul-assoc-1} on \textbf{(10)}, have \textbf{(11)}  $(q^\prime \cdot q_1) \cdot \Gamma_1 + q_2 \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$
 
-    Thus, by law \ref{law:mul-distr-add-right-1} on \textbf{(10)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-right-1} on \textbf{(11)}, $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \case_{q^\prime} v^\prime[v/x] \{y.e_1[v/x]; z.e_2[v/x]\} : C$, as required.
     \\
     \item[Case ABSURD.]
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\top \cdot \Gamma_2, x :^{\top \cdot q} A, \top \cdot \Gamma_2^\prime \tee \absurd \, e : B$.
@@ -1436,7 +1412,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By \ref{lem:graded-modal-forward-substitution} on \textbf{(3)} and \textbf{(5)}, then \textbf{(4)}, have \textbf{(6)} $q \cdot \Gamma_{1_1} + q \cdot \Gamma_{1_2} + \Gamma_2 \tee e[v_2/y][v_1/x] : C$.
 
-    Thus, by law \ref{law:mul-distr-add-left-1} on \textbf{(6)}, $q \cdot \Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : C$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-left-1} on \textbf{(6)}, $q \cdot \Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : C$, as required.
     \\
     \item[\mbox{Case $\case_q (\inl v) \{x.e_1; y.e_2\} \red e_1[v/x]$}.] 
     By assumption, have \textbf{(1)} $\Gamma \tee \case_q (\inl v) \{x.e_1; y.e_2\} : C$.
@@ -1549,7 +1525,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     Let $q = q_1 + q_2$, $\Gamma_2^\prime = \Gamma_{2_1} + \Gamma_{2_2}$, and $\Gamma_2^{\prime\prime} = \Gamma_{2_1}^\prime + \Gamma_{2_1}^\prime$.
 
-    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_1 + \Gamma_2$, as required.
+    By weakening using law \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + \Gamma_{2_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_1 + \Gamma_2$, as required.
 
     By PAIR on \textbf{(5)} and \textbf{(6)}, $\Gamma_{2_1} + \Gamma_{2_2}, x :^{q_1 + q_2}, \Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime \tee (v_1, v_2) : B_1 \times B_2$, as required.
     \\
@@ -1584,11 +1560,13 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By $\boxempty$I on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v^\prime[v/x] : B$.
     
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime = \Gamma$ and \textbf{(4)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have $q$, $\Gamma_2$ and $\Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime = \Gamma$ and \textbf{(5)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime : B$.
     
     For the exists statement, let $q = q^\prime \cdot q$, $\Gamma_2 = q^\prime \cdot \Gamma_2$ and $\Gamma_2^\prime = q^\prime \cdot \Gamma_2^\prime$.
 
-    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $(q^\prime \cdot q) \cdot \Gamma_1 + q^\prime \cdot \Gamma_2, q^\prime \cdot \Gamma_2^\prime = q^\prime \cdot (q \cdot \Gamma_1 + \Gamma_2, \Gamma_2^\prime) = q^\prime \cdot \Gamma$, as required.
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $(q^\prime \cdot q) \cdot \Gamma_1 + q^\prime \cdot \Gamma_2, q^\prime \cdot \Gamma_2^\prime = q^\prime \cdot (q \cdot \Gamma_1) + q^\prime \cdot \Gamma_2, q^\prime \cdot \Gamma_2^\prime$.
+    
+    By laws \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q^\prime \cdot (q \cdot \Gamma_1) + q^\prime \cdot \Gamma_2, q^\prime \cdot \Gamma_2^\prime = q^\prime \cdot \Gamma$, as required.
     
     By $\boxempty$I on \textbf{(5)}, $q^\prime \cdot \Gamma_2, x :^{q^\prime \cdot q} A, q^\prime \cdot \Gamma_2^\prime \tee \bbox_{q^\prime} v^\prime : \boxempty^{q^\prime} B$, as required.
     \\
@@ -1603,7 +1581,11 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     For the exists statement, let $q = q_1 + q^\prime \cdot q_2$, $\Gamma_2^\prime = \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}$ and $\Gamma_2^{\prime\prime} = \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime$.
 
-    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + q^\prime \cdot q_2 \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime = \Gamma_1 + q^\prime \cdot \Gamma_2$, as required.
+    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + (q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime$. 
+    
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $q_1 \cdot \Gamma_1^\prime + (q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + q^\prime \cdot (q_2 \cdot \Gamma_1^\prime) + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime$. 
+    
+    By laws \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q_1 \cdot \Gamma_1^\prime + (q^\prime \cdot q_2) \cdot \Gamma_1^\prime + \Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime = q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime + q^\prime \cdot (q_2 \cdot \Gamma_1 + \Gamma_{2_2}, \Gamma_{2_2}^\prime) = \Gamma_1 + q^\prime \cdot \Gamma_2$, as required.
 
     By APP on \textbf{(5)} and \textbf{(6)}, $\Gamma_{2_1} + q^\prime \cdot \Gamma_{2_2}, x :^{q_1 + q^\prime \cdot q_2}, \Gamma_{2_1}^\prime + q^\prime \cdot \Gamma_{2_2}^\prime \tee e \, v^\prime : B_2$, as required.
     \\
@@ -1635,7 +1617,11 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$.
 
-    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    By law \ref{law:mul-distr-add-right-2}, $(q^\prime \cdot q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = (q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$.
+    
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $(q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$. 
+    
+    By laws \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime) + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
     
     By weakening on \textbf{(6)}, have \textbf{(7)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime \cdot q^{\prime\prime}} B_1 \tee e : B_2$.
 
@@ -1652,7 +1638,11 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$ and $z :^0 B_2$.
 
-    By laws \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    By law \ref{law:mul-distr-add-right-2}, $(q^\prime \cdot q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = (q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$.
+    
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $(q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$. 
+    
+    By laws \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime) + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
     
     By weakening on \textbf{(6)}, have \textbf{(7)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime} B_1, z :^{q^\prime} B_2 \tee e : C$.
 
@@ -1671,7 +1661,11 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
     
     For the exists statement, let $q = q^\prime \cdot q_1 + q_2$, $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}$, and $\Gamma_2^\prime = q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$, where $\Gamma_{2_2}^{\prime\prime} = \Gamma_{2_2}$ and $\Gamma_{2_2}^{\prime\prime\prime} = \Gamma_{2_2}^\prime$ where $y :^0 B_1$.
 
-    By law \ref{law:mul-distr-add-right-2}, $(q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q_1 \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
+    By law \ref{law:mul-distr-add-right-2}, $(q^\prime \cdot q_1 + q_2) \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = (q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$.
+    
+    By laws \ref{law:mul-assoc-1} and \ref{law:mul-assoc-2}, forming an equality, $(q^\prime \cdot q_1) \cdot \Gamma_1^\prime + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime}$. 
+    
+    By laws \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q^\prime \cdot (q_1 \cdot \Gamma_1^\prime) + q_2 \cdot \Gamma_1^\prime + q^\prime \cdot \Gamma_{2_1} + \Gamma_{2_2}^{\prime\prime}, q^\prime \cdot \Gamma_{2_1}^\prime + \Gamma_{2_2}^{\prime\prime\prime} = q^\prime \cdot (q_1 \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime) + q_2 \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime = q^\prime \cdot \Gamma_1 + \Gamma_2$, as required.
     
     By weakening on \textbf{(7)}, have \textbf{(9)} $\Gamma_{2_2}^{\prime\prime}, x :^q A, \Gamma_{2_2}^{\prime\prime\prime}, y :^{q^\prime} B_1 \tee e : C$.
     
@@ -1754,7 +1748,7 @@ Consider $e[v_1/x, v_2/y]$ as a shorthand for $e[v_2/y][v_1/x]$.
 
     By SPLIT on \textbf{(8)} and \textbf{(9)}, have $q \cdot (\Gamma_{1_1} + \Gamma_{1_2}) + \Gamma_2^\prime \tee \llet_q (x, y) = (v_1, v_2) \lin e : B$.
 
-    Thus, by weakening using \ref{law:mul-distr-add-left-2}, $q \cdot \Gamma_{1_1} + q \cdot \Gamma_{1_2} + \Gamma_2^\prime \tee \llet_q (x, y) = (v_1, v_2) \lin e : B$, as required.
+    Thus, by weakening using law \ref{law:mul-distr-add-left-2}, $q \cdot \Gamma_{1_1} + q \cdot \Gamma_{1_2} + \Gamma_2^\prime \tee \llet_q (x, y) = (v_1, v_2) \lin e : B$, as required.
     \\
     \item[\mbox{Case $e[v/x] \red \case_q v \{x.e; \, y.\absurd \, y\}$}.]
     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A$ and \textbf{(2)} $\Gamma \tee e[v/x] : B$.
