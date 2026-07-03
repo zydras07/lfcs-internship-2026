@@ -65,22 +65,22 @@ class Mode (α : Type*)
 
   scale : α → α → α
 
-  scale_assoc : ∀ (a b c : α), b = ⊤ ∨
+  scale_assoc : ∀ (a b c : α),
     scale a (scale b c) ≥ scale (scale a b) c
   scale_top : ∀ a : α, scale a ⊤ = ⊤
   top_scale : ∀ a : α, scale ⊤ a = ⊤
   scale_zero : ∀ a : α, a = ⊤ ∨ scale a 0 = 0
   zero_scale : ∀ a : α, a = ⊤ ∨ scale 0 a = 0
-  scale_one : ∀ a : α, a = ⊤ ∨ scale a 1 = a
+  scale_one : ∀ a : α, scale a 1 = a
   one_scale : ∀ a : α, scale 1 a = a
 
   scale_meet : ∀ (a b c : α),
     scale a (b ⊓ c) = scale a b ⊓ scale a c
-  meet_scale : ∀ (a b c : α), a = ⊤ ∨ b = ⊤ ∨
+  meet_scale : ∀ (a b c : α),
     scale (a ⊓ b) c = scale a c ⊓ scale b c
   scale_seq : ∀ (a b c : α),
     scale a (b + c) ≥ (scale a b) + (scale a c)
-  seq_scale : ∀ (a b c : α), a = ⊤ ∨ b = ⊤ ∨
+  seq_scale : ∀ (a b c : α),
     scale (a + b) c ≤ (scale a c) + (scale b c)
 
 open Mode
