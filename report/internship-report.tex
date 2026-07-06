@@ -1927,6 +1927,7 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
 
 \begin{proof}
   TODO?
+  
 \end{proof}
 
 \begin{lemma}[Forward Substitution for Mode Qualifiers]
@@ -2010,7 +2011,7 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
 
     By \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, have \textbf{(6)} $(\Gamma_1, \lock_{\mu_4}) + \Gamma_2 \tee e[v/x] : B \at \mu_3$.
 
-    Thus, by weakening, \textbf{(4)} and \ref{law:add-mono} on \textbf{(6)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
+    Thus, by weakening, \textbf{(4)} and law \ref{law:add-mono} on \textbf{(6)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
     \\
     \item[Case \mbox{$\llet x = v \lin e \red e[v/x] : A \at \mu_2$}.]
     By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \llet x = v \lin e : B \at \mu_2$.
@@ -2020,9 +2021,37 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
     Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(2)} and \textbf{(3)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
     \\
     \item[Case \mbox{$\unbox_\nu (\bbox_\nu v) \red v : A \at \nu \cdot \mu$}.] 
-    \item[Case \mbox{$\llet_{\mu_1} (x, y) = (v_1, v_2) in e \red e[v_1/x, v_2/y]$}.] 
-    \item[Case \mbox{$(\lambda x.e) v \red e[v/x]$}.] 
-    \item[Case \mbox{$(\lambda x.e) v \red e[v/x]$}.] 
+    By assumption, have \textbf{(1)} $\Gamma \tee \unbox_\nu (\bbox_\nu v) : A \at \nu \cdot \mu$.
+
+    By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee \bbox_\nu v : \boxempty^\mu A \at \nu$.
+
+    Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma \tee v : A \at \nu \cdot \mu$, as required.
+    \item[Case \mbox{$\llet_{\mu_1} (x, y) = (v_1, v_2) \lin e \red e[v_1/x, v_2/y] : A \at \mu_2$}.] 
+    By assumption, have \textbf{(1)} $(\Gamma_{1_1} + \Gamma_{1_2}) + \Gamma_2 \tee \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e : B \at \mu_2$.
+
+    By SPLIT on \textbf{(1)}, have \textbf{(2)} $\Gamma_{1_1} + \Gamma_{1_2} \tee (v_1, v_2) : A_1 \times A_2 \at \mu_1$ and \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1, y : A_2 \at \mu_1 \tee e : B \at \mu_2$.
+
+    By PAIR on \textbf{(2)}, have \textbf{(4)} $\Gamma_{1_1} \tee v_1 : A_1$ and \textbf{(5)} $\Gamma_{1_2} \tee v_2 : A_2$.
+
+    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} with \textbf{(4)} and then \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : B \at \mu_2$, as required.
+    \\
+    \item[Case \mbox{$\case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} \red e_1[v/x] : A \at \mu_2$}.] 
+    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} : B \at \mu_2$.
+    
+    By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inl v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
+
+    By INL on \textbf{(2)}, have \textbf{(5)} $\Gamma_1 \tee v : A_1 \at \mu_1$.
+
+    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_1[v/x] : B \at \mu_2$, as required.
+    \\
+    \item[Case \mbox{$\case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} \red e_2[v/y]$}.] 
+    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} : B \at \mu_2$.
+    
+    By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inr v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
+
+    By INR on \textbf{(2)}, have \textbf{(5)} $\Gamma_2 \tee v : A_2 \at \mu_1$.
+
+    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_2[v/y] : B \at \mu_2$, as required.
   \end{description}
 \end{proof}
 
