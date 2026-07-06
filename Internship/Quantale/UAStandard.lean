@@ -1,70 +1,44 @@
 import Internship.Quantale.Base
 open Base
 
-namespace QUAExtended
+namespace QUAStandard
 
 @[grind cases]
-inductive UAExtendedSemiring where
+inductive UAStandardSemiring where
   |          top
   |          zero
   |           A
   |                AM
-  |       one
-  |              M
   |     CA
   |          CAM
   |          bot
   deriving DecidableEq, Repr, Fintype
 
-@[grind]
-def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
+@[simp, grind]
+def meet : UAStandardSemiring → UAStandardSemiring → UAStandardSemiring
   | .top, n    => n
   | n, .top    => n
   | .zero, n   => n
   | n, .zero   => n
   | .A, n      => n
   | n, .A      => n
-  | .one, .one => .one
   | .AM, .AM   => .AM
-  | .one, .AM  => .M
-  | .AM, .one  => .M
-  | .M, .one   => .M
-  | .one, .M   => .M
-  | .AM, .M    => .M
-  | .M, .AM    => .M
-  | .M, .M     => .M
-  | .one, .CA  => .CA
-  | .CA, .one  => .CA
   | .CA, .CA   => .CA
   | .AM, .CA   => .CAM
-  | .M, .CA    => .CAM
-  | .CA, .M    => .CAM
   | .CA, .AM   => .CAM
   | .bot, _    => .bot
   | _, .bot    => .bot
   | .CAM, _    => .CAM
   | _, .CAM    => .CAM
 
-@[grind]
-def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
+@[simp, grind]
+def seq : UAStandardSemiring → UAStandardSemiring → UAStandardSemiring
   | .top, _    => .top
   | _, .top    => .top
   | .bot, _    => .bot
   | _, .bot    => .bot
   | .zero, n   => n
   | n, .zero   => n
-  | .one, .one => .M
-  | .one, .M   => .M
-  | .M, .one   => .M
-  | .M, .M     => .M
-  | .one, .A   => .M
-  | .M, .A     => .M
-  | .A, .one   => .M
-  | .one, .AM  => .M
-  | .M, .AM    => .M
-  | .AM, .one  => .M
-  | .AM, .M    => .M
-  | .A, .M     => .M
   | .A, .A     => .AM
   | .A, .AM    => .AM
   | .AM, .A    => .AM
@@ -74,30 +48,17 @@ def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | _, .CA     => .bot
   | _, .CAM    => .bot
 
-@[grind]
-def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
+@[simp, grind]
+def scale : UAStandardSemiring → UAStandardSemiring → UAStandardSemiring
   | .top, _    => .top
   | .zero, n   => match n with
     | .top => .top
     | _ => .zero
-  | .one, n    => n
-  | .M, n      => match n with
-    | .top => .top
-    | .zero => .zero
-    | .A => .AM
-    | .one => .M
-    | .AM => .AM
-    | .M => .M
-    | .CA => .bot
-    | .CAM => .bot
-    | .bot => .bot
   | .A, n      => match n with
     | .top => .top
     | .zero => .zero
     | .A => .A
-    | .one => .A
     | .AM => .AM
-    | .M => .AM
     | .CA => .CA
     | .CAM => .CAM
     | .bot => .bot
@@ -105,9 +66,7 @@ def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
     | .top => .top
     | .zero => .zero
     | .A => .AM
-    | .one => .AM
     | .AM => .AM
-    | .M => .AM
     | .CA => .bot
     | .CAM => .bot
     | .bot => .bot
@@ -115,9 +74,7 @@ def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
     | .top => .top
     | .zero => .zero
     | .A => .A
-    | .one => .CA
     | .AM => .AM
-    | .M => .CAM
     | .CA => .CA
     | .CAM => .CAM
     | .bot => .bot
@@ -125,9 +82,7 @@ def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
     | .top => .top
     | .zero => .zero
     | .A => .AM
-    | .one => .CAM
     | .AM => .AM
-    | .M => .CAM
     | .CA => .bot
     | .CAM => .bot
     | .bot => .bot
@@ -136,37 +91,37 @@ def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
     | .zero => .zero
     | _ => .bot
 
-instance : Top UAExtendedSemiring where
+instance : Top UAStandardSemiring where
   top := .top
 
-@[grind =] theorem UAExtendedSemiring.top_eq :
-    (⊤ : UAExtendedSemiring) = .top := rfl
+@[simp, grind =] theorem UAStandardSemiring.top_eq :
+    (⊤ : UAStandardSemiring) = .top := rfl
 
-instance : Zero UAExtendedSemiring where
+instance : Zero UAStandardSemiring where
   zero := .zero
 
-@[grind =] theorem UAExtendedSemiring.zero_eq :
-    (0 : UAExtendedSemiring) = .zero := rfl
+@[simp, grind =] theorem UAStandardSemiring.zero_eq :
+    (0 : UAStandardSemiring) = .zero := rfl
 
-instance : One UAExtendedSemiring where
-  one := .one
+instance : One UAStandardSemiring where
+  one := .A
 
-@[grind =] theorem UAExtendedSemiring.one_eq :
-    (1 : UAExtendedSemiring) = .one := rfl
+@[simp, grind =] theorem UAStandardSemiring.one_eq :
+    (1 : UAStandardSemiring) = .A := rfl
 
-instance : Add UAExtendedSemiring where
+instance : Add UAStandardSemiring where
   add := seq
 
-@[grind =] theorem UAExtendedSemiring.hadd_eq (a b : UAExtendedSemiring) :
+@[simp, grind =] theorem UAStandardSemiring.hadd_eq (a b : UAStandardSemiring) :
     a + b = seq a b := rfl
 
-instance : Min UAExtendedSemiring where
+instance : Min UAStandardSemiring where
   min := meet
 
-@[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
+@[simp, grind =] theorem UAStandardSemiring.hmin_eq (a b : UAStandardSemiring) :
     a ⊓ b = meet a b := rfl
 
-instance : Quantale UAExtendedSemiring where
+instance : Quantale UAStandardSemiring where
   meet_assoc := by native_decide
   meet_comm := by native_decide
   meet_idem := by native_decide
@@ -182,7 +137,7 @@ instance : Quantale UAExtendedSemiring where
   seq_meet := by native_decide
   meet_seq := by native_decide
 
-instance : Mode UAExtendedSemiring where
+instance : Mode UAStandardSemiring where
   scale := scale
 
   scale_assoc := by simp [LE.le]; native_decide
@@ -190,7 +145,7 @@ instance : Mode UAExtendedSemiring where
   top_scale := by native_decide
   scale_zero := by native_decide
   zero_scale := by native_decide
-  scale_one := by native_decide
+  scale_one := by sorry
   one_scale := by native_decide
 
   scale_meet := by native_decide
@@ -198,47 +153,54 @@ instance : Mode UAExtendedSemiring where
   scale_seq := by simp [LE.le]; native_decide
   seq_scale := by simp [LE.le]; native_decide
 
-theorem right_residual_scale (q r : UAExtendedSemiring) :
+theorem right_residual_scale (q r : UAStandardSemiring) :
   Mode.scale .A q ≤ r ↔ q ≤ Mode.scale .CA r := by
-    simp [LE.le, UAExtendedSemiring.hmin_eq, Mode.scale]
+    simp [LE.le, UAStandardSemiring.hmin_eq, Mode.scale]
     grind
 
-lemma join_seq : ∀ a b c : UAExtendedSemiring,
+lemma join_seq : ∀ a b c : UAStandardSemiring,
     (a ⊔ b) + c = (a + c) ⊔ (b + c) := by native_decide
 
-lemma seq_join : ∀ a b c : UAExtendedSemiring,
+lemma seq_join : ∀ a b c : UAStandardSemiring,
     a + (b ⊔ c) = (a + b) ⊔ (a + c) := by native_decide
 
-lemma scale_join : ∀ (a b : UAExtendedSemiring),
+lemma scale_join : ∀ (a b : UAStandardSemiring),
     scale a b ≤ a ⊔ b := by native_decide
 
 open CompleteMode
 
-lemma scale_residual_div : ∀ (a b c : UAExtendedSemiring),
+lemma scale_residual_div : ∀ (a b c : UAStandardSemiring),
     (a ≤ scale b c ↔ div a b ≤ c) := by native_decide
 
-lemma div_one : ∀ (a b : UAExtendedSemiring),
-    (div a b ≤ 1 ↔ a ≤ b) := by native_decide
-
-lemma scale_div : ∀ (a b : UAExtendedSemiring),
+lemma scale_div : ∀ (a b : UAStandardSemiring),
     a ≤ scale b (div a b) := by native_decide
 
-lemma div_scale : ∀ (a b : UAExtendedSemiring),
+lemma div_scale : ∀ (a b : UAStandardSemiring),
     a ≥ div (scale b a) b := by native_decide
 
-lemma seq_div : ∀ (a b q : UAExtendedSemiring),
-    (div (a + b) q ≤ (div a q) + (div b q)) := by native_decide
+lemma add_div : ∀ (a b q : UAStandardSemiring),
+    ((div a q) + (div b q) ≥ div (a + b) q) := by native_decide
+
+-- lemma split_add : ∀ (a b c : UAStandardSemiring),
+    -- a + b ≥ c → ∃ d e, c = d + e ∧ a ≥ d ∧ b ≥ e := by
+    -- intros a b c h;
+    -- cases ha : a <;> cases hb : b <;> cases hc : c <;>
+      -- (first | rw [ha,hb,hc] at h; contradiction
+             -- | exists a, b; rw [ha,hb]; decide
+             -- | exists 0, c; rw [hc]; decide
+             -- | exists c, 0; rw [hc]; decide
+             -- | exists .AM, .AM; rw [hc]; decide
+             -- | skip)
+    -- exists 0, c; rw [hc]; decide
 
 inductive Many where | many
 
-instance : Modality Many UAExtendedSemiring where
+instance : Modality Many UAStandardSemiring where
   box n _ := match n with
   | .top => .top
   | .zero => .zero
   | .A => .AM
-  | .one => .M
   | .AM => .AM
-  | .M => .M
   | .CA => .CAM
   | .CAM => .CAM
   | .bot => .bot
@@ -248,22 +210,20 @@ instance : Modality Many UAExtendedSemiring where
   meet_box := by grind
   seq_box := by grind
 
-instance : Comonadic Many UAExtendedSemiring where
+instance : Comonadic Many UAStandardSemiring where
   box_dec := by
-    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
+    simp [LE.le, UAStandardSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
 
 inductive Aliased where | aliased
 
-instance : Modality Aliased UAExtendedSemiring where
+instance : Modality Aliased UAStandardSemiring where
   box n _ := match n with
   | .top => .top
   | .zero => .zero
   | .A => .A
-  | .one => .A
   | .AM => .AM
-  | .M => .AM
   | .CA => .CA
   | .CAM => .CAM
   | .bot => .bot
@@ -273,9 +233,9 @@ instance : Modality Aliased UAExtendedSemiring where
   meet_box := by grind
   seq_box := by grind
 
-instance : Monadic Aliased UAExtendedSemiring where
+instance : Monadic Aliased UAStandardSemiring where
   box_inc := by
-    simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
+    simp [LE.le, UAStandardSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
 
@@ -287,9 +247,9 @@ instance : Monadic Aliased UAExtendedSemiring where
 --  Law 8: q1 = unique, q2 = many, q3 = aliased
 --  Law 9: q1 = unique, q2 = aliased, q3 = aliased
 
--- theorem  scale_assoc : ∀ (a b c : UAExtendedSemiring), b = ⊤ ∨
+-- theorem  scale_assoc : ∀ (a b c : UAStandardSemiring), b = ⊤ ∨
     -- scale a (scale b c) ≤ scale (scale a b) c := by simp [LE.le]; grind
--- theorem scale_seq : ∀ (a b c : UAExtendedSemiring), b = 1 ∨ (b = .M) ∨ c = 1 ∨ (c = .M) ∨
+-- theorem scale_seq : ∀ (a b c : UAStandardSemiring), b = 1 ∨ (b = .M) ∨ c = 1 ∨ (c = .M) ∨
     -- scale a (b + c) ≤ (scale a b) + (scale a c) := by simp [LE.le]; grind
--- theorem seq_scale : ∀ (a b c : UAExtendedSemiring), a = ⊤ ∨ b = ⊤ ∨
+-- theorem seq_scale : ∀ (a b c : UAStandardSemiring), a = ⊤ ∨ b = ⊤ ∨
     -- scale (a + b) c ≥ (scale a c) + (scale b c) := by simp [LE.le]; grind
