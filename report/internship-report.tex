@@ -2105,6 +2105,131 @@ Recall:
   By Lemmas~\ref{lem:mode-qualifiers-type-preservation-beta-laws}, \ref{lem:mode-qualifiers-type-preservation-eta-laws} and \ref{lem:mode-qualifiers-type-preservation-commuting-conversions}.
 \end{proof}
 
+\subsection{New Modal Type Theory}
+
+A new calculus to fix the issues we identified with the graded modal type theory.
+The idea is that we have a new value judgement $\Gamma \tee v :^q A$,
+where, informally, $q\cdot\Gamma \tee v :^q A$ if and only if
+$\Gamma \tee v : A$ in the graded modal type theory.
+
+\paragraph{Syntax}
+
+\begin{align*}
+  A &::= \,^q A \rightarrow B \mid \boxempty^q A \mid A \times B \mid A + B \mid \unit \\
+  v &::= x \mid \lambda x.\, e \mid \bbox_q\, v \mid (v_1, v_2) \mid () \mid \inl\, v \mid \inr\, v \\
+  e &::= v \mid e\, v
+      \mid \llet x \leftarrow e_1 \lin e_2 \\
+    &\mid \llet_{q_1} \bbox_{q_2} x = v \lin e \\
+    &\mid \llet_q (x, y) = v \lin e
+      \mid \case_q\, v\, \{x.e_1;\; y.e_2\} \\
+    &\mid \absurd \, e
+\end{align*}
+
+\paragraph{Value typing rules} \hfill \framebox{$\Gamma \tee v : A$}
+
+\begin{mathpar}
+  \inferrule*[right=var]{
+    \phantom{.}
+  }{
+    0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma' \tee x :^q A
+  } \and
+  \inferrule*[right=sub]{
+    q' \leq q'' \\
+    \Gamma, x :^{qq'} A, \Gamma' \tee v :^q B
+  }{
+    \Gamma, x :^{qq''} A, \Gamma' \tee v :^q B
+  } \and
+  \inferrule*[right=lam]{
+    \Gamma, x :^q A \tee e : B
+  }{
+    q'\cdot\Gamma \tee \lambda x.\, e :^{q'} \,^q A \rightarrow B
+  } \and
+  \inferrule*[right=unit]{
+    \phantom{.}
+  }{
+    0\cdot\Gamma \tee () :^q \unit
+  } \and
+  \inferrule*[right=pair]{
+    \Gamma_1 \tee v_1 :^q A \\
+    \Gamma_2 \tee v_2 :^q B
+  }{
+    \Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^q A \times B
+  } \and
+  \inferrule*[right=inl]{
+    \Gamma \tee v :^q A
+  }{
+    \Gamma \tee \inl\, v :^q A + B
+  } \and
+  \inferrule*[right=inr]{
+    \Gamma \tee v :^q B
+  }{
+    \Gamma \tee \inr\, v :^q A + B
+  } \and
+  \inferrule*[right=$\boxempty$I]{
+    \Gamma \tee v :^{q'q} A
+  }{
+    q\cdot\Gamma \tee \bbox_q\, v :^{q'} \boxempty^q A
+  }
+\end{mathpar}
+
+\paragraph{Expression typing rules} \hfill \framebox{$\Gamma \tee e : B$}
+
+\begin{mathpar}
+  \inferrule*[right=app]{
+    \Gamma_1 \tee e : \,^q A \rightarrow B \\
+    \Gamma_2 \tee v :^q A
+  }{
+    \Gamma_1 + \Gamma_2 \tee e\, v : B
+  } \and
+  \inferrule*[right=bind]{
+    \Gamma_1 \tee e_1 : A \\
+    \Gamma_2, x :^1 A \tee e_2 : B
+  }{
+    \Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin e_2 : B
+  } \and
+  \inferrule*[right=$\boxempty$E]{
+    \Gamma_1 \tee v :^{q_1} \boxempty^{q_2} A \\
+    \Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B
+  }{
+    \Gamma_1 + \Gamma_2 \tee \llet_{q_1} \bbox_{q_2} x = v \lin e : B
+  } \and
+  \inferrule*[right=split]{
+    \Gamma_1 \tee v :^{q} A_1 \times A_2 \\
+    \Gamma_2, x :^q A_1, y :^q A_2 \tee e : B
+  }{
+    \Gamma_1 + \Gamma_2 \tee \llet_q (x, y) = v \lin e : B
+  } \and
+  \inferrule*[right=case]{
+    \Gamma_1 \tee v :^q A + B \\
+    \Gamma_2, x :^q A \tee e_1 : C \\
+    \Gamma_2, y :^q B \tee e_2 : C
+  }{
+    \Gamma_1 + \Gamma_2 \tee \case_q\, v\, \{x.e_1;\; y.e_2\} : C
+  } \and
+  \inferrule*[right=absurd]{
+    \Gamma \tee e : \zero
+  }{
+    \top\cdot\Gamma \tee \absurd \, e : A
+  }
+\end{mathpar}
+
+\paragraph{Box-elim reduction}
+
+\begin{lemma}[Forward Substitution for new type theory]
+\label{lem:new-modal-forward-substitution}
+  If $\Gamma_1 \tee v :^q A$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : B$.
+\end{lemma}
+\begin{proof}
+  TODO
+\end{proof}
+
+Assume that $\Gamma \tee \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2} v \lin e : B$.
+By the box-elim rule, we have $\Gamma = \Gamma_1 + \Gamma_2$ for some $\Gamma_1$ and $\Gamma_2$,
+and $\Gamma_1 \tee \bbox_{q_2} v :^{q_1} \boxempty^{q_2} A$,
+and $\Gamma_2, x :^{q_1 \cdot q_2} A \tee e : B$.
+By the box-intro rule, we have $\Gamma_1 \tee v :^{q_1 \cdot q_2} A$.
+We use the forward substitution lemma, to obtain $\Gamma_1 + \Gamma_2 \tee e[v/x] : B$.
+
 \begin{acks}
 
 The internship was supervised by Anton Lorenzen and Sam Lindley, University of Edinburgh. \\
