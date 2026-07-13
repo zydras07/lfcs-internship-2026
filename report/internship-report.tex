@@ -192,12 +192,6 @@ A fine-grained call-by-value calculus in the style of \cite{Abel:unified,Choudhu
   }{
     0 \cdot \Gamma, x :^1 A, 0 \cdot \Gamma' \tee x : A
   } \and
-  \inferrule*[right=sub]{
-    q \leq q' \\
-    \Gamma, x :^q A, \Gamma' \tee v : B
-  }{
-    \Gamma, x :^{q'} A, \Gamma' \tee v : B
-  } \and
   \inferrule*[right=lam]{
     \Gamma, x :^q A \tee e : B
   }{
@@ -234,6 +228,12 @@ A fine-grained call-by-value calculus in the style of \cite{Abel:unified,Choudhu
 \paragraph{Expression typing rules} \hfill \framebox{$\Gamma \tee e : B$}
 
 \begin{mathpar}
+  \inferrule*[right=sub]{
+    q \leq q' \\
+    \Gamma, x :^q A, \Gamma' \tee e : B
+  }{
+    \Gamma, x :^{q'} A, \Gamma' \tee e : B
+  } \and
   \inferrule*[right=app]{
     \Gamma_1 \tee e : \,^q A \rightarrow B \\
     \Gamma_2 \tee v : A
@@ -474,7 +474,7 @@ We define $\mathrm{locks}(\Gamma)$ as the composition of all locks in $\Gamma$:
 
 The graded modal calculus and the mode qualifier calculus have a similar parameterisation. Both are characterised by an algebra $(S, +, \cdot, \le, 0, 1)$, where 0 is the additive identity and multiplicative zero and 1 is the multiplicative identity. 
 
-$\Gamma_1 + \Gamma_2$, where $\Gamma_1$ and $\Gamma_2$ are contexts, is defined by adding modes point-wise over variables, and $q \cdot \Gamma$, where $q$ is a mode and $\Gamma$ is a context, is defined by multiplying modes point-wise over the variables in $\Gamma$.
+$\Gamma_1 + \Gamma_2$, where $\Gamma_1$ and $\Gamma_2$ are contexts, is defined as any $\Gamma \ge \Gamma^\prime$ where $\Gamma^\prime$ is obtained by adding modes point-wise over variables, and $q \cdot \Gamma$, where $q$ is a mode and $\Gamma$ is a context, is defined by multiplying modes point-wise over the variables in $\Gamma$.
 
 $\Gamma_1 \le \Gamma_2$ is also defined by comparing variables point-wise. In the mode qualifier calculus, if variable modes are equal when compared point-wise, then locks may be compared point-wise contrapositively, where $\mu \le \mu^\prime$ $\Gamma_1, \lock_{\mu^\prime}, \Gamma_2 \le \Gamma_1, \lock_\mu, \Gamma_2$. Two contexts are incomparable if they have a different set of variables or locks in different positions.
 
@@ -639,8 +639,8 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
 \end{proof}
 
 \begin{theorem}[Weakening for Graded Modal Type Theory]
-\label{thm:graded-modal-weakening}
-  If \ $\Gamma \leq \Gamma^\prime$ and $\Gamma \tee e : A$, then $\Gamma^\prime \tee e : A$.
+\label{thm:graded-modal-weakening-values}
+  If \ $\Gamma \leq \Gamma^\prime$ and $\Gamma \tee v : A$, then $\Gamma^\prime \tee v : A$.
 \end{theorem}
 
 \begin{proof}
@@ -671,9 +671,7 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     By LAM on this, $\Gamma^\prime \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu^\prime$, as required.
     \\
     \item[Case APP.]
-    By the inductive hypothesis, have $\Gamma^\prime_1 \tee e_1 : (A \at \mu_1 \rightarrow B \at \mu_2) \at \_$ and $\Gamma^\prime_2 \tee e_2 : A \at \mu_1$. 
-    
-    By APP on these and assumption $\mu_2^\prime \le \mu_2$, $\Gamma^\prime_1 + \Gamma^\prime_2 \tee e_1 e_2 : B \at \mu_2^\prime$ as required.
+    By the definition of $+$ over contexts, $\Gamma^\prime \tee e_1 e_2 : B \at \mu_2^\prime$, as required.
     \\
     \item[Case $\boxempty$I.]
     By the inductive hypothesis, have $\Gamma^\prime \tee e : A \at \nu \cdot \mu^\prime$.
@@ -835,11 +833,6 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     
     Thus, by VAR, $\cdot, x : \sem{A} \at q \tee x : \sem{A} \at q$, as required.
     \\
-    \item[Case SUB.]
-    By the inductive hypothesis, have $q^\prime \cdot \sem{\Gamma}, x : \sem{A} \at q^\prime \cdot q_1, q^\prime \cdot \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$. 
-    
-    Thus, by the assumption $q_1 \le q_2$ and weakening, $q^\prime \cdot \sem{\Gamma}, x : \sem{A} \at q_2, q^\prime \cdot \sem{\Gamma^\prime} \tee \sem{v} : \sem{B} \at q$, as required.
-    \\
     \item[Case LAM.]
     By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q \tee \sem{e} : \sem{B} \at 1$. 
 
@@ -888,8 +881,13 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
 \end{theorem}
 
 \begin{proof} 
-  Proceed by induction over the structure of the derivation of  $\Gamma \tee e : A$.
+  Proceed by induction over the structure of the derivation of $\Gamma \tee e : A$.
   \begin{description}
+    \item[Case SUB.]
+    By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q_1, \sem{\Gamma^\prime} \tee \sem{e} : \sem{B} \at q$. 
+    
+    Thus, by the assumption $q_1 \le q_2$ and weakening, $\sem{\Gamma}, x : \sem{A} \at q_2, \sem{\Gamma^\prime} \tee \sem{e} : \sem{B} \at q$, as required.
+    \\
     \item[Case APP.]
     By assumption, have \textbf{(1)} $\Gamma_1 \tee e : \,^qA \rightarrow B$ and \textbf{(2)} $\Gamma_2 \tee v : A$. 
     
@@ -2026,6 +2024,7 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
     By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee \bbox_\nu v : \boxempty^\mu A \at \nu$.
 
     Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma \tee v : A \at \nu \cdot \mu$, as required.
+    \\
     \item[Case \mbox{$\llet_{\mu_1} (x, y) = (v_1, v_2) \lin e \red e[v_1/x, v_2/y] : A \at \mu_2$}.] 
     By assumption, have \textbf{(1)} $(\Gamma_{1_1} + \Gamma_{1_2}) + \Gamma_2 \tee \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e : B \at \mu_2$.
 
@@ -2133,12 +2132,6 @@ $\Gamma \tee v : A$ in the graded modal type theory.
   }{
     0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma' \tee x :^q A
   } \and
-  \inferrule*[right=sub]{
-    q' \leq q'' \\
-    \Gamma, x :^{qq'} A, \Gamma' \tee v :^q B
-  }{
-    \Gamma, x :^{qq''} A, \Gamma' \tee v :^q B
-  } \and
   \inferrule*[right=lam]{
     \Gamma, x :^q A \tee e : B
   }{
@@ -2175,6 +2168,12 @@ $\Gamma \tee v : A$ in the graded modal type theory.
 \paragraph{Expression typing rules} \hfill \framebox{$\Gamma \tee e : B$}
 
 \begin{mathpar}
+  \inferrule*[right=sub]{
+    q' \leq q'' \\
+    \Gamma, x :^{q'} A, \Gamma' \tee e : B
+  }{
+    \Gamma, x :^{q''} A, \Gamma' \tee e : B
+  } \and
   \inferrule*[right=app]{
     \Gamma_1 \tee e : \,^q A \rightarrow B \\
     \Gamma_2 \tee v :^q A
@@ -2215,12 +2214,133 @@ $\Gamma \tee v : A$ in the graded modal type theory.
 
 \paragraph{Box-elim reduction}
 
-\begin{lemma}[Forward Substitution for new type theory]
-\label{lem:new-modal-forward-substitution}
+\begin{lemma}
+\label{lem:new-modal-mode-split}
+  If $\Gamma \tee v :^q A$, then $q \cdot \Gamma^\prime \le \Gamma$ for some $\Gamma^\prime$, $q_1 \cdot \Gamma^\prime \tee v :^{q_1} A$ and $q_2 \cdot \Gamma^\prime \tee v :^{q_2} A$ for all $q_1 + q_2 = q^\prime$.
+\end{lemma}
+
+\begin{proof}
+  Proceed by induction over the structure of the derivation of $\Gamma \tee v :^q A$.
+  \begin{description}
+    \item[Case VAR.]
+    By assumption, have $0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma^\prime \tee x :^q A$.
+    
+    For the exists statement, let $\Gamma^\prime = 0 \cdot \Gamma, x :^1 A, 0 \cdot \Gamma^\prime$.
+
+    $0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma^\prime \ge q \cdot (0 \cdot \Gamma, x :^1 A, 0 \cdot \Gamma^\prime)$, as required.
+
+    $0 \cdot \Gamma, x :^{q_1} A, 0 \cdot \Gamma^\prime \tee x :^{q_1} A$ and $0 \cdot \Gamma, x :^{q_2} A, 0 \cdot \Gamma^\prime \tee x :^{q_2} A$, as required.
+    \\
+    \item[Case LAM.]
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma \tee \lambda x.e :^{q^\prime} \,^q A \rightarrow B$.
+
+    For the exists statement, let $\Gamma^\prime = \Gamma$.
+
+    $q^\prime \cdot \Gamma \le q^\prime \cdot \Gamma$, as required.
+
+    By LAM inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma, x :^q A \tee e : B$.
+
+    By LAM on \textbf{(2)}, $q_1^\prime \cdot \Gamma \tee \lambda x.e :^{q_1} \,^q A \rightarrow B$ and $q_2^\prime \cdot \Gamma \tee \lambda x.e :^{q_2} \,^q A \rightarrow B$, as required.
+    \\
+    \item[Case UNIT.]
+    By assumption, have \textbf{(1)} $0 \cdot \Gamma \tee () :^q \unit$.
+
+    For the exists statement, let $\Gamma^\prime = 0 \cdot \Gamma$.
+
+    $0 \cdot \Gamma \ge q \cdot (0 \cdot \Gamma)$, as required.
+
+    By UNIT, $q_1 \cdot (0 \cdot \Gamma) \tee () :^{q_1} \unit$ and $q_2 \cdot (0 \cdot \Gamma) \tee () :^{q_2} \unit$, as required.
+    \\
+    \item[Case PAIR.]
+    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^q A \times B$.
+
+    By PAIR inversion, have \textbf{(2)} $\Gamma_1 \tee v_1 :^q A$ and \textbf{(3)} $\Gamma_2 \tee v_2 :^q B$.
+
+    By the inductive hypothesis, have $q \cdot \Gamma_1^\prime \ge \Gamma_1$ and $q \cdot \Gamma_2^\prime \ge \Gamma_2$ where \textbf{(4)} $q_{1_1} \cdot \Gamma_1^\prime \tee v_1 :^{q_{1_1}} A$, \textbf{(5)} $q_{1_2} \cdot \Gamma_1^\prime \tee v_1 :^{q_{1_2}} A$, \textbf{(6)} $q_{2_1} \cdot \Gamma_2^\prime \tee v_2 :^{q_{2_1}} B$ and \textbf{(7)} $q_{2_2} \cdot \Gamma_2^\prime \tee v_2 :^{q_{2_2}} B$, for any $q_{1_1} + q_{1_2} = q$ and $q_{2_1} + q_{2_2} = q$.
+
+    For the exists statement, let $\Gamma^\prime = \Gamma_1^\prime + \Gamma_2^\prime$.
+
+    $q \cdot (\Gamma_1^\prime + \Gamma_2^\prime) \ge q \cdot \Gamma_1^\prime + q \cdot \Gamma_2^\prime \ge \Gamma_1 + \Gamma_2$, as required.
+
+    By PAIR on \textbf{()}
+    \\
+    \item[Case INL.]
+    By assumption, have \textbf{(1)} $\Gamma \tee \inl v :^q A + B$.
+
+    By INL inversion, have \textbf{(2)} $\Gamma \tee v :^q A$.
+
+    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q \cdot \Gamma^\prime \le \Gamma$ where \textbf{(4)} $q_1 \cdot \Gamma^\prime \tee v :^{q_1} A$ and \textbf{(5)} $q_2 \cdot \Gamma^\prime \tee v :^{q_2} A$ for any $q_1 + q_2 = q$.
+
+    For the exists statement, let $\Gamma^\prime = \Gamma^\prime$ as above.
+
+    \textbf{(3)} is as required.
+
+    By INL on each of \textbf{(4)} and \textbf{(5)}, $q_1 \cdot \Gamma^\prime \tee \inl v :^{q_1} A + B$ and $q_2 \cdot \Gamma^\prime \tee \inl v :^{q_2} A + B$, as required.
+    \\
+    \item[Case INR.]
+    By assumption, have \textbf{(1)} $\Gamma \tee \inr v :^q A + B$.
+
+    By INR inversion, have \textbf{(2)} $\Gamma \tee v :^q B$.
+
+    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $q \cdot \Gamma^\prime \le \Gamma$ where \textbf{(4)} $q_1 \cdot \Gamma^\prime \tee v :^{q_1} B$ and \textbf{(5)} $q_2 \cdot \Gamma^\prime \tee v :^{q_2} B$ for any $q_1 + q_2 = q$.
+
+    For the exists statement, let $\Gamma^\prime = \Gamma^\prime$ as above.
+
+    \textbf{(3)} is as required.
+
+    By INR on each of \textbf{(4)} and \textbf{(5)}, $q_1 \cdot \Gamma^\prime \tee \inr v :^{q_1} A + B$ and $q_2 \cdot \Gamma^\prime \tee \inr v :^{q_2} A + B$, as required.
+    \\
+    \item[Case $\boxempty$I.]
+    By assumption, have \textbf{(1)} $q^\prime \cdot \Gamma \tee \bbox_{q^\prime} v :^q \boxempty^{q^\prime} A$.
+
+    By $\boxempty$I inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee v :^{q \cdot q^\prime} A$.
+
+    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $(q \cdot q^\prime) \cdot \Gamma^\prime \le \Gamma$ where \textbf{(4)} $(q_1 \cdot q^\prime) \cdot \Gamma^\prime \tee v :^{q_1 \cdot q^\prime} A$ and \textbf{(5)} $q_2 \cdot \Gamma^\prime \tee v :^{q_2 \cdot q^\prime}$ for all $q_1 + q_2 = q \cdot q^\prime$.
+
+    For the exists statement, let $\Gamma^\prime = $
+    
+    By $\boxempty$I on each of \textbf{(4)} and \textbf{(5)}, $q_1 \cdot \Gamma^\prime \tee  v :^{q_1} A + B$ and $q_2 \cdot \Gamma^\prime \tee \inr v :^{q_2} A + B$, as required.
+    \\
+  \end{description}
+\end{proof}
+
+\begin{lemma}[Forward Substitution for New Type Theory Values]
+\label{lem:new-modal-forward-substitution-vals}
+  If $\Gamma_1 \tee v :^q A$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime :^{q^\prime} B$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee v^\prime[v/x] :^{q^\prime} B$.
+\end{lemma}
+
+\begin{proof}
+  TODO.
+  
+\end{proof}
+
+\begin{lemma}[Forward Substitution for New Type Theory Expressions]
+\label{lem:new-modal-forward-substitution-exprs}
   If $\Gamma_1 \tee v :^q A$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : B$.
 \end{lemma}
+
 \begin{proof}
-  TODO
+  Proceed by induction over the structure of the derivation of $\Gamma_2, x :^q A, \Gamma_2^\prime \tee e : B$.
+
+  For brevity, we only consider the $\boxempty$E case.
+  \begin{description}
+    \item[Case $\boxempty$E.]
+    By assumption, have \textbf{(1)} $\Gamma_1 \tee v :^q A$ and \textbf{(2)} $\Gamma_2, x :^q A, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = \bbox_{q_2} v^\prime \lin e : B_2$.
+
+    By $\boxempty$E on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x :^{q_1^\prime} A, \Gamma_{2_1}^\prime \tee \bbox_{q_2} v^\prime :^{q_1} \boxempty^{q_2} B_1$ and \textbf{(4)} $\Gamma_{2_2}, x :^{q_2^\prime} A, \Gamma_{2_2}^\prime, y :^{q_1 \cdot q_2} B_1 \tee e : B_2$, where $q_1^\prime + q_2^\prime = q$, $\Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$ and $\Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$.
+
+    By \ref{lem:new-modal-mode-split} on \textbf{(1)}, have some $\Gamma_1^\prime$ such that \textbf{(5)} $q \cdot \Gamma_1^\prime \le \Gamma_1$, \textbf{(6)} $q_1^\prime \cdot \Gamma_1^\prime \tee v :^{q_1^\prime} A$ and \textbf{(7)} $q_2^\prime \cdot \Gamma_1^\prime \tee v :^{q_2^\prime} A$.
+
+    By \ref{lem:new-modal-forward-substitution-vals} on \textbf{(3)} and \textbf{(8)}, have \textbf{(9)} $q_1^\prime \cdot \Gamma_1^\prime + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee \bbox_{q_2} v^\prime[v/x] :^{q_1} \boxempty^{q_2} B_1$. 
+
+    By the inductive hypothesis on \textbf{(4)} and \textbf{(6)}, have \textbf{(10)} $q_2^\prime \cdot \Gamma_1^\prime + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y :^{q_1 \cdot q_2} B_1 \tee e[v/x] : B_2$.
+
+    By $\boxempty$E on \textbf{(9)} and \textbf{(10)}, have \textbf{(11)} $q_1^\prime \cdot \Gamma_1^\prime + q_2^\prime \cdot \Gamma_1^\prime + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = \bbox_{q_2} v^\prime[v/x] \lin e[v/x] : B_2$.
+
+    By weakening on \textbf{(11)} using law \ref{law:mul-distr-add-left-1}, have \textbf{(12)} $q \cdot \Gamma_1^\prime + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = \bbox_{q_2} v^\prime[v/x] \lin e[v/x] : B_2$.
+    
+    Thus, by weakening on \textbf{(12)} using \textbf{(5)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet_{q_1} \bbox_{q_2} y = \bbox_{q_2} v^\prime[v/x] \lin e[v/x] : B_2$, as required.
+  \end{description}
 \end{proof}
 
 Assume that $\Gamma \tee \llet_{q_1} \bbox_{q_2} x = \bbox_{q_2} v \lin e : B$.
