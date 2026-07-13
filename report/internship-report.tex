@@ -2319,6 +2319,24 @@ $\Gamma \tee v : A$ in the graded modal type theory.
   \end{description}
 \end{proof}
 
+\begin{lemma}
+\label{lem:new-modal-mode-split-2}
+  If $\Gamma_1 + \Gamma_2 \tee v :^{q_1 + q_2} A$, then $\Gamma_1 \tee v :^{q_1} A$ and $\Gamma_1 \tee v :^{q_2} A$.
+\end{lemma}
+
+\begin{proof}
+  Proceed by induction over the structure of $\Gamma_1 + \Gamma_2 \tee v :^{q_1 + q_2} A$.
+  \begin{description}
+    \item[Case VAR.] 
+    \item[Case LAM.] 
+    \item[Case UNIT.] 
+    \item[Case PAIR.] 
+    \item[Case INL.] 
+    \item[Case INR.] 
+    \item[Case $\boxempty$I.] 
+  \end{description}
+\end{proof}
+
 \begin{lemma}[Forward Substitution for New Type Theory Values]
 \label{lem:new-modal-forward-substitution-vals}
   If $\Gamma_1 \tee v :^q A$ and $\Gamma_2, x :^q A, \Gamma_2^\prime \tee v^\prime :^{q^\prime} B$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee v^\prime[v/x] :^{q^\prime} B$.
