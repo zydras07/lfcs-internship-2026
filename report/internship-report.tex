@@ -612,16 +612,6 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
 \end{proof}
 
 \begin{lemma}
-\label{lem:mul-left-inverse-div-le-contexts}
-  $\Gamma \le (q \cdot \Gamma) \setminus q$.
-\end{lemma}
-
-\begin{proof}
-  By the definition of $\setminus$ over contexts being point-wise, this follows from \ref{lem:mul-left-inverse-div-le}.
-  
-\end{proof}
-
-\begin{lemma}
 \label{lem:div-identity}
   $1 \le q \setminus q$.
 \end{lemma}
@@ -833,7 +823,7 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     \item[Case LAM.]
     By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q \tee \sem{e} : \sem{B} \at 1$. 
 
-    By weakening using \ref{lem:mul-left-inverse-div-le-contexts}, have $(q^\prime \cdot \sem{\Gamma}) \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
+    By weakening using \ref{lem:mul-left-inverse-div-le}, have $(q^\prime \cdot \sem{\Gamma}) \setminus q^\prime, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
     
     By \ref{thm:mode-qualifiers-div-to-lock}, have $q^\prime \cdot \sem{\Gamma}, \lock_q, x : \sem{A} \at q \tee \sem{e} : B \at 1$. 
     
@@ -849,7 +839,7 @@ $\top \le 0 \le 1 \le \mathbb{G}$, $+$ as maximum, $\top$ as the multiplicative 
     
     By PAIR on \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $q \cdot \sem{\Gamma_1} + q \cdot \sem{\Gamma_2} \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$
     
-    Thus, by weakening using law \ref{law:mul-distr-add-left-1}, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
+    Thus, by law \ref{law:mul-distr-add-left-1} and \ref{law:mul-distr-add-left-2}, forming an equality, $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee (\sem{v_1}, \sem{v_2}) : \sem{A} \times \sem{B} \at q$, which, by translation, is equivalent to $q \cdot (\sem{\Gamma_1} + \sem{\Gamma_2}) \tee \sem{(v_1, v_2)} : \sem{A \times B} \at q$, as required.
     \\ 
     \item[Case INL.]
     By the inductive hypothesis, have $q \cdot \sem{\Gamma} \tee \sem{e} : \sem{A} \at q$. 
@@ -883,7 +873,7 @@ If $\Gamma \tee e : A$, then $\sem{\Gamma} \tee \sem{e} : \sem{A} \at 1$.
     \item[Case SUB.]
     By the inductive hypothesis, have $\sem{\Gamma}, x : \sem{A} \at q_1, \sem{\Gamma^\prime} \tee \sem{e} : \sem{B} \at q$. 
     
-    Thus, by the assumption $q_1 \le q_2$ and weakening, $\sem{\Gamma}, x : \sem{A} \at q_2, \sem{\Gamma^\prime} \tee \sem{e} : \sem{B} \at q$, as required.
+    Thus, by weakening using the assumption $q_1 \le q_2$, $\sem{\Gamma}, x : \sem{A} \at q_2, \sem{\Gamma^\prime} \tee \sem{e} : \sem{B} \at q$, as required.
     \\
     \item[Case APP.]
     By assumption, have \textbf{(1)} $\Gamma_1 \tee e : \,^qA \rightarrow B$ and \textbf{(2)} $\Gamma_2 \tee v : A$. 
@@ -1902,204 +1892,204 @@ Recall $E ::= [\cdot] \mid E\, v \mid \llet x \leftarrow E \lin e$.
   By Lemmas~\ref{lem:graded-modal-type-preservation-beta-reduction-laws}, \ref{lem:graded-modal-type-preservation-beta-expansion-laws}, \ref{lem:graded-modal-type-preservation-eta-laws} and \ref{lem:graded-modal-type-preservation-commuting-conversions}.
 \end{proof}
 
-\subsection{Equational Laws for Mode Qualifiers}
+% \subsection{Equational Laws for Mode Qualifiers}
 
-\paragraph{Beta laws}
+% \paragraph{Beta laws}
 
-\begin{align*}
-  (\lambda x.\, e)\, v &\red e[v/x] : A \at \mu_3 \\
-  \llet x = v \lin e &\red e[v/x] : A \at \mu_2 \\
-  \unbox_\nu\, (\bbox_\nu\, v) &\red v : A \at \nu \cdot \mu \\
-  \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e &\red e[v_1/x, v_2/y] : A \at \mu_2 \\
-  \case_{\mu_1}\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\red e_1[v/x] : A \at \mu_2 \\
-  \case_{\mu_1}\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\red e_2[v/y] : A \at \mu_2
-\end{align*}
+% \begin{align*}
+%   (\lambda x.\, e)\, v &\red e[v/x] : A \at \mu_3 \\
+%   \llet x = v \lin e &\red e[v/x] : A \at \mu_2 \\
+%   \unbox_\nu\, (\bbox_\nu\, v) &\red v : A \at \nu \cdot \mu \\
+%   \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e &\red e[v_1/x, v_2/y] : A \at \mu_2 \\
+%   \case_{\mu_1}\, (\inl\, v)\, \{x.e_1;\; y.e_2\} &\red e_1[v/x] : A \at \mu_2 \\
+%   \case_{\mu_1}\, (\inr\, v)\, \{x.e_1;\; y.e_2\} &\red e_2[v/y] : A \at \mu_2
+% \end{align*}
 
-\begin{lemma}
-  \label{lem:mode-qualifiers-mode-split}
-  If $\Gamma_1 + \Gamma_2 \tee e : A \at (q_1 + q_2)$, then $\Gamma_1 \tee e : A \at q_1$ and $\Gamma_2 \tee e : A \at q_2$.
-\end{lemma}
+% \begin{lemma}
+%   \label{lem:mode-qualifiers-mode-split}
+%   If $\Gamma_1 + \Gamma_2 \tee e : A \at (q_1 + q_2)$, then $\Gamma_1 \tee e : A \at q_1$ and $\Gamma_2 \tee e : A \at q_2$.
+% \end{lemma}
 
-\begin{proof}
-  TODO?
+% \begin{proof}
+%   TODO?
   
-\end{proof}
+% \end{proof}
 
-\begin{lemma}[Forward Substitution for Mode Qualifiers]
-\label{lem:mode-qualifiers-forward-substitution}
-  If $\Gamma_1 \tee v : A \at \mu_1$ and $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : B \at \mu_2$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : B \at \mu_2$.
-\end{lemma}
+% \begin{lemma}[Forward Substitution for Mode Qualifiers]
+% \label{lem:mode-qualifiers-forward-substitution}
+%   If $\Gamma_1 \tee v : A \at \mu_1$ and $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : B \at \mu_2$, then $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : B \at \mu_2$.
+% \end{lemma}
 
-\begin{proof}
-  Proceed by induction over the structure of the derivation of $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : B$.
+% \begin{proof}
+%   Proceed by induction over the structure of the derivation of $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : B$.
 
-  Most cases will be omitted for brevity.
-  \begin{description}
-    \item[Case VAR.] 
-    Since $\Gamma_2 = \Gamma_2^\prime = \cdot$, by assumption, $\Gamma_1 \tee v : A \at \mu_1$, as required.
-    \\
-    \item[Case LAM.] 
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \lambda y.e : (B_1 \at \mu_2 \rightarrow B_2 \at \mu_3) \at \mu_4$.
+%   Most cases will be omitted for brevity.
+%   \begin{description}
+%     \item[Case VAR.] 
+%     Since $\Gamma_2 = \Gamma_2^\prime = \cdot$, by assumption, $\Gamma_1 \tee v : A \at \mu_1$, as required.
+%     \\
+%     \item[Case LAM.] 
+%     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \lambda y.e : (B_1 \at \mu_2 \rightarrow B_2 \at \mu_3) \at \mu_4$.
 
-    By LAM on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime, \lock_{\mu_4}, y : B_1 \at \mu_2 \tee e : B_2 \at \mu_3$.
+%     By LAM on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime, \lock_{\mu_4}, y : B_1 \at \mu_2 \tee e : B_2 \at \mu_3$.
 
-    By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime, \lock_{\mu_4}, y : B_1 \at \mu_2 \tee e[v/x] : B_2 \at \mu_3$.
+%     By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime, \lock_{\mu_4}, y : B_1 \at \mu_2 \tee e[v/x] : B_2 \at \mu_3$.
 
-    Thus, by LAM on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \lambda y.e[v/x] : (B_1 \at \mu_2 \rightarrow B_2 \at \mu_3) \at \mu_4$, as required.
-    \\
-    \item[Case APP.]
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e_1 \, e_2 : B_2 \at \mu_2$.
+%     Thus, by LAM on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \lambda y.e[v/x] : (B_1 \at \mu_2 \rightarrow B_2 \at \mu_3) \at \mu_4$, as required.
+%     \\
+%     \item[Case APP.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e_1 \, e_2 : B_2 \at \mu_2$.
 
-    By APP on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x : A \at \mu_{1_1}, \Gamma_{2_1}^\prime \tee e_1 : (B_1 \at \mu_3 \rightarrow B_2 \at \mu_4) \at \mu_5$, \textbf{(4)} $\Gamma_{2_2}, x : A \at \mu_{1_2}, \Gamma_{2_2}^\prime \tee e_2 : B_1 \at \mu_3$ and \textbf{(5)} $\mu_4 \ge \mu_2$, where $\mu_{1_1} + \mu_{1_2} = \mu_1$, $\Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$ and $\Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$.
+%     By APP on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x : A \at \mu_{1_1}, \Gamma_{2_1}^\prime \tee e_1 : (B_1 \at \mu_3 \rightarrow B_2 \at \mu_4) \at \mu_5$, \textbf{(4)} $\Gamma_{2_2}, x : A \at \mu_{1_2}, \Gamma_{2_2}^\prime \tee e_2 : B_1 \at \mu_3$ and \textbf{(5)} $\mu_4 \ge \mu_2$, where $\mu_{1_1} + \mu_{1_2} = \mu_1$, $\Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$ and $\Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$.
 
-    By \ref{lem:mode-qualifiers-mode-split} on \textbf{(1)}, have \textbf{(6)} $\Gamma_{1_1} \tee v : A \at \mu_{1_1}$ and \textbf{(7)} $\Gamma_{1_2} \tee v : A \at \mu_{1_2}$, where $\Gamma_{1_1} + \Gamma_{1_2} = \Gamma_1$.
+%     By \ref{lem:mode-qualifiers-mode-split} on \textbf{(1)}, have \textbf{(6)} $\Gamma_{1_1} \tee v : A \at \mu_{1_1}$ and \textbf{(7)} $\Gamma_{1_2} \tee v : A \at \mu_{1_2}$, where $\Gamma_{1_1} + \Gamma_{1_2} = \Gamma_1$.
 
-    By the inductive hypothesis on \textbf{(3)} with \textbf{(5)} and  \textbf{(4)} with \textbf{(6)}, have \textbf{(8)} $\Gamma_{1_1} + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee e_1[v/x] : (B_1 \at \mu_3 \rightarrow B_2 \at \mu_4) \at \mu_5$ and \textbf{(9)} $\Gamma_{1_2} + \Gamma_{2_2}, \Gamma_{2_2}^\prime \tee e_2[v/x] : B_1 \at \mu_3$.
+%     By the inductive hypothesis on \textbf{(3)} with \textbf{(5)} and  \textbf{(4)} with \textbf{(6)}, have \textbf{(8)} $\Gamma_{1_1} + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee e_1[v/x] : (B_1 \at \mu_3 \rightarrow B_2 \at \mu_4) \at \mu_5$ and \textbf{(9)} $\Gamma_{1_2} + \Gamma_{2_2}, \Gamma_{2_2}^\prime \tee e_2[v/x] : B_1 \at \mu_3$.
 
-    Thus, by APP on \textbf{(5)}, \textbf{(8)} and \textbf{(9)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e_1[v/x] \, e_2[v/x] : B_2 \at \mu_2$, as required.
-    \\
-    \item[Case $\boxempty$I.]
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \bbox_{\mu_3} e : \boxempty^{\mu_3} A \at \mu_2$.
+%     Thus, by APP on \textbf{(5)}, \textbf{(8)} and \textbf{(9)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e_1[v/x] \, e_2[v/x] : B_2 \at \mu_2$, as required.
+%     \\
+%     \item[Case $\boxempty$I.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \bbox_{\mu_3} e : \boxempty^{\mu_3} A \at \mu_2$.
 
-    By $\boxempty$I on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : A \at \mu_2 \cdot \mu_3$.
+%     By $\boxempty$I on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : A \at \mu_2 \cdot \mu_3$.
 
-    By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : A \at \mu_2 \cdot \mu_3$.
+%     By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : A \at \mu_2 \cdot \mu_3$.
 
-    Thus, by $\boxempty$I on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \bbox_{\mu_3} e[v/x] : \boxempty^{\mu_3} A \at \mu_2$, as required.
-    \\
-    \item[Case $\boxempty$E.]
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \unbox_{\mu_3} e : A \at \mu_2 \cdot \mu_3$.
+%     Thus, by $\boxempty$I on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \bbox_{\mu_3} e[v/x] : \boxempty^{\mu_3} A \at \mu_2$, as required.
+%     \\
+%     \item[Case $\boxempty$E.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \unbox_{\mu_3} e : A \at \mu_2 \cdot \mu_3$.
 
-    By $\boxempty$E on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : \boxempty^{\mu_3} A \at \mu_2$.
+%     By $\boxempty$E on \textbf{(2)}, have \textbf{(3)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee e : \boxempty^{\mu_3} A \at \mu_2$.
 
-    By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : \boxempty^{\mu_3} A \at \mu_2$.
+%     By the inductive hypothesis on \textbf{(1)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : \boxempty^{\mu_3} A \at \mu_2$.
     
-    Thus, by $\boxempty$E on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : \at \mu_2 \cdot \mu_3$, as required.
-    \\
-    \item[Case LET.]
-    By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \llet y = e_1 in e_2 : B_2 \at \mu_2$.
+%     Thus, by $\boxempty$E on \textbf{(4)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee e[v/x] : \at \mu_2 \cdot \mu_3$, as required.
+%     \\
+%     \item[Case LET.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(2)} $\Gamma_2, x : A \at \mu_1, \Gamma_2^\prime \tee \llet y = e_1 \lin e_2 : B_2 \at \mu_2$.
 
-    By LET on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x : A \at \mu_{1_1}, \Gamma_{2_1}^\prime \tee e_1 : B_1 \at \mu_3$ and \textbf{(4)} $\Gamma_{2_2}, x : A \at \mu_{1_2}, \Gamma_{2_2}^\prime, y : B_1 \at \mu_3 \tee e_2 : B_2 \at \mu_2$, where $\mu_{1_1} + \mu_{1_2} = \mu_1$, $\Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$ and $\Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$.
+%     By LET on \textbf{(2)}, have \textbf{(3)} $\Gamma_{2_1}, x : A \at \mu_{1_1}, \Gamma_{2_1}^\prime \tee e_1 : B_1 \at \mu_3$ and \textbf{(4)} $\Gamma_{2_2}, x : A \at \mu_{1_2}, \Gamma_{2_2}^\prime, y : B_1 \at \mu_3 \tee e_2 : B_2 \at \mu_2$, where $\mu_{1_1} + \mu_{1_2} = \mu_1$, $\Gamma_{2_1} + \Gamma_{2_2} = \Gamma_2$ and $\Gamma_{2_1}^\prime + \Gamma_{2_2}^\prime = \Gamma_2^\prime$.
 
-    By \ref{lem:mode-qualifiers-mode-split} on \textbf{(1)}, have \textbf{(5)} $\Gamma_{1_1} \tee v : A \at \mu_{1_1}$ and \textbf{(6)} $\Gamma_{1_2} \tee v : A \at \mu_{1_2}$, where $\Gamma_{1_1} + \Gamma_{1_2} = \Gamma_1$.
+%     By \ref{lem:mode-qualifiers-mode-split} on \textbf{(1)}, have \textbf{(5)} $\Gamma_{1_1} \tee v : A \at \mu_{1_1}$ and \textbf{(6)} $\Gamma_{1_2} \tee v : A \at \mu_{1_2}$, where $\Gamma_{1_1} + \Gamma_{1_2} = \Gamma_1$.
 
-    By the inductive hypothesis on \textbf{(3)} with \textbf{(5)} and  \textbf{(4)} with \textbf{(6)}, have \textbf{(7)} $\Gamma_{1_1} + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee e_1[v/x] : B_1$ and \textbf{(8)} $\Gamma_{1_2} + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y : B_1 \at \mu_3 \tee e_2[v/x] : B_2 \at \mu_2$.
+%     By the inductive hypothesis on \textbf{(3)} with \textbf{(5)} and  \textbf{(4)} with \textbf{(6)}, have \textbf{(7)} $\Gamma_{1_1} + \Gamma_{2_1}, \Gamma_{2_1}^\prime \tee e_1[v/x] : B_1$ and \textbf{(8)} $\Gamma_{1_2} + \Gamma_{2_2}, \Gamma_{2_2}^\prime, y : B_1 \at \mu_3 \tee e_2[v/x] : B_2 \at \mu_2$.
 
-    Thus, by LET on \textbf{(7)} and \textbf{(8)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet y = e_1[v/x] \lin e_2[v/x] : B_2 \at \mu_2$, as required.
-  \end{description}
-\end{proof}
+%     Thus, by LET on \textbf{(7)} and \textbf{(8)}, $\Gamma_1 + \Gamma_2, \Gamma_2^\prime \tee \llet y = e_1[v/x] \lin e_2[v/x] : B_2 \at \mu_2$, as required.
+%   \end{description}
+% \end{proof}
 
-\begin{lemma}[Type Preservation for Beta Reduction Laws]
-\label{lem:mode-qualifiers-type-preservation-beta-reduction-laws}
-  If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_1 : A \at \mu$, then $\Gamma \tee e_2 : A \at \mu$.
-\end{lemma}
+% \begin{lemma}[Type Preservation for Beta Reduction Laws]
+% \label{lem:mode-qualifiers-type-preservation-beta-reduction-laws}
+%   If\/ $e_1 \equiv e_2 : A \at \mu$ and $\Gamma \tee e_1 : A \at \mu$, then $\Gamma \tee e_2 : A \at \mu$.
+% \end{lemma}
 
-\begin{proof}
-  Proceed by induction over the structure of $e_1 \red e_2 : A$. 
-  \begin{description}
-    \item[Case \mbox{$(\lambda x.e) v \red e[v/x] : A \at \mu_2$}.]
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee (\lambda x.e) v : B \at \mu_2$.
+% \begin{proof}
+%   Proceed by induction over the structure of $e_1 \red e_2 : A$. 
+%   \begin{description}
+%     \item[Case \mbox{$(\lambda x.e) v \red e[v/x] : A \at \mu_2$}.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee (\lambda x.e) v : B \at \mu_2$.
 
-    By APP on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_3) \at \mu_4$, \textbf{(3)} $\Gamma_2 \tee v : A \at \mu_1$ and \textbf{(4)} $\mu_3 \ge \mu_2$
+%     By APP on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \lambda x.e : (A \at \mu_1 \rightarrow B \at \mu_3) \at \mu_4$, \textbf{(3)} $\Gamma_2 \tee v : A \at \mu_1$ and \textbf{(4)} $\mu_3 \ge \mu_2$
 
-    By LAM on \textbf{(2)}, have \textbf{(5)} $\Gamma_1, \lock_{\mu_4}, x : A \at \mu_1 \tee e : B \at \mu_3$.
+%     By LAM on \textbf{(2)}, have \textbf{(5)} $\Gamma_1, \lock_{\mu_4}, x : A \at \mu_1 \tee e : B \at \mu_3$.
 
-    By \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, have \textbf{(6)} $(\Gamma_1, \lock_{\mu_4}) + \Gamma_2 \tee e[v/x] : B \at \mu_3$.
+%     By \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, have \textbf{(6)} $(\Gamma_1, \lock_{\mu_4}) + \Gamma_2 \tee e[v/x] : B \at \mu_3$.
 
-    Thus, by weakening, \textbf{(4)} and law \ref{law:add-mono} on \textbf{(6)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
-    \\
-    \item[Case \mbox{$\llet x = v \lin e \red e[v/x] : A \at \mu_2$}.]
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \llet x = v \lin e : B \at \mu_2$.
+%     Thus, by weakening using \textbf{(4)} and law \ref{law:add-mono} on \textbf{(6)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
+%     \\
+%     \item[Case \mbox{$\llet x = v \lin e \red e[v/x] : A \at \mu_2$}.]
+%     By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \llet x = v \lin e : B \at \mu_2$.
 
-    By LET on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(3)} $\Gamma_2, x : A \at \mu_1 \tee e : B \at \mu_2$.
+%     By LET on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee v : A \at \mu_1$ and \textbf{(3)} $\Gamma_2, x : A \at \mu_1 \tee e : B \at \mu_2$.
 
-    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(2)} and \textbf{(3)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
-    \\
-    \item[Case \mbox{$\unbox_\nu (\bbox_\nu v) \red v : A \at \nu \cdot \mu$}.] 
-    By assumption, have \textbf{(1)} $\Gamma \tee \unbox_\nu (\bbox_\nu v) : A \at \nu \cdot \mu$.
+%     Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(2)} and \textbf{(3)}, $\Gamma_1 + \Gamma_2 \tee e[v/x] : B \at \mu_2$, as required.
+%     \\
+%     \item[Case \mbox{$\unbox_\nu (\bbox_\nu v) \red v : A \at \nu \cdot \mu$}.] 
+%     By assumption, have \textbf{(1)} $\Gamma \tee \unbox_\nu (\bbox_\nu v) : A \at \nu \cdot \mu$.
 
-    By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee \bbox_\nu v : \boxempty^\mu A \at \nu$.
+%     By $\boxempty$E on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee \bbox_\nu v : \boxempty^\mu A \at \nu$.
 
-    Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma \tee v : A \at \nu \cdot \mu$, as required.
-    \\
-    \item[Case \mbox{$\llet_{\mu_1} (x, y) = (v_1, v_2) \lin e \red e[v_1/x, v_2/y] : A \at \mu_2$}.] 
-    By assumption, have \textbf{(1)} $(\Gamma_{1_1} + \Gamma_{1_2}) + \Gamma_2 \tee \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e : B \at \mu_2$.
+%     Thus, by $\boxempty$I on \textbf{(2)}, $\Gamma \tee v : A \at \nu \cdot \mu$, as required.
+%     \\
+%     \item[Case \mbox{$\llet_{\mu_1} (x, y) = (v_1, v_2) \lin e \red e[v_1/x, v_2/y] : A \at \mu_2$}.] 
+%     By assumption, have \textbf{(1)} $(\Gamma_{1_1} + \Gamma_{1_2}) + \Gamma_2 \tee \llet_{\mu_1} (x, y) = (v_1, v_2) \lin e : B \at \mu_2$.
 
-    By SPLIT on \textbf{(1)}, have \textbf{(2)} $\Gamma_{1_1} + \Gamma_{1_2} \tee (v_1, v_2) : A_1 \times A_2 \at \mu_1$ and \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1, y : A_2 \at \mu_1 \tee e : B \at \mu_2$.
+%     By SPLIT on \textbf{(1)}, have \textbf{(2)} $\Gamma_{1_1} + \Gamma_{1_2} \tee (v_1, v_2) : A_1 \times A_2 \at \mu_1$ and \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1, y : A_2 \at \mu_1 \tee e : B \at \mu_2$.
 
-    By PAIR on \textbf{(2)}, have \textbf{(4)} $\Gamma_{1_1} \tee v_1 : A_1$ and \textbf{(5)} $\Gamma_{1_2} \tee v_2 : A_2$.
+%     By PAIR on \textbf{(2)}, have \textbf{(4)} $\Gamma_{1_1} \tee v_1 : A_1$ and \textbf{(5)} $\Gamma_{1_2} \tee v_2 : A_2$.
 
-    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} with \textbf{(4)} and then \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : B \at \mu_2$, as required.
-    \\
-    \item[Case \mbox{$\case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} \red e_1[v/x] : A \at \mu_2$}.] 
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} : B \at \mu_2$.
+%     Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} with \textbf{(4)} and then \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e[v_2/y][v_1/x] : B \at \mu_2$, as required.
+%     \\
+%     \item[Case \mbox{$\case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} \red e_1[v/x] : A \at \mu_2$}.] 
+%     By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inl v) {x.e_1; \, y.e_2} : B \at \mu_2$.
     
-    By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inl v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
+%     By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inl v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
 
-    By INL on \textbf{(2)}, have \textbf{(5)} $\Gamma_1 \tee v : A_1 \at \mu_1$.
+%     By INL on \textbf{(2)}, have \textbf{(5)} $\Gamma_1 \tee v : A_1 \at \mu_1$.
 
-    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_1[v/x] : B \at \mu_2$, as required.
-    \\
-    \item[Case \mbox{$\case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} \red e_2[v/y]$}.] 
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} : B \at \mu_2$.
+%     Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_1[v/x] : B \at \mu_2$, as required.
+%     \\
+%     \item[Case \mbox{$\case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} \red e_2[v/y]$}.] 
+%     By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee \case_{\mu_1} (\inr v) {x.e_1; \, y.e_2} : B \at \mu_2$.
     
-    By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inr v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
+%     By CASE on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee \inr v : A_1 + A_2 \at \mu_1$, \textbf{(3)} $\Gamma_2, x : A_1 \at \mu_1 \tee e_1 : B \at \mu_2$ and \textbf{(4)} $\Gamma_2, y : A_2 \at \mu_1 \tee e_2 : B \at \mu_2$.
 
-    By INR on \textbf{(2)}, have \textbf{(5)} $\Gamma_2 \tee v : A_2 \at \mu_1$.
+%     By INR on \textbf{(2)}, have \textbf{(5)} $\Gamma_2 \tee v : A_2 \at \mu_1$.
 
-    Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_2[v/y] : B \at \mu_2$, as required.
-  \end{description}
-\end{proof}
+%     Thus, by \ref{lem:mode-qualifiers-forward-substitution} on \textbf{(3)} and \textbf{(5)}, $\Gamma_1 + \Gamma_2 \tee e_2[v/y] : B \at \mu_2$, as required.
+%   \end{description}
+% \end{proof}
 
-\paragraph{Eta laws}
+% \paragraph{Eta laws}
 
-\begin{align*}
-  \llet x = e \lin \lambda y.\, x\, y &\equiv e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu \\
-  \llet x = e \lin () &\equiv e : \unit \at \mu \\
-  \llet_1 (x, y) = e \lin (x, y) &\equiv e : A \times B \at \mu \\
-  \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e : A + B \at \mu \\
-  \bbox_\nu\, (\unbox_\nu\, e) &\equiv e : \boxempty^\nu A \at \mu
-\end{align*}
+% \begin{align*}
+%   \llet x = e \lin \lambda y.\, x\, y &\equiv e : (A \at \mu_1 \rightarrow B \at \mu_2) \at \mu \\
+%   \llet x = e \lin () &\equiv e : \unit \at \mu \\
+%   \llet_1 (x, y) = e \lin (x, y) &\equiv e : A \times B \at \mu \\
+%   \case_1\, e\, \{x.\, \inl\, x;\; y.\, \inr\, y\} &\equiv e : A + B \at \mu \\
+%   \bbox_\nu\, (\unbox_\nu\, e) &\equiv e : \boxempty^\nu A \at \mu
+% \end{align*}
 
-\begin{lemma}[Type Preservation for Eta Laws]
-\label{lem:mode-qualifiers-type-preservation-eta-laws}
-  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
-\end{lemma}
+% \begin{lemma}[Type Preservation for Eta Laws]
+% \label{lem:mode-qualifiers-type-preservation-eta-laws}
+%   If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+% \end{lemma}
 
-\paragraph{Evaluation contexts}
-Recall:
-\begin{align*}
-  E &::= [\cdot] \mid \bbox_\nu\, E \mid (E, e) \mid (v, E) \mid \inl\, E \mid \inr\, E \\
-    &\mid E\, e_2 \mid v_1\, E \mid \unbox_\nu\, E \\
-    &\mid \llet x = E \lin e \mid \llet_\mu (x, y) = E \lin e \\
-    &\mid \case_\mu\, E\, \{x.e_1;\; y.e_2\}
-\end{align*}
+% \paragraph{Evaluation contexts}
+% Recall:
+% \begin{align*}
+%   E &::= [\cdot] \mid \bbox_\nu\, E \mid (E, e) \mid (v, E) \mid \inl\, E \mid \inr\, E \\
+%     &\mid E\, e_2 \mid v_1\, E \mid \unbox_\nu\, E \\
+%     &\mid \llet x = E \lin e \mid \llet_\mu (x, y) = E \lin e \\
+%     &\mid \case_\mu\, E\, \{x.e_1;\; y.e_2\}
+% \end{align*}
 
-\paragraph{Commuting conversions}
+% \paragraph{Commuting conversions}
 
-\begin{align*}
-  E[\llet x = e_1 \lin e_2]
-    &\equiv \llet x = e_1 \lin E[e_2] : A \at \mu_2
-    && (x \notin \mathrm{fv}(E)) \\
-  E[\llet_{\mu_1} (x, y) = e_1 \lin e_2]
-    &\equiv \llet_{\mu_1} (x, y) = e_1 \lin E[e_2] : A \at \mu_2
-    && (x, y \notin \mathrm{fv}(E)) \\
-  E[\case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\}]
-    &\equiv \case_{\mu_1}\, e\, \{x.\, E[e_1];\; y.\, E[e_2]\} : A \at \mu_2
-    && (x, y \notin \mathrm{fv}(E))
-\end{align*}
+% \begin{align*}
+%   E[\llet x = e_1 \lin e_2]
+%     &\equiv \llet x = e_1 \lin E[e_2] : A \at \mu_2
+%     && (x \notin \mathrm{fv}(E)) \\
+%   E[\llet_{\mu_1} (x, y) = e_1 \lin e_2]
+%     &\equiv \llet_{\mu_1} (x, y) = e_1 \lin E[e_2] : A \at \mu_2
+%     && (x, y \notin \mathrm{fv}(E)) \\
+%   E[\case_{\mu_1}\, e\, \{x.e_1;\; y.e_2\}]
+%     &\equiv \case_{\mu_1}\, e\, \{x.\, E[e_1];\; y.\, E[e_2]\} : A \at \mu_2
+%     && (x, y \notin \mathrm{fv}(E))
+% \end{align*}
 
-\begin{lemma}[Type Preservation for Commuting Conversions]
-\label{lem:mode-qualifiers-type-preservation-commuting-conversions}
-  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
-\end{lemma}
+% \begin{lemma}[Type Preservation for Commuting Conversions]
+% \label{lem:mode-qualifiers-type-preservation-commuting-conversions}
+%   If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+% \end{lemma}
 
-\begin{theorem}[Type Preservation for Mode Qualifiers]
-  If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
-\end{theorem}
-\begin{proof}
-  By Lemmas~\ref{lem:mode-qualifiers-type-preservation-beta-laws}, \ref{lem:mode-qualifiers-type-preservation-eta-laws} and \ref{lem:mode-qualifiers-type-preservation-commuting-conversions}.
-\end{proof}
+% \begin{theorem}[Type Preservation for Mode Qualifiers]
+%   If\/ $e_1 \equiv e_2 : A \at \mu$, then $\Gamma \tee e_1 : A \at \mu$ if and only if $\Gamma \tee e_2 : A \at \mu$.
+% \end{theorem}
+% \begin{proof}
+%   By Lemmas~\ref{lem:mode-qualifiers-type-preservation-beta-laws}, \ref{lem:mode-qualifiers-type-preservation-eta-laws} and \ref{lem:mode-qualifiers-type-preservation-commuting-conversions}.
+% \end{proof}
 
 \begin{acks}
 
