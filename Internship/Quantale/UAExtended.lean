@@ -16,7 +16,7 @@ inductive UAExtendedSemiring where
   |          bot
   deriving DecidableEq, Repr, Fintype
 
-@[grind]
+@[simp, grind]
 def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .top, n    => n
   | n, .top    => n
@@ -45,7 +45,7 @@ def meet : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .CAM, _    => .CAM
   | _, .CAM    => .CAM
 
-@[grind]
+@[simp, grind]
 def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .top, _    => .top
   | _, .top    => .top
@@ -74,12 +74,10 @@ def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | _, .CA     => .bot
   | _, .CAM    => .bot
 
-@[grind]
+@[simp, grind]
 def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .top, _    => .top
-  | .zero, n   => match n with
-    | .top => .top
-    | _ => .zero
+  | .zero, n   => .zero
   | .one, n    => n
   | .M, n      => match n with
     | .top => .top
@@ -139,31 +137,31 @@ def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
 instance : Top UAExtendedSemiring where
   top := .top
 
-@[grind =] theorem UAExtendedSemiring.top_eq :
+@[simp, grind =] theorem UAExtendedSemiring.top_eq :
     (⊤ : UAExtendedSemiring) = .top := rfl
 
 instance : Zero UAExtendedSemiring where
   zero := .zero
 
-@[grind =] theorem UAExtendedSemiring.zero_eq :
+@[simp, grind =] theorem UAExtendedSemiring.zero_eq :
     (0 : UAExtendedSemiring) = .zero := rfl
 
 instance : One UAExtendedSemiring where
   one := .one
 
-@[grind =] theorem UAExtendedSemiring.one_eq :
+@[simp, grind =] theorem UAExtendedSemiring.one_eq :
     (1 : UAExtendedSemiring) = .one := rfl
 
 instance : Add UAExtendedSemiring where
   add := seq
 
-@[grind =] theorem UAExtendedSemiring.hadd_eq (a b : UAExtendedSemiring) :
+@[simp, grind =] theorem UAExtendedSemiring.hadd_eq (a b : UAExtendedSemiring) :
     a + b = seq a b := rfl
 
 instance : Min UAExtendedSemiring where
   min := meet
 
-@[grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
+@[simp, grind =] theorem UAExtendedSemiring.hmin_eq (a b : UAExtendedSemiring) :
     a ⊓ b = meet a b := rfl
 
 instance : Quantale UAExtendedSemiring where
@@ -194,7 +192,7 @@ instance : Mode UAExtendedSemiring where
   one_scale := by native_decide
 
   scale_meet := by native_decide
-  meet_scale := by grind
+  meet_scale := by native_decide
   scale_seq := by simp [LE.le]; native_decide
   seq_scale := by simp [LE.le]; native_decide
 
@@ -254,6 +252,14 @@ instance : Comonadic Many UAExtendedSemiring where
     grind
   box_idem := by simp [Modality.box]; grind
 
+lemma many_box : ∀ (a : UAExtendedSemiring),
+  Modality.box a (.many : Many) = scale a .M := by
+    intro a; cases a <;> simp [Modality.box, scale]
+
+lemma scale_box_many : ∀ (a b : UAExtendedSemiring),
+  scale (Modality.box a (.many : Many)) b ≤ scale a (scale .M b) := by
+    intro a b; cases a <;> cases b <;> simp [LE.le, scale]
+
 inductive Aliased where | aliased
 
 instance : Modality Aliased UAExtendedSemiring where
@@ -264,20 +270,28 @@ instance : Modality Aliased UAExtendedSemiring where
   | .one => .A
   | .AM => .AM
   | .M => .AM
-  | .CA => .CA
-  | .CAM => .CAM
+  | .CA => .A
+  | .CAM => .AM
   | .bot => .bot
 
-  zero_box := by grind
-  top_box := by grind
+  zero_box := by simp
+  top_box := by simp
   meet_box := by grind
-  seq_box := by grind
+  seq_box a b c := by simp [LE.le]; grind
 
 instance : Monadic Aliased UAExtendedSemiring where
   box_inc := by
     simp [LE.le, UAExtendedSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
+
+lemma aliased_box : ∀ (a : UAExtendedSemiring),
+  Modality.box a (.aliased : Aliased) = scale a .A := by
+    intro a; cases a <;> simp [Modality.box, scale]
+
+lemma scale_box_aliased : ∀ (a b : UAExtendedSemiring),
+  scale (Modality.box a (.aliased : Aliased)) b ≤ scale a (scale b .A) := by
+    intro a b; cases a <;> cases b <;> simp [LE.le, scale]
 
 #eval scale .AM (scale .CA .A)
 #eval (scale .AM .CA)

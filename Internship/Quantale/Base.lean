@@ -65,8 +65,6 @@ class Mode (α : Type*)
 
   scale : α → α → α
 
-  scale_assoc : ∀ (a b c : α),
-    scale a (scale b c) ≥ scale (scale a b) c
   scale_top : ∀ a : α, scale a ⊤ = ⊤
   top_scale : ∀ a : α, scale ⊤ a = ⊤
   scale_zero : ∀ a : α, a = ⊤ ∨ scale a 0 = 0
@@ -74,6 +72,8 @@ class Mode (α : Type*)
   scale_one : ∀ a : α, scale a 1 = a
   one_scale : ∀ a : α, scale 1 a = a
 
+  scale_assoc : ∀ (a b c : α),
+    scale a (scale b c) ≥ scale (scale a b) c
   scale_meet : ∀ (a b c : α),
     scale a (b ⊓ c) = scale a b ⊓ scale a c
   meet_scale : ∀ (a b c : α),
@@ -102,7 +102,7 @@ class Modality (α : Type*) (β : Type*) [Mode β] where
   meet_box : ∀ (a : α) (b c : β),
     box (b ⊓ c) a = box b a ⊓ box c a
   seq_box : ∀ (a : α) (b c : β),
-    box (b + c) a = box b a + box c a
+    box (b + c) a ≤ box b a + box c a
 
 open Modality
 
@@ -266,6 +266,11 @@ instance [Mode β] [Modality α1 β] [Modality α2 β] : Modality (Comp α1 α2)
   top_box := by simp [top_box]
   zero_box := by simp [zero_box]
   meet_box := by simp [meet_box]
-  seq_box := by simp [seq_box]
+  seq_box := by
+    intros a b c;
+    cases a with | comp a1 a2 =>
+    apply (le_trans (box_monotone _ _ _ (seq_box a1 _ _)))
+    apply (le_trans (seq_box a2 _ _))
+    simp
 
 end Base

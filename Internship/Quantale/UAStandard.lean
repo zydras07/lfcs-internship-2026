@@ -181,6 +181,12 @@ lemma div_scale : ∀ (a b : UAStandardSemiring),
 lemma add_div : ∀ (a b q : UAStandardSemiring),
     ((div a q) + (div b q) ≥ div (a + b) q) := by native_decide
 
+lemma scale_seq_eq : ∀ (a b c : UAStandardSemiring),
+    scale a (b + c) = (scale a b) + (scale a c) := by grind
+
+lemma div_eq_top : ∀ (a b : UAStandardSemiring),
+    (div a b = ⊤ → a = ⊤) := by native_decide
+
 -- lemma split_add : ∀ (a b c : UAStandardSemiring),
     -- a + b ≥ c → ∃ d e, c = d + e ∧ a ≥ d ∧ b ≥ e := by
     -- intros a b c h;
@@ -224,20 +230,24 @@ instance : Modality Aliased UAStandardSemiring where
   | .zero => .zero
   | .A => .A
   | .AM => .AM
-  | .CA => .CA
-  | .CAM => .CAM
+  | .CA => .A
+  | .CAM => .AM
   | .bot => .bot
 
   zero_box := by grind
   top_box := by grind
   meet_box := by grind
-  seq_box := by grind
+  seq_box a b c := by simp [LE.le]; grind
 
 instance : Monadic Aliased UAStandardSemiring where
   box_inc := by
     simp [LE.le, UAStandardSemiring.hmin_eq, Modality.box]
     grind
   box_idem := by simp [Modality.box]; grind
+
+lemma aliased_box : ∀ (a : UAStandardSemiring),
+  Modality.box a (.aliased : Aliased) = scale a .A := by
+    intro a; cases a <;> simp [Modality.box, scale]
 
 #eval scale .AM (scale .CA .A)
 #eval (scale .AM .CA)
