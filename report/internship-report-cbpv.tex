@@ -92,6 +92,9 @@
 
 \renewcommand{\qed}{\hfill\resizebox{8px}{8px}{\input{image.pdf_tex}}}
 
+\DeclareMathOperator{\scale}{\mathbin{\triangleleft}}
+\DeclareMathOperator{\boxap}{\mathbin{\triangleright}}
+
 \newtheorem{law}{Law}
 
 \begin{document}
@@ -185,44 +188,44 @@ $\Gamma \tee v : A$ in the graded modal type theory.
   \inferrule*[right=var]{
     \phantom{.}
   }{
-    0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma' \tee x :^q A
+    0\Gamma, x :^q A, 0\Gamma' \tee x :^q A
   } \and
   \inferrule*[right=vsub]{
-    q' \leq q'' \\
-    \Gamma, x :^{q'} A, \Gamma' \tee v :^q B
+    \gamma \leq \delta \\
+    \gamma\Gamma \tee v :^q B
   }{
-    \Gamma, x :^{q''} A, \Gamma' \tee v :^q B
+    \delta\Gamma \tee v :^q B
   } \and
   \inferrule*[right=thunk]{
-    \Gamma \tee e : \underline{B}
+    \gamma\Gamma \tee e : \underline{B}
   }{
-    q\cdot\Gamma \tee \thunk\, e :^{q} U\, \underline{B}
+    (q\scale\gamma)\Gamma \tee \thunk\, e :^{q} U\, \underline{B}
   } \and
   \inferrule*[right=unit]{
     \phantom{.}
   }{
-    0\cdot\Gamma \tee () :^q \unit
+    0\Gamma \tee () :^q \unit
   } \and
   \inferrule*[right=pair]{
-    \Gamma_1 \tee v_1 :^q A \\
-    \Gamma_2 \tee v_2 :^q B
+    \gamma_1\Gamma \tee v_1 :^q A \\
+    \gamma_2\Gamma \tee v_2 :^q B
   }{
-    \Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^q A \times B
+    (\gamma_1 + \gamma_2)\Gamma \tee (v_1, v_2) :^q A \times B
   } \and
   \inferrule*[right=inl]{
-    \Gamma \tee v :^q A
+    \gamma\Gamma \tee v :^q A
   }{
-    \Gamma \tee \inl\, v :^q A + B
+    \gamma\Gamma \tee \inl\, v :^q A + B
   } \and
   \inferrule*[right=inr]{
-    \Gamma \tee v :^q B
+    \gamma\Gamma \tee v :^q B
   }{
-    \Gamma \tee \inr\, v :^q A + B
+    \gamma\Gamma \tee \inr\, v :^q A + B
   } \and
   \inferrule*[right=$\boxempty$I]{
-    \Gamma \tee v :^{q'q} A
+    \gamma\Gamma \tee v :^{q' \boxap q} A
   }{
-    \Gamma \tee \bbox_q\, v :^{q'} \boxempty^q A
+    \gamma\Gamma \tee \bbox_q\, v :^{q'} \boxempty^q A
   }
 \end{mathpar}
 
@@ -230,61 +233,61 @@ $\Gamma \tee v : A$ in the graded modal type theory.
 
 \begin{mathpar}
   \inferrule*[right=return]{
-    \Gamma \tee v :^q A
+    \gamma\Gamma \tee v :^q A
   }{
-    \Gamma \tee \return\, v : F^q\, A
+    \gamma\Gamma \tee \return\, v : F^q\, A
   } \and
   \inferrule*[right=force]{
-    \Gamma \tee v :^1 U\, \underline{B}
+    \gamma\Gamma \tee v :^1 U\, \underline{B}
   }{
-    \Gamma \tee \force\, v : \underline{B}
+    \gamma\Gamma \tee \force\, v : \underline{B}
   } \and
   \inferrule*[right=esub]{
-    q \leq q' \\
-    \Gamma, x :^{q} A, \Gamma' \tee e : \underline{B}
+    \gamma \leq \delta \\
+    \gamma\Gamma \tee e : \underline{B}
   }{
-    \Gamma, x :^{q'} A, \Gamma' \tee e : \underline{B}
+    \delta\Gamma \tee e : \underline{B}
   } \and
   \inferrule*[right=lam]{
-    \Gamma, x :^q A \tee e : \underline{B}
+    \gamma\Gamma, x :^q A \tee e : \underline{B}
   }{
-    \Gamma \tee \lambda x.\, e : \,^q A \rightarrow \underline{B}
+    \gamma\Gamma \tee \lambda x.\, e : \,^q A \rightarrow \underline{B}
   } \and
   \inferrule*[right=app]{
-    \Gamma_1 \tee e : \,^q A \rightarrow \underline{B} \\
-    \Gamma_2 \tee v :^q A
+    \gamma\Gamma \tee e : \,^q A \rightarrow \underline{B} \\
+    \gamma\Gamma \tee v :^q A
   }{
-    \Gamma_1 + \Gamma_2 \tee e\, v : \underline{B}
+    (\gamma + \delta)\Gamma \tee e\, v : \underline{B}
   } \and
   \inferrule*[right=bind]{
-    \Gamma_1 \tee e_1 : F^q\, A \\
-    \Gamma_2, x :^q A \tee e_2 : \underline{B}
+    \gamma\Gamma \tee e_1 : F^q\, A \\
+    \delta\Gamma, x :^q A \tee e_2 : \underline{B}
   }{
-    \Gamma_1 + \Gamma_2 \tee \llet x \leftarrow e_1 \lin e_2 : \underline{B}
+    (\gamma + \delta)\Gamma \tee \llet x \leftarrow e_1 \lin e_2 : \underline{B}
   } \and
   \inferrule*[right=$\boxempty$E]{
-    \Gamma_1 \tee v :^{q_1} \boxempty^{q_2} A \\
-    \Gamma_2, x :^{q_1 \cdot q_2} A \tee e : \underline{B}
+    \gamma\Gamma \tee v :^{q_1} \boxempty^{q_2} A \\
+    \delta\Gamma, x :^{q_1\boxap q_2} A \tee e : \underline{B}
   }{
-    \Gamma_1 + \Gamma_2 \tee \llet_{q_1} \bbox_{q_2} x = v \lin e : \underline{B}
+    (\gamma + \delta)\Gamma \tee \llet_{q_1} \bbox_{q_2} x = v \lin e : \underline{B}
   } \and
   \inferrule*[right=split]{
-    \Gamma_1 \tee v :^{q} A_1 \times A_2 \\
-    \Gamma_2, x :^q A_1, y :^q A_2 \tee e : \underline{B}
+    \gamma\Gamma \tee v :^{q} A_1 \times A_2 \\
+    \delta\Gamma, x :^q A_1, y :^q A_2 \tee e : \underline{B}
   }{
-    \Gamma_1 + \Gamma_2 \tee \llet_q (x, y) = v \lin e : \underline{B}
+    (\gamma + \delta)\Gamma \tee \llet_q (x, y) = v \lin e : \underline{B}
   } \and
   \inferrule*[right=case]{
-    \Gamma_1 \tee v :^q A_1 + A_2 \\
-    \Gamma_2, x :^q A_1 \tee e_1 : \underline{B} \\
-    \Gamma_2, y :^q A_2 \tee e_2 : \underline{B}
+    \gamma\Gamma \tee v :^q A_1 + A_2 \\
+    \delta\Gamma, x :^q A_1 \tee e_1 : \underline{B} \\
+    \zeta\Gamma, y :^q A_2 \tee e_2 : \underline{B}
   }{
-    \Gamma_1 + \Gamma_2 \tee \case_q\, v\, \{x.e_1;\; y.e_2\} : \underline{B}
+    (\gamma + (\delta \sqcap \zeta))\Gamma \tee \case_q\, v\, \{x.e_1;\; y.e_2\} : \underline{B}
   } \and
   \inferrule*[right=absurd]{
-    \Gamma \tee e : F^q\,\zero
+    \gamma\Gamma \tee e : F^q\,\zero
   }{
-    \top\cdot\Gamma \tee \absurd \, e : \underline{B}
+    \top\Gamma \tee \absurd \, e : \underline{B}
   }
 \end{mathpar}
 
