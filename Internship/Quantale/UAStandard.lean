@@ -218,7 +218,6 @@ inductive Many where | many
 
 instance : Modality Many UAStandardSemiring where
   box n _ := match n with
-  | .top => .top
   | .zero => .zero
   | .A => .AM
   | .AM => .AM
@@ -242,7 +241,6 @@ inductive Aliased where | aliased
 
 instance : Modality Aliased UAStandardSemiring where
   box n _ := match n with
-  | .top => .top
   | .zero => .zero
   | .A => .A
   | .AM => .AM
@@ -265,3 +263,32 @@ instance : Monadic Aliased UAStandardSemiring where
 lemma aliased_box : ∀ (a : UAStandardSemiring),
   Modality.box a (.aliased : Aliased) = scale a .A := by
     intro a; cases a <;> simp [Modality.box, scale]
+
+@[grind]
+def star (a : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
+  match fuel with
+  | 0 => a 
+  | Nat.succ n => 0 ⊓ (a + (star a n))
+
+theorem test1 : ∀ a b : UAStandardSemiring, 
+  star (a + b) 5 = star a 5 + star b 5 := by native_decide
+
+theorem test2 : ∀ a b : UAStandardSemiring, 
+  star (scale a b) 5 = scale (star a 5) b := by native_decide
+
+@[grind]
+def exp (a : UAStandardSemiring) (b : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
+  match fuel with
+  | 0 => a 
+  | Nat.succ n => a + (scale b (exp a b n))
+
+theorem test3 : ∀ a b c : UAStandardSemiring, 
+  exp (a + b) c 5 = exp a c 5 + exp b c 5 := by native_decide
+
+theorem test4 : ∀ a b c : UAStandardSemiring, 
+  exp (scale a b) c 5 = scale (exp a c 5) b := by native_decide
+
+
+
+
+
