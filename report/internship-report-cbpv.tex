@@ -61,6 +61,8 @@
 \DeclareMathOperator{\inr}{\text{inr}}
 \DeclareMathOperator{\suc}{\text{succ}}
 \DeclareMathOperator{\absurd}{\text{absurd}}
+\DeclareMathOperator{\while}{\text{while}}
+\DeclareMathOperator{\fix}{\text{fix}}
 \DeclareMathOperator{\primrec}{\text{primrec}}
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\tee}{\vdash}
@@ -289,7 +291,19 @@ $\Gamma \tee v : A$ in the graded modal type theory.
   }{
     \top\Gamma \tee \absurd \, e : \underline{B}
   }
+  \inferrule*[right=while]{
+    \gamma\Gamma \tee e : \,^q A \rightarrow F^q\, (A + B) \\
+  }{
+    \gamma^*\Gamma \tee \while \, e : \,^q (A + B) \rightarrow F^q\, B
+  }
+  \inferrule*[right=fix]{
+    \gamma\Gamma \tee e : \,^q U\, \underline{B} \rightarrow \underline{B}
+  }{
+    \gamma^q\Gamma \tee \fix \, e : \underline{B}
+  }
 \end{mathpar}
+
+where $\gamma^* = 0 \sqcap \gamma + \gamma^*$ and $\gamma^q = \gamma + q\scale\gamma^q$.
 
 Parameterisation is as in the main report.
 
