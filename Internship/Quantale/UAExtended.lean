@@ -77,7 +77,9 @@ def seq : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
 @[simp, grind]
 def scale : UAExtendedSemiring → UAExtendedSemiring → UAExtendedSemiring
   | .top, _    => .top
-  | .zero, n   => .zero
+  | .zero, n   => match n with
+    | .top => .top
+    | _ => .zero
   | .one, n    => n
   | .M, n      => match n with
     | .top => .top
@@ -245,6 +247,7 @@ instance : Modality Many UAExtendedSemiring where
   top_box := by grind
   meet_box := by grind
   seq_box := by grind
+  box_scale := by simp [Mode.scale, LE.le]; grind
 
 instance : Comonadic Many UAExtendedSemiring where
   box_dec := by
@@ -278,6 +281,7 @@ instance : Modality Aliased UAExtendedSemiring where
   top_box := by simp
   meet_box := by grind
   seq_box a b c := by simp [LE.le]; grind
+  box_scale := by simp [Mode.scale, LE.le]; grind
 
 instance : Monadic Aliased UAExtendedSemiring where
   box_inc := by
@@ -293,8 +297,8 @@ lemma scale_box_aliased : ∀ (a b : UAExtendedSemiring),
   scale (Modality.box a (.aliased : Aliased)) b ≤ scale a (scale b .A) := by
     intro a b; cases a <;> cases b <;> simp [LE.le, scale]
 
-#eval scale .AM (scale .CA .A)
-#eval (scale .AM .CA)
+-- #eval scale .AM (scale .CA .A)
+-- #eval (scale .AM .CA)
 
 -- counter-examples:
 --  Law 7: q1 = aliased many, q2 = unique, q3 = aliased

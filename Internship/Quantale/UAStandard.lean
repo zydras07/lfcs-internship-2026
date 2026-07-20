@@ -199,6 +199,21 @@ lemma div_eq_top : ∀ (a b : UAStandardSemiring),
              -- | skip)
     -- exists 0, c; rw [hc]; decide
 
+-- -- #eval scale .AM (scale .CA .A)
+-- #eval (scale .AM .CA)
+
+-- counter-examples:
+--  Law 7: q1 = aliased many, q2 = unique, q3 = aliased
+--  Law 8: q1 = unique, q2 = many, q3 = aliased
+--  Law 9: q1 = unique, q2 = aliased, q3 = aliased
+
+-- theorem  scale_assoc : ∀ (a b c : UAStandardSemiring), b = ⊤ ∨
+    -- scale a (scale b c) ≤ scale (scale a b) c := by simp [LE.le]; grind
+-- theorem scale_seq : ∀ (a b c : UAStandardSemiring), b = 1 ∨ (b = .M) ∨ c = 1 ∨ (c = .M) ∨
+    -- scale a (b + c) ≤ (scale a b) + (scale a c) := by simp [LE.le]; grind
+-- theorem seq_scale : ∀ (a b c : UAStandardSemiring), a = ⊤ ∨ b = ⊤ ∨
+    -- scale (a + b) c ≥ (scale a c) + (scale b c) := by simp [LE.le]; grind
+
 inductive Many where | many
 
 instance : Modality Many UAStandardSemiring where
@@ -215,6 +230,7 @@ instance : Modality Many UAStandardSemiring where
   top_box := by grind
   meet_box := by grind
   seq_box := by grind
+  box_scale a b c := by simp [Mode.scale]; grind
 
 instance : Comonadic Many UAStandardSemiring where
   box_dec := by
@@ -238,6 +254,7 @@ instance : Modality Aliased UAStandardSemiring where
   top_box := by grind
   meet_box := by grind
   seq_box a b c := by simp [LE.le]; grind
+  box_scale a b c := by simp [Mode.scale, LE.le]; grind
 
 instance : Monadic Aliased UAStandardSemiring where
   box_inc := by
@@ -248,18 +265,3 @@ instance : Monadic Aliased UAStandardSemiring where
 lemma aliased_box : ∀ (a : UAStandardSemiring),
   Modality.box a (.aliased : Aliased) = scale a .A := by
     intro a; cases a <;> simp [Modality.box, scale]
-
-#eval scale .AM (scale .CA .A)
-#eval (scale .AM .CA)
-
--- counter-examples:
---  Law 7: q1 = aliased many, q2 = unique, q3 = aliased
---  Law 8: q1 = unique, q2 = many, q3 = aliased
---  Law 9: q1 = unique, q2 = aliased, q3 = aliased
-
--- theorem  scale_assoc : ∀ (a b c : UAStandardSemiring), b = ⊤ ∨
-    -- scale a (scale b c) ≤ scale (scale a b) c := by simp [LE.le]; grind
--- theorem scale_seq : ∀ (a b c : UAStandardSemiring), b = 1 ∨ (b = .M) ∨ c = 1 ∨ (c = .M) ∨
-    -- scale a (b + c) ≤ (scale a b) + (scale a c) := by simp [LE.le]; grind
--- theorem seq_scale : ∀ (a b c : UAStandardSemiring), a = ⊤ ∨ b = ⊤ ∨
-    -- scale (a + b) c ≥ (scale a c) + (scale b c) := by simp [LE.le]; grind

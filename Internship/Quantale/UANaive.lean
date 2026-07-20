@@ -184,6 +184,7 @@ instance : Modality Many UANaiveSemiring where
   top_box := by grind
   meet_box := by grind
   seq_box := by grind
+  box_scale := by simp [Mode.scale, LE.le]; grind
 
 instance : Comonadic Many UANaiveSemiring where
   box_dec := by
@@ -207,6 +208,7 @@ instance : Modality Aliased UANaiveSemiring where
   top_box := by grind
   meet_box := by grind
   seq_box := by grind
+  box_scale := by simp [Mode.scale, LE.le]; grind
 
 instance : Monadic Aliased UANaiveSemiring where
   box_inc := by

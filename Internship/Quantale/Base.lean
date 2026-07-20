@@ -103,6 +103,8 @@ class Modality (α : Type*) (β : Type*) [Mode β] where
     box (b ⊓ c) a = box b a ⊓ box c a
   seq_box : ∀ (a : α) (b c : β),
     box (b + c) a ≤ box b a + box c a
+  box_scale : ∀ (a b : β) (c : α),
+    box (scale a b) c ≤ scale a (box b c)
 
 open Modality
 
@@ -248,6 +250,7 @@ instance [Mode α] : Modality Id α where
   top_box := by simp
   meet_box := by simp
   seq_box := by simp
+  box_scale := by simp
 
 instance [Mode α] : Comonadic Id α where
   box_dec := by simp [box]
@@ -271,6 +274,12 @@ instance [Mode β] [Modality α1 β] [Modality α2 β] : Modality (Comp α1 α2)
     cases a with | comp a1 a2 =>
     apply (le_trans (box_monotone _ _ _ (seq_box a1 _ _)))
     apply (le_trans (seq_box a2 _ _))
+    simp
+  box_scale := by
+    intros a b c;
+    cases c with | comp c1 c2 =>
+    apply (le_trans (box_monotone _ _ _ (box_scale _ _ c1)))
+    apply (le_trans (box_scale _ _ c2))
     simp
 
 end Base
