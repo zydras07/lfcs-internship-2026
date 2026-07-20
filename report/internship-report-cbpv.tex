@@ -167,13 +167,13 @@
 
 A new calculus to fix the issues we identified with the graded modal type theory.
 The idea is that we have a new value judgement $\Gamma \tee v :^q A$,
-where, informally, $q\cdot\Gamma \tee v :^q A$ if and only if
+where, informally, $q\scale\Gamma \tee v :^q A$ if and only if
 $\Gamma \tee v : A$ in the graded modal type theory.
 
 \paragraph{Syntax}
 
 \begin{align*}
-  A &::= U\, \underline{B} \mid \boxempty^q A \mid A \times A' \mid A + A' \mid \unit \\
+  A &::= U\, \underline{B} \mid \boxempty^q A \mid A \times A' \mid A + A' \mid \unit \mid \zero \\
   \underline{B} &::= F^q\, A \mid \,^q A \rightarrow \underline{B} \\
   v &::= x \mid \thunk\, e \mid \bbox_q\, v \mid (v_1, v_2) \mid () \mid \inl\, v \mid \inr\, v \\
   e &::= \return\, v \mid \lambda x.\, e \mid e\, v
@@ -184,7 +184,7 @@ $\Gamma \tee v : A$ in the graded modal type theory.
     &\mid \absurd \, e
 \end{align*}
 
-\paragraph{Value typing rules} \hfill \framebox{$\Gamma \tee v : A$}
+\paragraph{Value typing rules} \hfill \framebox{$\Gamma \tee v :^q A$}
 
 \begin{mathpar}
   \inferrule*[right=var]{
