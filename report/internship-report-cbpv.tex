@@ -302,8 +302,8 @@ $\Gamma \tee v : A$ in the graded modal type theory.
     \gamma^q\Gamma \tee \fix \, e : \underline{B}
   }
 \end{mathpar}
-
-where $\gamma^* = 0 \sqcap \gamma + \gamma^*$ and $\gamma^q = \gamma + q\scale\gamma^q$.
+-where $\gamma^* = 0 \sqcap \gamma + \gamma^*$ and $\gamma^q = \gamma + q\scale\gamma^q$.
+\\
 
 Parameterisation is as in the main report.
 
@@ -343,7 +343,7 @@ The laws that must hold for the algebra are:
 
 \begin{law}
 \label{law:mul-mono-left}
-  If $q_2 \le q_3$, then $q_1 \scale q_2 \le q_1 \scale q_3$.
+  if $q_2 \le q_3$, then $q_1 \scale q_2 \le q_1 \scale q_3$.
 \end{law}
 
 The laws that must hold for forward substitution are:
@@ -368,8 +368,18 @@ The laws that must hold for forward substitution are:
 \end{law}
 
 \begin{law}
+\label{law:mul-mono-right-scale}
+  if $q_1 \le q_2$, then $q_1 \scale q_3 \le q_2 \scale q_3$.
+\end{law}
+
+\begin{law}
 \label{law:mul-mono-right}
   If $q_1 \le q_2$, then $q_1 \boxop q_3 \le q_2 \boxop q_3$.
+\end{law}
+
+\begin{law}
+\label{law:boxop-elim}
+  There exists a $q_4$ such that $(q_1 \boxop q_2) \scale q_3 = q_1 \scale q_4$.
 \end{law}
 
 \section{Proofs}
@@ -380,11 +390,11 @@ The laws that must hold for forward substitution are:
 \end{lemma}
 
 \begin{proof}
-  Consider the set $M = \{q^{\prime\prime} : q \cdot q^{\prime\prime} \le q \cdot q^\prime\}$, the candidates for $q^{\prime\prime} = q \cdot q^\prime \setminus q$.
+  Consider the set $M = \{q^{\prime\prime} : q \scale q^{\prime\prime} \le q \scale q^\prime\}$, the candidates for $q^{\prime\prime} = q \scale q^\prime \setminus q$.
 
-  Since $q \cdot q^\prime \le q \cdot q^\prime$, it follows that $q^\prime \in M$.
+  Since $q \scale q^\prime \le q \scale q^\prime$, it follows that $q^\prime \in M$.
   
-  Thus, since $q \cdot q^\prime \setminus q$ is given by $\bigvee M$, $q^\prime \le q \cdot q^\prime \setminus q$, as required.
+  Thus, since $q \scale q^\prime \setminus q$ is given by $\bigsqcup M$, $q^\prime \le q \scale q^\prime \setminus q$, as required.
   
 \end{proof}
 
@@ -394,9 +404,9 @@ The laws that must hold for forward substitution are:
 \end{lemma}
 
 \begin{proof}
-  By the definition of division, $q^\prime \setminus q = \bigvee\{q^{\prime\prime} : q \cdot q^{\prime\prime} \le q^\prime\}$.
+  By the definition of division, $q^\prime \setminus q = \bigsqcup\limits_{q^{\prime\prime}} q \scale q^{\prime\prime} \le q^\prime$.
 
-  Thus, $q \cdot (q^\prime \setminus q) \le q^\prime$, as required.
+  Thus, $q \scale (q^\prime \setminus q) \le q^\prime$, as required.
   
 \end{proof}
 
@@ -406,11 +416,11 @@ The laws that must hold for forward substitution are:
 \end{lemma}
 
 \begin{proof}
-  Consider the sets $M_1 = \{q^\prime : q \cdot q^\prime \le q_1\}$ and $M_2 = \{q^\prime : q \cdot q^\prime = q_2\}$.
+  Consider the sets $M_1 = \{q^\prime : q \scale q^\prime \le q_1\}$ and $M_2 = \{q^\prime : q \scale q^\prime = q_2\}$.
 
   Since $q_1 \le q_2$, every element in $M_1$ is in $M_2$, so $M_1 \subseteq M_2$.
   
-  Thus, since $q_1 \setminus q$ and $q_2 \setminus q$ are given by $\bigvee M_1$ and $\bigvee M_2$, $q_1 \setminus q \le q_2 \setminus q$, as required.
+  Thus, since $q_1 \setminus q$ and $q_2 \setminus q$ are given by $\bigsqcup M_1$ and $\bigvee M_2$, $q_1 \setminus q \le q_2 \setminus q$, as required.
   
 \end{proof}
 
@@ -420,15 +430,25 @@ The laws that must hold for forward substitution are:
 \end{lemma}
 
 \begin{proof}
-  By \ref{lem:mul-left-inverse-div-2}, have \textbf{(1)} $q_3 \cdot (q_1 \setminus q_3) \le q_1$ and \textbf{(2)} $q_3 \cdot (q_2 \setminus q_3) \le q_2$.
+  By \ref{lem:mul-left-inverse-div-2}, have \textbf{(1)} $q_3 \scale (q_1 \setminus q_3) \le q_1$ and \textbf{(2)} $q_3 \scale (q_2 \setminus q_3) \le q_2$.
 
-  By law \ref{law:add-mono} on \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q_3 \cdot (q_1 \setminus q_3) + q_3 \cdot (q_2 \setminus q_3) \le q_1 + q_2$.
+  By law \ref{law:add-mono} on \textbf{(1)} and \textbf{(2)}, have \textbf{(3)} $q_3 \scale (q_1 \setminus q_3) + q_3 \scale (q_2 \setminus q_3) \le q_1 + q_2$.
 
-  By law \ref{law:mul-distr-add-left-2} on \textbf{(3)}, have \textbf{(4)} $q_3 \cdot (q_1 \setminus q_3 + q_2 \setminus q_3) \le q_1 + q_2$.
+  By law \ref{law:mul-distr-add-left-2} on \textbf{(3)}, have \textbf{(4)} $q_3 \scale (q_1 \setminus q_3 + q_2 \setminus q_3) \le q_1 + q_2$.
 
-  Now consider the candidate set for $(q_1 + q_2) \setminus q_3$, $M = \{q : q_3 \cdot q \le q_1 + q_2\}$.
+  Now consider the candidate set for $(q_1 + q_2) \setminus q_3$, $M = \{q : q_3 \scale q \le q_1 + q_2\}$.
 
   Since $\textbf{(3)} \in M$, $\textbf{(3)} \le (q_1 + q_2) \setminus q_3$, as required.
+  
+\end{proof}
+
+\begin{lemma}
+\label{lem:zero-div}
+  $0 \setminus q = 0$
+\end{lemma}
+
+\begin{proof}
+  Since 0 is the greatest absorbing element of $\scale$ on the left, $\bigsqcup\limits_{q^\prime} q \scale q^\prime \le 0 = 0$, as required.
   
 \end{proof}
 
@@ -514,7 +534,7 @@ The laws that must hold for forward substitution are:
 
     By $\boxempty$I inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee v :^{(q_1 + q_2) \boxop q} A$.
 
-    By weakening using law \ref{law:mul-distr-add-right-2} on \textbf{(2)}, have \textbf{(3)} $\gamma\Gamma \tee v :^{q_1 \boxop q + q_2 \boxop q} A$.
+    By \ref{lem:new-modal-succedent-weakening} using law \ref{law:mul-distr-add-right-2} on \textbf{(2)}, have \textbf{(3)} $\gamma\Gamma \tee v :^{q_1 \boxop q + q_2 \boxop q} A$.
 
     By the inductive hypothesis on \textbf{(3)}, have \textbf{(4)} $\gamma_1 + \gamma_2 \le \gamma$ such that \textbf{(5)} $\gamma_1\Gamma \tee v :^{q_1 \boxop q} A$ and \textbf{(6)} $\gamma_2\Gamma \tee v :^{q_2 \boxop q} A$.
 
@@ -528,7 +548,7 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:new-modal-succedent-weakening}
-  If $\Gamma \tee v :^q A$ and $q^\prime \le q$, then $\Gamma \tee v :^{q^\prime} A$.
+  If $\gamma\Gamma \tee v :^q A$ and $q^\prime \le q$, then $\gamma\Gamma \tee v :^{q^\prime} A$.
 \end{lemma}
 
 \begin{proof}
@@ -539,59 +559,57 @@ The laws that must hold for forward substitution are:
 
     By VAR, have \textbf{(2)} $\underline{0}\Gamma, x :^{q^\prime} A, \underline{0}\Gamma^\prime \tee x :^{q^\prime} A$.
 
-    By weakening on \textbf{(1)} and \textbf{(2)}, $\underline{0}\Gamma, x :^q A, \underline{0}\Gamma^\prime \tee x :^{q^\prime} A$, as required.
+    By weakening on \textbf{(2)} using \textbf{(1)}, $\underline{0}\Gamma, x :^q A, \underline{0}\Gamma^\prime \tee x :^{q^\prime} A$, as required.
     \\
     \item[Case VSUB.] 
     By assumption, have \textbf{(1)} $\gamma^\prime\Gamma \tee v :^q A$ and \textbf{(2)} $q^\prime \le q$.
     
-    By VSUB inversion, have \textbf{(3)} $\gamma \le \gamma^\prime$ and \textbf{(4)} $\gamma\Gamma, x :^{q^\prime} A, \Gamma^\prime \tee v :^{q_1 \cdot q_2} B$.
+    By VSUB inversion, have \textbf{(3)} $\gamma \le \gamma^\prime$ and \textbf{(4)} $\gamma\Gamma \tee v :^q A$.
 
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(4)}, have \textbf{(5)} $\Gamma, x :^{q^\prime} A, \Gamma^\prime \tee v :^{q_1^\prime \cdot q_2} B$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(4)}, have \textbf{(5)} $\gamma\Gamma \tee v :^{q^\prime} A$.
 
-    By VSUB on \textbf{(3)} and \textbf{(5)}, $\Gamma, x :^{q^{\prime\prime}} A, \Gamma^\prime \tee v :^{q_1^\prime \cdot q_2} B$, as required.
+    By VSUB on \textbf{(3)} and \textbf{(5)}, $\gamma^\prime\Gamma \tee v :^{q^\prime} A$, as required.
     \\
     \item[Case THUNK.] 
-    By assumption, have \textbf{(1)} $(q_1 \cdot q_2) \cdot \Gamma \tee \thunk e :^{q_1 \cdot q_2} U \, \underline{B}$ and \textbf{(2)} $q_1^\prime \le q_1$.
+    By assumption, have \textbf{(1)} $(q \scale \gamma)\Gamma \tee \thunk e :^q U \, \underline{B}$ and \textbf{(2)} $q^\prime \le q$.
 
-    By THUNK inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee e : \underline{B}$.
+    By THUNK inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee e : \underline{B}$.
 
-    By THUNK on \textbf{(2)}, have \textbf{(3)} $(q_1^\prime \cdot q_2) \cdot \Gamma \tee \thunk e :^{q_1^\prime \cdot q_2} U \, \underline{B}$.
+    By THUNK on \textbf{(2)}, have \textbf{(3)} $(q^\prime \scale \gamma)\Gamma \tee \thunk e :^{q^\prime} U \, \underline{B}$.
 
-    By law \ref{law:mul-mono-right} on \textbf{(2)}, have \textbf{(4)} $q_1^\prime \cdot q_2 \le q_1 \cdot q_2$.
+    By law \ref{law:mul-mono-right-scale} on \textbf{(2)}, have \textbf{(4)} $q^\prime \scale \gamma \le q \scale \gamma$.
 
-    By ESUB on \textbf{(3)} and \textbf{(4)}, have $(q_1 \cdot q_2) \cdot \Gamma \tee \thunk e :^{q_1^\prime \cdot q_2} U \, \underline{B}$, as required.
+    By VSUB on \textbf{(3)} and \textbf{(4)}, $(q \scale \gamma)\Gamma \tee \thunk e :^{q^\prime} U \, \underline{B}$, as required.
     \\
     \item[Case UNIT.]
-    By assumption, have $0 \cdot \Gamma \tee () :^{q_1 \cdot q_2} \unit$.
-
-    By UNIT, $0 \cdot \Gamma \tee () :^{q_1^\prime \cdot q_2} \unit$, as required.
+    By UNIT, $\underline{0}\Gamma \tee () :^{q^\prime} \unit$, as required.
     \\
     \item[Case PAIR.]
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^{q_1 \cdot q_2} A \times B$ and \textbf{(2)} $q^\prime \le q$.
+    By assumption, have \textbf{(1)} $(\gamma_1 + \gamma_2)\Gamma \tee (v_1, v_2) :^q A \times B$ and \textbf{(2)} $q^\prime \le q$.
 
-    By PAIR inversion, have \textbf{(3)} $\Gamma_1 \tee v_1 :^{q_1 \cdot q_2} A$ and \textbf{(4)} $\Gamma_2 \tee v_2 :^{q_1 \cdot q_2} B$.
+    By PAIR inversion, have \textbf{(3)} $\gamma_1\Gamma \tee v_1 :^q A$ and \textbf{(4)} $\gamma_2\Gamma \tee v_2 :^q B$.
 
-    By the inductive hypothesis on \textbf{(2)} with each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\Gamma_1 \tee v_1 :^{q_1^\prime \cdot q_2} A$ and \textbf{(6)} $\Gamma_2 \tee v_2 :^{q_1^\prime \cdot q_2} B$.
+    By the inductive hypothesis on \textbf{(2)} with each of \textbf{(3)} and \textbf{(4)}, have \textbf{(5)} $\gamma_1\Gamma \tee v_1 :^{q^\prime} A$ and \textbf{(6)} $\gamma_2\Gamma \tee v_2 :^{q^\prime} B$.
 
-    By PAIR on \textbf{(5)} and \textbf{(6)}, $\Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^{q_1^\prime \cdot q_2} A \times B$, as required.
+    By PAIR on \textbf{(5)} and \textbf{(6)}, $(\gamma_1 + \gamma_2)\Gamma \tee (v_1, v_2) :^{q^\prime} A \times B$, as required.
     \\
     \item[Case INL.] 
-    By assumption, have \textbf{(1)} $\Gamma \tee \inl v :^{q_1 \cdot q_2} A + B$ and \textbf{(2)} $q_1^\prime \le q_1$.
+    By assumption, have \textbf{(1)} $\gamma\Gamma \tee \inl v :^q A + B$ and \textbf{(2)} $q^\prime \le q$.
 
-    By INL inversion on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v :^{q_1 \cdot q_2} : A$.
+    By INL inversion on \textbf{(1)}, have \textbf{(3)} $\gamma\Gamma \tee v :^q : A$.
 
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\Gamma \tee v :^{q_1^\prime \cdot q_2} : A$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\gamma\Gamma \tee v :^{q^\prime} : A$.
 
-    By INL on \textbf{(4)}, have \textbf{(5)} $\Gamma \tee \inl v :^{q_1^\prime \cdot q_2} A + B$, as required.
+    By INL on \textbf{(4)}, have \textbf{(5)} $\gamma\Gamma \tee \inl v :^{q^\prime} A + B$, as required.
     \\
     \item[Case INR.] 
-    By assumption, have \textbf{(1)} $\Gamma \tee \inr v :^{q_1 \cdot q_2} A + B$ and \textbf{(2)} $q_1^\prime \le q_1$.
+    By assumption, have \textbf{(1)} $\gamma\Gamma \tee \inr v :^q A + B$ and \textbf{(2)} $q^\prime \le q$.
 
-    By INR inversion on \textbf{(1)}, have \textbf{(3)} $\Gamma \tee v :^{q_1 \cdot q_2} : B$.
+    By INR inversion on \textbf{(1)}, have \textbf{(3)} $\gamma\Gamma \tee v :^q B$.
 
-    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\Gamma \tee v :^{q_1^\prime \cdot q_2} : B$.
+    By the inductive hypothesis on \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\gamma\Gamma \tee v :^{q^\prime} : B$.
 
-    By INR on \textbf{(4)}, have \textbf{(5)} $\Gamma \tee \inr v :^{q_1^\prime \cdot q_2} A + B$, as required.
+    By INR on \textbf{(4)}, have \textbf{(5)} $\gamma\Gamma \tee \inr v :^{q^\prime} A + B$, as required.
     \\
     \item[Case $\boxempty$I.]
     By assumption, have \textbf{(1)} $\gamma\Gamma \tee \bbox_q v :^{q^\prime} \boxempty^q A$ and \textbf{(2)} $q^{\prime\prime} \le q^\prime$.
@@ -608,70 +626,70 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:new-modal-div-both-sides}
-  If $\Gamma \tee v :^{q^\prime \cdot q} A$, then $\Gamma \setminus q^\prime \tee v :^q A$.
+  If $\gamma\Gamma \tee v :^{q^\prime \scale q} A$, then $(\gamma \setminus q^\prime)\Gamma \tee v :^q A$.
 \end{lemma}
 
 \begin{proof}
-  Proceed by induction over the structure of the derivation of $\Gamma \tee v :^{q^\prime \cdot q} A$.
+  Proceed by induction over the structure of the derivation of $\gamma\Gamma \tee v :^{q^\prime \scale q} A$.
   \begin{description}
-    \item[Case VAR ???.]
-    By VAR, have \textbf{(1)} $(0 \cdot \Gamma) \setminus q^\prime, x :^q A, (0 \cdot \Gamma^\prime) \setminus q^\prime \tee x :^q A$. ???
+    \item[Case VAR.]
+    Considering \ref{lem:zero-div}, by VAR, have \textbf{(1)} $(\underline{0} \setminus q^\prime)\Gamma, x :^q A, (\underline{0} \setminus q^\prime) \tee x :^q A$.
 
-    By weakening using \ref{lem:mul-left-inverse-div-1}, $(0 \cdot \Gamma) \setminus q^\prime, x :^{(q^\prime \cdot q) \setminus q^\prime} A, (0 \cdot \Gamma^\prime) \setminus q^\prime \tee x :^q A$, as required.
+    By weakening using \ref{lem:mul-left-inverse-div-1}, $(\underline{0} \setminus q^\prime)\Gamma, x :^{(q^\prime \cdot q) \setminus q^\prime} A, (\underline{0} \setminus q^\prime)\Gamma^\prime \tee x :^q A$, as required.
     \\
     \item[Case VSUB.]
-    By assumption, have \textbf{(1)} $\Gamma, x :^{q_2} A, \Gamma^\prime \tee v :^{q^\prime \cdot q} B$. 
+    By assumption, have \textbf{(1)} $\gamma^\prime\Gamma \tee v :^{q^\prime \scale q} B$. 
 
-    By VSUB inversion on \textbf{(1)}, have \textbf{(2)} $q_1 \le q_2$ and \textbf{(3)} $\Gamma, x :^{q_1}, \Gamma^\prime \tee v :^{q^\prime \cdot q} B$.
+    By VSUB inversion on \textbf{(1)}, have \textbf{(2)} $\gamma \le \gamma^\prime$ and \textbf{(3)} $\gamma\Gamma \tee v :^{q^\prime \scale q} B$.
 
-    By the inductive hypothesis on \textbf{(3)}, have \textbf{(4)} $\Gamma \setminus q^\prime, x :^{q_1 \setminus q^\prime} A, \Gamma^\prime \setminus q^\prime \tee v :^q B$.
+    By the inductive hypothesis on \textbf{(3)}, have \textbf{(4)} $(\gamma \setminus q^\prime)\Gamma \tee v :^q B$.
 
-    By \ref{lem:div-mono} on \textbf{(2)}, have \textbf{(5)} $q_1 \setminus q^\prime \le q_2 \setminus q^\prime$.
+    By \ref{lem:div-mono} on \textbf{(2)}, have \textbf{(5)} $\gamma \setminus q^\prime \le \gamma^\prime \setminus q^\prime$.
 
-    By VSUB on \textbf{(4)} and \textbf{(5)}, $\Gamma \setminus q^\prime, x :^{q_2 \setminus q^\prime} A, \Gamma^\prime \setminus q^\prime \tee v :^q B$, as required.
+    By VSUB on \textbf{(4)} and \textbf{(5)}, $(\gamma^\prime \setminus q^\prime)\Gamma \tee v :^q B$, as required.
     \\
     \item[Case THUNK.] 
-    By assumption, have \textbf{(1)} $(q^\prime \cdot q) \cdot \Gamma \tee \thunk e :^{q^\prime \cdot q} U \, \underline{B}$.
+    By assumption, have \textbf{(1)} $((q^\prime \scale q) \scale \gamma)\Gamma \tee \thunk e :^{q^\prime \scale q} U \, \underline{B}$.
 
-    By THUNK inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee e : \underline{B}$.
+    By THUNK inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee e : \underline{B}$.
 
-    By THUNK on \textbf{(2)}, have \textbf{(3)} $q \cdot \Gamma \tee \thunk e :^q U \, \underline{B}$.
+    By THUNK on \textbf{(2)}, have \textbf{(3)} $(q \scale \gamma)\Gamma \tee \thunk e :^q U \, \underline{B}$.
 
-    By weakening using law \ref{lem:mul-left-inverse-div-1} on \textbf{(3)}, have \textbf{(4)} $(q^\prime \cdot (q \cdot \Gamma)) \setminus q^\prime \tee \thunk e :^q U \, \underline{B}$.
+    By weakening using law \ref{lem:mul-left-inverse-div-1} on \textbf{(3)}, have \textbf{(4)} $((q^\prime \scale (q \scale \gamma)) \setminus q^\prime)\Gamma \tee \thunk e :^q U \, \underline{B}$.
 
-    By weakening using \ref{law:mul-assoc-1} on \textbf{(4)}, have $((q^\prime \cdot q) \cdot \Gamma) \setminus q^\prime \tee \thunk e :^q U \, \underline{B}$, as required.
+    By weakening using \ref{law:mul-assoc-1} on \textbf{(4)}, have $(((q^\prime \scale q) \scale \gamma) \setminus q^\prime) \tee \thunk e :^q U \, \underline{B}$, as required.
     \\
-    \item[Case UNIT ???.]
-    By UNIT, have $0 \cdot (\Gamma \setminus q^\prime) \tee () :^q \unit$.
+    \item[Case UNIT.]
+    Considering \ref{lem:zero-div}, by UNIT, have $(\underline{0} \setminus q^\prime)\Gamma \tee () :^q \unit$, as required.
     \\
     \item[Case PAIR.]
-    By assumption, have \textbf{(1)} $\Gamma_1 + \Gamma_2 \tee (v_1, v_2) :^{q^\prime \cdot q} A \times B$.
+    By assumption, have \textbf{(1)} $(\gamma_1 + \gamma_2)\Gamma \tee (v_1, v_2) :^{q^\prime \scale q} A \times B$.
 
-    By PAIR inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma_1 \tee v_1 :^{q^\prime \cdot q} A$ and \textbf{(3)} $\Gamma_2 \tee v_2 :^{q^\prime \cdot q} B$.
+    By PAIR inversion on \textbf{(1)}, have \textbf{(2)} $\gamma_1\Gamma \tee v_1 :^{q^\prime \scale q} A$ and \textbf{(3)} $\gamma_2\Gamma \tee v_2 :^{q^\prime \scale q} B$.
 
-    By the inductive hypothesis on each of \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $\Gamma_1 \setminus q^\prime \tee v_1 :^q A$ and \textbf{(5)} $\Gamma_2 \setminus q^\prime \tee v_2 :^q B$.
+    By the inductive hypothesis on each of \textbf{(2)} and \textbf{(3)}, have \textbf{(4)} $(\gamma_1 \setminus q^\prime)\Gamma \tee v_1 :^q A$ and \textbf{(5)} $(\gamma_2 \setminus q^\prime)\Gamma \tee v_2 :^q B$.
 
-    By PAIR on \textbf{(4)} and \textbf{(5)}, have \textbf{(6)} $\Gamma_1 \setminus q^\prime + \Gamma_2 \setminus q^\prime \tee (v_1, v_2) :^q A \times B$.
+    By PAIR on \textbf{(4)} and \textbf{(5)}, have \textbf{(6)} $(\gamma_1 \setminus q^\prime + \gamma_2 \setminus q^\prime)\Gamma \tee (v_1, v_2) :^q A \times B$.
 
-    By \ref{lem:div-distr-add} on \textbf{(6)}, $(\Gamma_1 + \Gamma_2) \setminus q^\prime \tee (v_1, v_2) :^q A \times B$, as required.
+    By \ref{lem:div-distr-add} on \textbf{(6)}, $((\gamma_1 + \gamma_2) \setminus q^\prime)\Gamma \tee (v_1, v_2) :^q A \times B$, as required.
     \\
     \item[Case INL.]
-    By assumption, have \textbf{(1)} $\Gamma \tee \inl v :^{q^\prime \cdot q} A + B$.
+    By assumption, have \textbf{(1)} $\gamma\Gamma \tee \inl v :^{q^\prime \scale q} A + B$.
 
-    By INL inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee v :^{q^\prime \cdot q} A$.
+    By INL inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee v :^{q^\prime \scale q} A$.
 
-    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $\Gamma \setminus q^\prime \tee v :^q A$
+    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $(\gamma \setminus q^\prime)\Gamma \tee v :^q A$
 
-    By INL on \textbf{(3)}, $\Gamma \setminus q^\prime \tee : \inl v :^q A + B$, as required.
+    By INL on \textbf{(3)}, $(\gamma \setminus q^\prime)\Gamma \tee : \inl v :^q A + B$, as required.
     \\
     \item[Case INR.]
-    By assumption, have \textbf{(1)} $\Gamma \tee \inr v :^{q^\prime \cdot q} A + B$.
+    By assumption, have \textbf{(1)} $\gamma\Gamma \tee \inr v :^{q^\prime \scale q} A + B$.
 
-    By INR inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee v :^{q^\prime \cdot q} B$.
+    By INR inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee v :^{q^\prime \scale q} B$.
 
-    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $\Gamma \setminus q^\prime \tee v :^q B$
+    By the inductive hypothesis on \textbf{(2)}, have \textbf{(3)} $(\gamma \setminus q^\prime)\Gamma \tee v :^q B$
 
-    By INR on \textbf{(3)}, $\Gamma \setminus q^\prime \tee : \inr v :^q A + B$, as required.
+    By INR on \textbf{(3)}, $(\gamma \setminus q^\prime)\Gamma \tee : \inr v :^q A + B$, as required.
     \\
     \item[Case $\boxempty$I TODO.]
     By assumption, have \textbf{(1)} $\gamma\Gamma \tee \bbox_q v :^{q_1 \scale q_2} \boxempty^q A$.
@@ -688,45 +706,45 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:new-modal-invariant}
-  If $\gamma\Gamma \tee v :^{q \boxop q^\prime} A$, then there exists a $\gamma^\prime$ such that $q \scale \gamma^\prime \le \gamma$ and $(q \scale \gamma^\prime)\Gamma \tee v :^{q \boxop q^\prime} A$.
+  If $\gamma\Gamma \tee v :^{q \scale q^\prime} A$, then there exists a $\gamma^\prime$ such that $q \scale \gamma^\prime \le \gamma$ and $(q \scale \gamma^\prime)\Gamma \tee v :^{q \scale q^\prime} A$.
 \end{lemma}
 
 \begin{proof}
   Proceed by induction over the structure of the derivation of $\Gamma \tee v :^q A$.
   \begin{description}
     \item[Case VAR.]
-    By assumption, have \textbf{(1)} $\underline{0}\Gamma, x :^{q \cdot q^\prime} A, 0 \cdot \Gamma^\prime \tee x :^{q \cdot q^\prime} A$.
+    By assumption, have \textbf{(1)} $\underline{0}\Gamma, x :^q A, \underline{0}\Gamma^\prime \tee x :^q A$.
 
-    For the exists statement, let $\Gamma^\prime = 0 \cdot \Gamma, x :^{q^\prime} A, 0 \cdot \Gamma^\prime$.
+    For the exists statement, let $\gamma^\prime = (\underline{0}, 1, \underline{0})$.
 
-    $q \cdot (0 \cdot \Gamma), x :^{q \cdot q^\prime} A, q \cdot (0 \cdot \Gamma) \le 0 \cdot \Gamma, x :^q A, 0 \cdot \Gamma$, as required.
+    $q \scale (\underline{0}, 1, \underline{0}) \le (\underline{0}, q, \underline{0})$, as required.
 
     ???
     \\
     \item[Case VSUB.]
-    By assumption, have \textbf{(1)} $\Gamma_1, x :^{q_2} A, \Gamma_2 \tee v :^{q \cdot q^\prime} B$.
+    By assumption, have \textbf{(1)} $\Gamma_1, x :^{q_2} A, \Gamma_2 \tee v :^{q \scale q^\prime} B$.
 
-    By VSUB inversion, have \textbf{(2)} $q_1 \le q_2$ and \textbf{(3)} $\Gamma_1, x :^{q_1} A, \Gamma_2 \tee v :^{q \cdot q^\prime} B$.
+    By VSUB inversion, have \textbf{(2)} $q_1 \le q_2$ and \textbf{(3)} $\Gamma_1, x :^{q_1} A, \Gamma_2 \tee v :^{q \scale q^\prime} B$.
 
-    By the inductive hypothesis, have $\Gamma_1^\prime, x :^{q_1^\prime} A, \Gamma_2^\prime$ such that \textbf{(4)} $q \cdot \Gamma_1^\prime, x :^{q \cdot q_1^\prime} A, q \cdot \Gamma_2^\prime \le \Gamma_1, x :^{q_1}, \Gamma_2$ and \textbf{(5)} $q \cdot \Gamma_1^\prime, x :^{q \cdot q_1^\prime} A, q \cdot \Gamma_2^\prime \tee v :^{q \cdot q^\prime} B$.
+    By the inductive hypothesis, have $\Gamma_1^\prime, x :^{q_1^\prime} A, \Gamma_2^\prime$ such that \textbf{(4)} $q \scale \Gamma_1^\prime, x :^{q \scale q_1^\prime} A, q \scale \Gamma_2^\prime \le \Gamma_1, x :^{q_1}, \Gamma_2$ and \textbf{(5)} $q \scale \Gamma_1^\prime, x :^{q \scale q_1^\prime} A, q \scale \Gamma_2^\prime \tee v :^{q \scale q^\prime} B$.
 
     For the exists statement, have $\Gamma^\prime = \Gamma_1^\prime, x :^{q_1^\prime} A, \Gamma_2^\prime$.
 
     \textbf{(4)} is as required.
 
-    By law \ref{law:mul-mono-left} on \textbf{(2)}, have \textbf{(6)} $q \cdot q_1^\prime \le q \cdot q_2^\prime$.
+    By law \ref{law:mul-mono-left} on \textbf{(2)}, have \textbf{(6)} $q \scale q_1^\prime \le q \scale q_2^\prime$.
 
-    By VSUB on \textbf{(5)} and \textbf{(6)}, $\Gamma_1^\prime, x :^{q \cdot q_2^\prime}, \Gamma_2^\prime \tee v :^q B$, as required.
+    By VSUB on \textbf{(5)} and \textbf{(6)}, $\Gamma_1^\prime, x :^{q \scale q_2^\prime}, \Gamma_2^\prime \tee v :^q B$, as required.
     \\
     \item[Case THUNK.]
-    By assumption, have \textbf{(1)} $q \cdot \Gamma \tee \thunk e :^q U \, \underline{B}$.
+    By assumption, have \textbf{(1)} $q \scale \Gamma \tee \thunk e :^q U \, \underline{B}$.
 
     For the exists statement, let $\Gamma^\prime = \Gamma$.
 
     \textbf{(1)} is as required.
     \\
     \item[Case UNIT ???.]
-    By assumption, have \textbf{(1)} $0 \cdot \Gamma \tee () :^q \unit$.
+    By assumption, have \textbf{(1)} $0 \scale \Gamma \tee () :^q \unit$.
 
     ???
     \\
@@ -735,54 +753,54 @@ The laws that must hold for forward substitution are:
 
     By PAIR inversion, have \textbf{(2)} $\Gamma_1 \tee v_1 :^q A$ and \textbf{(3)} $\Gamma_2 \tee v_2 :^q B$.
 
-    By the inductive hypothesis on each of \textbf{(2)} and \text{(3)}, have $\Gamma_1^\prime$ such that \textbf{(4)} $\Gamma_1^\prime \le \Gamma_1$ and \textbf{(5)} $q \cdot \Gamma_1^\prime \tee v_1 :^q A$, and $\Gamma_2^\prime$ such that \textbf{(6)} $\Gamma_2^\prime \le \Gamma_2$ and \textbf{(7)} $q \cdot \Gamma_2^\prime \tee v_2 :^q B$.
+    By the inductive hypothesis on each of \textbf{(2)} and \text{(3)}, have $\Gamma_1^\prime$ such that \textbf{(4)} $\Gamma_1^\prime \le \Gamma_1$ and \textbf{(5)} $q \scale \Gamma_1^\prime \tee v_1 :^q A$, and $\Gamma_2^\prime$ such that \textbf{(6)} $\Gamma_2^\prime \le \Gamma_2$ and \textbf{(7)} $q \scale \Gamma_2^\prime \tee v_2 :^q B$.
 
     For the exists statement, let $\Gamma^\prime = \Gamma_1^\prime + \Gamma_2^\prime$.
 
     By law \ref{law:add-mono} on \textbf{(4)} and \textbf{(6)}, $\Gamma_1^\prime + \Gamma_2^\prime \le \Gamma_1 + \Gamma_2$, as required.
 
-    By PAIR on \textbf{(5)} and \textbf{(7)}, have \textbf{(8)} $q \cdot \Gamma_1 + q \cdot \Gamma_2 \tee (v_1, v_2) :^q A \times B$.
+    By PAIR on \textbf{(5)} and \textbf{(7)}, have \textbf{(8)} $q \scale \Gamma_1 + q \scale \Gamma_2 \tee (v_1, v_2) :^q A \times B$.
 
-    By weakening using law \ref{law:mul-distr-add-left-2}, $q \cdot (\Gamma_1 + \Gamma_2) \tee (v_1, v_2) :^q A \times B$, as required.
+    By weakening using law \ref{law:mul-distr-add-left-2}, $q \scale (\Gamma_1 + \Gamma_2) \tee (v_1, v_2) :^q A \times B$, as required.
     \\
     \item[Case INL.]
     By assumption, have \textbf{(1)} $\Gamma \tee \inl v :^q A + B$.
 
     By INL inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee v :^q A$.
 
-    By the inductive hypothesis on \textbf{(2)}, have $\Gamma^\prime$ such that \textbf{(3)} $q \cdot \Gamma^\prime \le \Gamma$ and \textbf{(4)} $q \cdot \Gamma^\prime \tee v :^q A$.
+    By the inductive hypothesis on \textbf{(2)}, have $\Gamma^\prime$ such that \textbf{(3)} $q \scale \Gamma^\prime \le \Gamma$ and \textbf{(4)} $q \scale \Gamma^\prime \tee v :^q A$.
 
     For the exists statement, let $\Gamma^\prime = \Gamma^\prime$.
 
     \textbf{(3)} is as required. 
 
-    By INL on \textbf{(4)}, $q \cdot \Gamma^\prime \tee \inl v : A + B$, as required.
+    By INL on \textbf{(4)}, $q \scale \Gamma^\prime \tee \inl v : A + B$, as required.
     \\
     \item[Case INR.]
     By assumption, have \textbf{(1)} $\Gamma \tee \inr v :^q A + B$.
 
     By INR inversion on \textbf{(1)}, have \textbf{(2)} $\Gamma \tee v :^q B$.
 
-    By the inductive hypothesis on \textbf{(2)}, have $\Gamma^\prime$ such that \textbf{(3)} $q \cdot \Gamma^\prime \le \Gamma$ and \textbf{(4)} $q \cdot \Gamma^\prime \tee v :^q B$.
+    By the inductive hypothesis on \textbf{(2)}, have $\Gamma^\prime$ such that \textbf{(3)} $q \scale \Gamma^\prime \le \Gamma$ and \textbf{(4)} $q \scale \Gamma^\prime \tee v :^q B$.
 
     For the exists statement, let $\Gamma^\prime = \Gamma^\prime$.
 
     \textbf{(3)} is as required. 
 
-    By INR on \textbf{(4)}, $q \cdot \Gamma^\prime \tee \inr v : A + B$, as required.
+    By INR on \textbf{(4)}, $q \scale \Gamma^\prime \tee \inr v : A + B$, as required.
     \\
     \item[Case $\boxempty$I.]
     By assumption, have \textbf{(1)} $\gamma\Gamma \tee \bbox_{q^\prime} v :^q \boxempty^{q^\prime} A$.
 
     By $\boxempty$I inversion on \textbf{(1)}, have \textbf{(2)} $\gamma\Gamma \tee v :^{q \boxop q^\prime} A$.
 
-    By the inductive hypothesis on \textbf{(2)}, have $\gamma^\prime$ such that \textbf{(3)} $q \scale \gamma^\prime \le \gamma$ and \textbf{(4)} $(q \scale \gamma^\prime)\Gamma \tee v :^{q \boxop q^\prime} A$.
+    By the inductive hypothesis on \textbf{(2)}, have $\gamma^\prime$ such that \textbf{(3)} $(q \boxop q^\prime) \scale \gamma^\prime \le \gamma$ and \textbf{(4)} $((q \boxop q^\prime) \scale \gamma^\prime)\Gamma \tee v :^{q \boxop q^\prime} A$.
 
-    For the exists statement, let $\gamma^\prime = \gamma^\prime$.
+    By law \ref{law:boxop-elim}, have $\gamma^{\prime\prime}$ such that \textbf{(5)} $(q \boxop q^\prime) \scale \gamma^\prime = q \scale \gamma^{\prime\prime}$
 
-    \textbf{(3)} is as required.
+    For the exists statement, let $\gamma^\prime = \gamma^{\prime\prime}$.
 
-    By $\boxempty$I on \textbf{(4)}, $(q \scale \gamma^\prime)\Gamma \tee \bbox_{q^\prime} v :^q \boxempty^{q^\prime} A$, as required.
+    By \textbf{(5)}, \textbf{(3)} and \textbf{(4)} are as required.
   \end{description}
 \end{proof}
 
@@ -997,6 +1015,35 @@ The laws that must hold for forward substitution are:
     \\
     \item[Case ABSURD.]
     $(\gamma_2, q, \gamma_2^\prime)$ has a different shape to $\top$, and so this case cannot occur.
+
+    asd
+
+    asd
+
+    asd
+
+    asd
+
+    asd
+
+    asd
+    \\
+    \item[Case WHILE.]
+    By assumption, have \textbf{(1)} $\gamma_1\Gamma \tee v :^{q^*} A$ and \textbf{(2)} $\gamma_2^*\Gamma, x :^{q^*} A, \gamma_2^{\prime*} \Gamma^\prime \tee \while e : \,^q (A + B) \rightarrow F^q B$.
+
+    By WHILE inversion on \textbf{(2)}, have \textbf{(3)} $\gamma_2\Gamma, x :^q A, \gamma_2^\prime\Gamma^\prime \tee e : \,^q A \rightarrow F^q (A + B)$.
+
+    By \ref{lem:new-modal-invariant} on \textbf{(1)}, have $\gamma_1^\prime$ such that \textbf{(4)} $q^* \scale \gamma_1^\prime \le \gamma_1$ and \textbf{(5)} $(q \scale \gamma_1^\prime)\Gamma \tee v :^q A$.
+
+    By the inductive hypothesis on \textbf{(3)} and \textbf{(5)}, have \textbf{(6)} $(q \scale \gamma_1^\prime + \gamma_2)\Gamma, \gamma_2^\prime\Gamma^\prime \tee e[v/x] : \,^q A \rightarrow F^q (A + B)$.
+
+    By WHILE on \textbf{(6)}, have \textbf{(7)} $(q \scale \gamma_1^\prime + \gamma_2)^*\Gamma, \gamma_2^{\prime*}\Gamma^\prime \tee \while e[v/x] : \,^q (A + B) \rightarrow F^q B$.
+
+    By ??? on \textbf{(7)}, have \textbf{(8)} $((q \scale \gamma_1)^* + \gamma_2^*)\Gamma, \gamma_2^{\prime*}\Gamma^\prime \tee \while e[v/x] : \,^q (A + B) \rightarrow F^q B$.
+    
+    By ??? on \textbf{(8)}, $(q^* \scale \gamma_1 + \gamma_2^*)\Gamma, \gamma_2^{\prime*}\Gamma^\prime \tee \while e[v/x] : \,^q (A + B) \rightarrow F^q B$, as required.
+    \\
+    \item[Case FIX.]
   \end{description}
 \end{proof}
 
