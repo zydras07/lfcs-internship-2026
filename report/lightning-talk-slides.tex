@@ -1,0 +1,120 @@
+\documentclass[10pt]{beamer}
+
+\usetheme{metropolis}
+
+\usepackage{mathpartir}
+\usepackage{wrapfig}
+\usepackage{scalerel}
+\usepackage{minted}
+\usepackage{mathtools}
+\usepackage{fontawesome} % lock symbol
+\usepackage{tikz}
+\usepackage{stmaryrd}
+\usepackage[bb=boondox]{mathalfa}
+\usepackage{pifont}
+\usepackage{listings}
+
+
+\newcommand{\under}[2]{\underset{\raisebox{2mm}{$\scriptstyle #2$}}{#1}}
+\newcommand{\inh}[1]{\under{#1}{\uparrow}}
+\newcommand{\syn}[1]{\under{#1}{\downarrow}}
+\DeclareMathOperator{\llet}{\text{let}}
+\DeclareMathOperator{\lin}{\text{in}}
+\DeclareMathOperator{\case}{\text{case}}
+\DeclareMathOperator{\bbox}{\text{box}}
+\DeclareMathOperator{\unbox}{\text{unbox}}
+\DeclareMathOperator{\mmod}{\text{mod}}
+\DeclareMathOperator{\thunk}{\text{thunk}}
+\DeclareMathOperator{\force}{\text{force}}
+\DeclareMathOperator{\return}{\text{return}}
+\newcommand{\unmod}[3]{\text{let}_{#1} \text{ mod}_{#2}({#3}) \leftarrow}
+\newcommand{\at}{\mathbin{\mbox{\small\ensuremath{@}}}}
+\DeclarePairedDelimiter\ann{\langle}{\rangle}
+\newcommand{\unit}{\mathbb{1}}
+\newcommand{\zero}{\mathbb{0}}
+\DeclareMathOperator{\inl}{\text{inl}}
+\DeclareMathOperator{\inr}{\text{inr}}
+\DeclareMathOperator{\suc}{\text{succ}}
+\DeclareMathOperator{\absurd}{\text{absurd}}
+\DeclareMathOperator{\while}{\text{while}}
+\DeclareMathOperator{\fix}{\text{fix}}
+\DeclareMathOperator{\primrec}{\text{primrec}}
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\tee}{\vdash}
+\newcommand{\teev}{\vdash^\mathrm{v}}
+\newcommand{\teec}{\vdash^\mathrm{c}}
+\newcommand{\hole}{\,?}
+\newcommand*{\Ev}{E_\mathrm{v}}
+\newcommand*{\Ep}{K}
+\DeclareMathOperator{\red}{\rightsquigarrow}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclareMathOperator{\lock}{\tikz{\node[scale=1, line width=0pt, inner sep=0pt] at (0,0) {\faLock\,};}}
+\definecolor{gainsboro}{rgb}{0.86, 0.86, 0.86}
+\newcommand{\reducedstrut}{\vrule width 0pt height .9\ht\strutbox depth .9\dp\strutbox\relax}
+\newcommand{\gray}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{0pt}%
+  \colorbox{gainsboro}{\reducedstrut$#1$\/}%
+  \endgroup
+}
+
+\newcommand{\clashes}{\,\text{\Lightning}\,}
+\newcommand{\notclashes}{\,{\text{\Lightning}\mkern-8.5mu\backslash}\,}
+\DeclareMathOperator{\joinctx}{\mathbin{\fatsemi}}
+\DeclareMathOperator{\splitctx}{\curlyveeuparrow}
+
+\newcommand{\one}{\mathbf{1}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+\renewcommand{\qed}{\hfill\resizebox{8px}{8px}{\input{image.pdf_tex}}}
+
+\DeclareMathOperator{\scale}{\mathbin{\triangleleft}}
+\DeclareMathOperator{\boxop}{\mathbin{\triangleright}}
+
+\begin{document}
+
+\begin{frame}[fragile]
+\frametitle{Background}
+
+\begin{itemize}
+\setlength{\itemsep}{1em}
+  \item What are modes?
+  \begin{lstlisting}[language = caml, basicstyle=\footnotesize\ttfamily, aboveskip=0.5, belowskip=0.5]
+let process_parts_wrong (pair @ unique) =
+let x @ unique = pair.fst in
+let y @ unique = pair.fst in ... 
+  \end{lstlisting}
+  \item Modes as semirings (with orderings). \\
+  many $\le$ once \\
+  once + once = many \\
+  unique many $\cdot$ aliased once = aliased many \\
+  \item Where the semiring goes wrong... \\
+$\cdot, y : \tau \at \text{AM} \tee (\bbox_A y, \bbox_A y) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$
+$\cdot, y : \tau \at \text{AM} \tee \llet_{\bot}x =  \bbox_A y \lin (x, x) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$ ???
+\item Again, what are modes?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}
+\vspace{0.7em}
+\frametitle{What I did}
+Proved useful properties (substitution, beta and eta law type preservation) of various modal calculi to compile a minimal set of laws needed for the modes that we wanted to express. \\
+
+Takeaways:
+\begin{itemize}
+  \item Splitting $\cdot$ into $\scale$ (scale) and $\boxop$ (box).
+  \item Converting equalities to inequalities. \\
+  $(a \scale b) \scale c = a \scale \, (b \scale c)$ might not hold, but $(a \scale b) \scale c \le a \scale \, (b \scale c)$ does!
+  \item Locks expressed as a division operator in terms of $\scale$.
+\end{itemize}
+
+What else you can do:
+\begin{itemize}
+  \item Show other mode systems follow our structure.
+  \item Take advantage of the weaker laws to do other fun things (Kleene star for grades!)
+\end{itemize}
+\end{frame}
+
+\end{document}
