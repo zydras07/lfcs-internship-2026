@@ -264,31 +264,39 @@ lemma aliased_box : ∀ (a : UAStandardSemiring),
   Modality.box a (.aliased : Aliased) = scale a .A := by
     intro a; cases a <;> simp [Modality.box, scale]
 
-@[grind]
-def star (a : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
-  match fuel with
-  | 0 => a 
-  | Nat.succ n => 0 ⊓ (a + (star a n))
+lemma scale_box_many : ∀ (a b : UAStandardSemiring), ∃ (c : UAStandardSemiring),
+  scale (Modality.box a (.many : Many)) b = scale a c := by native_decide
 
-theorem test1 : ∀ a b : UAStandardSemiring, 
-  star (a + b) 5 = star a 5 + star b 5 := by native_decide
+lemma scale_box_aliased : ∀ (a b : UAStandardSemiring), ∃ (c : UAStandardSemiring),
+  scale (Modality.box a (.aliased : Aliased)) b = scale a c := by native_decide
 
-theorem test2 : ∀ a b : UAStandardSemiring, 
-  star (scale a b) 5 = scale (star a 5) b := by native_decide
+lemma meet_split : ∀ (a b c : UAStandardSemiring),
+  c ≤ a ⊓ b ↔ c ≤ a ∧ c ≤ b := by native_decide
 
 @[grind]
-def exp (a : UAStandardSemiring) (b : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
+def pre_star (a : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
   match fuel with
-  | 0 => a 
-  | Nat.succ n => a + (scale b (exp a b n))
+  | 0 => a
+  | Nat.succ n => 0 ⊓ (a + (pre_star a n))
 
-theorem test3 : ∀ a b c : UAStandardSemiring, 
-  exp (a + b) c 5 = exp a c 5 + exp b c 5 := by native_decide
+def star a := pre_star a 5
 
-theorem test4 : ∀ a b c : UAStandardSemiring, 
-  exp (scale a b) c 5 = scale (exp a c 5) b := by native_decide
+theorem test1 : ∀ a b : UAStandardSemiring,
+  star (a + b) ≥ star a + star b := by native_decide
 
+theorem test2 : ∀ a b : UAStandardSemiring,
+  star (scale a b) ≥ scale (star a) b := by native_decide
 
+@[grind]
+def pre_exp (a : UAStandardSemiring) (b : UAStandardSemiring) (fuel : ℕ) : UAStandardSemiring :=
+  match fuel with
+  | 0 => a
+  | Nat.succ n => a + (scale b (pre_exp a b n))
 
+def exp a b := pre_exp a b 5
 
+theorem test3 : ∀ a b c : UAStandardSemiring,
+  exp (a + b) c = exp a c + exp b c := by native_decide
 
+theorem test4 : ∀ a b c : UAStandardSemiring,
+  exp (scale a b) c ≥ scale (exp a c) b := by native_decide
