@@ -421,13 +421,13 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:mul-left-inverse-div-2}
-  $q \scale (q^\prime \setminus q) \le q^\prime$.
+  $q \scale \, (q^\prime \setminus q) \le q^\prime$.
 \end{lemma}
 
 \begin{proof}
   By the definition of division, $q^\prime \setminus q = \bigsqcup\limits_{q^{\prime\prime}} q \scale q^{\prime\prime} \le q^\prime$.
 
-  Thus, $q \scale (q^\prime \setminus q) \le q^\prime$, as required.
+  Thus, $q \scale \, (q^\prime \setminus q) \le q^\prime$, as required.
   
 \end{proof}
 
@@ -465,11 +465,11 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:zero-div}
-  $0 \setminus q = 0$
+  If $q \ne \top$, $0 \setminus q = 0$
 \end{lemma}
 
 \begin{proof}
-  Since 0 is the greatest absorbing element of $\scale$ on the left, $\bigsqcup\limits_{q^\prime} q \scale q^\prime \le 0 = 0$, as required.
+  Since 0 is the absorbing element of $\scale$ on the left (excluding $\top$), $\bigsqcup\limits_{q^\prime} q \scale q^\prime \le 0 = 0$, as required.
   
 \end{proof}
 
@@ -653,7 +653,7 @@ The laws that must hold for forward substitution are:
 \begin{proof}
   Proceed by induction over the structure of the derivation of $\gamma\Gamma \tee v :^{q^\prime \scale q} A$.
   \begin{description}
-    \item[Case VAR.]
+    \item[Case VAR ???.]
     Considering \ref{lem:zero-div}, by VAR, have \textbf{(1)} $(\underline{0} \setminus q^\prime)\Gamma, x :^q A, (\underline{0} \setminus q^\prime) \tee x :^q A$.
 
     By weakening using \ref{lem:mul-left-inverse-div-1}, $(\underline{0} \setminus q^\prime)\Gamma, x :^{(q^\prime \cdot q) \setminus q^\prime} A, (\underline{0} \setminus q^\prime)\Gamma^\prime \tee x :^q A$, as required.
@@ -680,7 +680,7 @@ The laws that must hold for forward substitution are:
 
     By weakening using \ref{law:mul-assoc-1} on \textbf{(4)}, have $(((q^\prime \scale q) \scale \gamma) \setminus q^\prime) \tee \thunk e :^q U \, \underline{B}$, as required.
     \\
-    \item[Case UNIT.]
+    \item[Case UNIT ???.]
     Considering \ref{lem:zero-div}, by UNIT, have $(\underline{0} \setminus q^\prime)\Gamma \tee () :^q \unit$, as required.
     \\
     \item[Case PAIR.]
