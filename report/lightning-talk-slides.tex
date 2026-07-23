@@ -1,4 +1,4 @@
-\documentclass[10pt]{beamer}
+\documentclass[9pt]{beamer}
 
 \usetheme{metropolis}
 
@@ -13,6 +13,8 @@
 \usepackage[bb=boondox]{mathalfa}
 \usepackage{pifont}
 \usepackage{listings}
+\usepackage{tikz}
+\usepackage{bm}
 
 
 \newcommand{\under}[2]{\underset{\raisebox{2mm}{$\scriptstyle #2$}}{#1}}
@@ -80,7 +82,8 @@
 \begin{itemize}
 \setlength{\itemsep}{1em}
   \item What are modes?
-  \begin{lstlisting}[language = caml, basicstyle=\footnotesize\ttfamily, aboveskip=0.5, belowskip=0.5]
+  \begin{lstlisting}[language = caml, basicstyle=\footnotesize\ttfamily, aboveskip=0.5, belowskip=0.5,
+  literate={'"'}{\textquotesingle "\textquotesingle}3           {'\\"'}{\textquotesingle\textbackslash "\textquotesingle}4]
 let process_parts_wrong (pair @ unique) =
 let x @ unique = pair.fst in
 let y @ unique = pair.fst in ... 
@@ -89,10 +92,22 @@ let y @ unique = pair.fst in ...
   many $\le$ once \\
   once + once = many \\
   unique many $\cdot$ aliased once = aliased many \\
+
   \item Where the semiring goes wrong... \\
-$\cdot, y : \tau \at \text{AM} \tee (\bbox_A y, \bbox_A y) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$
-$\cdot, y : \tau \at \text{AM} \tee \llet_{\bot}x =  \bbox_A y \lin \, (x, x) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$ ???
+  \begin{lstlisting}[language = caml, basicstyle=\footnotesize\ttfamily, aboveskip=0.5, belowskip=0.5, mathescape=true]
+let y @ aliased many = ... in
+
+  (y @@ aliased, y @@ aliased) @ unique                   $\checkmark$
+    (* aliased + aliased = aliased many *)
+    
+  let x = y @@ aliased in (x, x) @ unique                 $\times$
+    (* (unique + unique) $\cdot$ aliased = aliased many *)
+  \end{lstlisting}
+% $\cdot, y : \tau \at \text{AM} \tee (\bbox_A y, \bbox_A y) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$
+% $\cdot, y : \tau \at \text{AM} \tee \llet_{\bot}x =  \bbox_A y \lin \, (x, x) : \boxempty^A \tau \times \boxempty^A \tau \at \text{CA}$ ???
 \item Again, what are modes?
+
+
 \end{itemize}
 
 \end{frame}
@@ -106,7 +121,9 @@ Takeaways:
 \begin{itemize}
   \item Splitting $\cdot$ into $\scale$ (scale) and $\boxop$ (box).
   \item Converting equalities to inequalities. \\
-  $(a \scale b) \scale c = a \scale \, (b \scale c)$ might not hold, but $(a \scale b) \scale c \le a \scale \, (b \scale c)$ does!
+  $(a \scale b) \scale c = a \scale \, (b \scale c)$ might not hold, 
+  \\
+  but $(a \scale b) \scale c \le a \scale \, (b \scale c)$ does!
   \item Locks expressed as a division operator in terms of $\scale$.
 \end{itemize}
 
@@ -115,6 +132,61 @@ What else you can do:
   \item Show other mode systems follow our structure.
   \item Take advantage of the weaker laws to do other fun things (Kleene star for grades!)
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+\begin{tikzpicture}[scale=0.5]
+
+\fontsize{5}
+\\
+\node (0) at (2, 4) {UNUSED($\bm{0}$)};
+\node (a) at (2, 3) {ALIASED ONCE($\bm{A}$)};
+\node (1) at (0.5, 2) {UNIQUE ONCE($\bm{1}$)};
+\node (am) at (4, 2) {ALIASED MANY($\bm{AM}$)};
+\node (ca) at (-1, 1) {COALIASED ONCE($\bm{A \rightarrow 1}$)};
+\node (m) at (3, 1) {UNIQUE MANY($\bm{M}$)};
+\node (bot) at (5, 0) {UNIQUE ERROR($\bm{\bot}$)};
+\node (cam) at (0.5, 0) {COALIASED MANY($\bm{A \rightarrow M}$)};
+\node (cabot) at (3, -1) {COALIASED ERROR($\bm{A \rightarrow \bot}$)};
+
+\draw[->] (a) -- (0);
+\draw[->] (1) -- (a);
+\draw[->] (am) -- (a);
+\draw[->] (ca) -- (1);
+\draw[->] (m) -- (1);
+\draw[->] (m) -- (am);
+\draw[->] (cam) -- (ca);
+\draw[->] (cam) -- (m);
+\draw[->] (bot) -- (m);
+\draw[->] (cabot) -- (cam);
+\draw[->] (cabot) -- (bot);
+
+\end{tikzpicture}
+  
+
+\begin{tikzpicture}[scale=0.5]
+
+\fontsize{5}
+\\
+\node (top) at (2, 5) {UNREACHABLE($\bm{\top}$)};
+\node (0) at (2, 4) {UNUSED($\bm{0}$)};
+\node (a) at (2, 3) {ALIASED ONCE($\bm{A}$)};
+\node (am) at (4, 2) {ALIASED MANY($\bm{AM}$)};
+\node (ca) at (0, 2) {UNIQUE ONCE($\bm{CA}$)};
+\node (cam) at (2, 1) {UNIQUE MANY($\bm{CAM}$)};
+\node (bot) at (2, 0) {ERROR($\bm{\bot}$)};
+
+\draw[->] (0) -- (top);
+\draw[->] (a) -- (0);
+\draw[->] (ca) -- (a);
+\draw[->] (am) -- (a);
+\draw[->] (cam) -- (ca);
+\draw[->] (cam) -- (am);
+\draw[->] (bot) -- (cam);
+
+\end{tikzpicture}
 \end{frame}
 
 \end{document}
