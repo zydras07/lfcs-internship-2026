@@ -465,7 +465,7 @@ The laws that must hold for forward substitution are:
 
 \begin{lemma}
 \label{lem:zero-div}
-  If $q \ne \top$, $0 \setminus q = 0$
+  If $q > 0$, $0 \setminus q = 0$
 \end{lemma}
 
 \begin{proof}
@@ -654,7 +654,11 @@ The laws that must hold for forward substitution are:
   Proceed by induction over the structure of the derivation of $\gamma\Gamma \tee v :^{q^\prime \scale q} A$.
   \begin{description}
     \item[Case VAR ???.]
-    Considering \ref{lem:zero-div}, by VAR, have \textbf{(1)} $(\underline{0} \setminus q^\prime)\Gamma, x :^q A, (\underline{0} \setminus q^\prime) \tee x :^q A$.
+    Consider the case $q^\prime = 0$.
+
+    
+    
+    Since $q^\prime \ne \top$, considering \ref{lem:zero-div}, by VAR, have \textbf{(1)} $(\underline{0} \setminus q^\prime)\Gamma, x :^q A, (\underline{0} \setminus q^\prime)\Gamma^\prime \tee x :^q A$.
 
     By weakening using \ref{lem:mul-left-inverse-div-1}, $(\underline{0} \setminus q^\prime)\Gamma, x :^{(q^\prime \cdot q) \setminus q^\prime} A, (\underline{0} \setminus q^\prime)\Gamma^\prime \tee x :^q A$, as required.
     \\
@@ -681,7 +685,7 @@ The laws that must hold for forward substitution are:
     By weakening using \ref{law:mul-assoc-1} on \textbf{(4)}, have $(((q^\prime \scale q) \scale \gamma) \setminus q^\prime) \tee \thunk e :^q U \, \underline{B}$, as required.
     \\
     \item[Case UNIT ???.]
-    Considering \ref{lem:zero-div}, by UNIT, have $(\underline{0} \setminus q^\prime)\Gamma \tee () :^q \unit$, as required.
+    Since $q^\prime \ne \top$, considering \ref{lem:zero-div}, by UNIT, have $(\underline{0} \setminus q^\prime)\Gamma \tee () :^q \unit$, as required.
     \\
     \item[Case PAIR.]
     By assumption, have \textbf{(1)} $(\gamma_1 + \gamma_2)\Gamma \tee (v_1, v_2) :^{q^\prime \scale q} A \times B$.
